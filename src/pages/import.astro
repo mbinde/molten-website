@@ -427,13 +427,15 @@ import Layout from '../layouts/Layout.astro';
       renderCart();
 
       // Focus on the quantity field for the newly added item
-      setTimeout(() => {
-        const quantityInput = document.querySelector(`input[data-code="${code}"][type="number"]`);
-        if (quantityInput) {
-          quantityInput.focus();
-          quantityInput.select();
-        }
-      }, 100);
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          const quantityInput = document.querySelector(`input[data-code="${code}"][type="number"]`);
+          if (quantityInput) {
+            quantityInput.focus();
+            quantityInput.select();
+          }
+        });
+      });
     }
 
     // Confirm cart item (collapse it)
@@ -456,13 +458,15 @@ import Layout from '../layouts/Layout.astro';
         renderCart();
 
         // Focus on quantity field
-        setTimeout(() => {
-          const quantityInput = document.querySelector(`input[data-code="${code}"][type="number"]`);
-          if (quantityInput) {
-            quantityInput.focus();
-            quantityInput.select();
-          }
-        }, 100);
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            const quantityInput = document.querySelector(`input[data-code="${code}"][type="number"]`);
+            if (quantityInput) {
+              quantityInput.focus();
+              quantityInput.select();
+            }
+          });
+        });
       }
     }
 
@@ -505,6 +509,14 @@ import Layout from '../layouts/Layout.astro';
       const item = importList.find(i => i.code === code);
       if (item) {
         item.location = location;
+      }
+    }
+
+    // Handle Enter key in form fields
+    function handleFormKeyDown(event, code) {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        confirmItem(code);
       }
     }
 
@@ -584,12 +596,16 @@ import Layout from '../layouts/Layout.astro';
                     min="1"
                     value="${item.quantity}"
                     onchange="updateQuantity('${item.code}', this.value)"
+                    onkeydown="handleFormKeyDown(event, '${item.code}')"
                     data-code="${item.code}"
+                    tabindex="0"
                     class="px-2 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-orange-500"
                     placeholder="Quantity"
                   />
                   <select
                     onchange="updateType('${item.code}', this.value)"
+                    onkeydown="handleFormKeyDown(event, '${item.code}')"
+                    tabindex="0"
                     class="px-2 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-orange-500"
                   >
                     <option value="rods" ${item.type === 'rods' ? 'selected' : ''}>Rods</option>
@@ -604,6 +620,8 @@ import Layout from '../layouts/Layout.astro';
                 ${hasSubtypes(item.type) ? `
                 <select
                   onchange="updateSubtype('${item.code}', this.value)"
+                  onkeydown="handleFormKeyDown(event, '${item.code}')"
+                  tabindex="0"
                   class="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-orange-500"
                 >
                   <option value="">No subtype</option>
@@ -616,11 +634,14 @@ import Layout from '../layouts/Layout.astro';
                   type="text"
                   value="${item.location || ''}"
                   oninput="updateLocation('${item.code}', this.value)"
+                  onkeydown="handleFormKeyDown(event, '${item.code}')"
+                  tabindex="0"
                   class="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-orange-500"
                   placeholder="Location (e.g., Shelf A, Box 3)"
                 />
                 <button
                   onclick="confirmItem('${item.code}')"
+                  tabindex="0"
                   class="w-full px-4 py-2 bg-orange-500 text-white rounded-lg font-medium hover:bg-orange-600 transition"
                 >
                   Add to List
@@ -735,6 +756,7 @@ import Layout from '../layouts/Layout.astro';
     window.updateLocation = updateLocation;
     window.confirmItem = confirmItem;
     window.expandItem = expandItem;
+    window.handleFormKeyDown = handleFormKeyDown;
 
     // Event listeners
     document.getElementById('searchInput').addEventListener('input', filterCatalog);
