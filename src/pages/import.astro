@@ -233,6 +233,17 @@ import Layout from '../layouts/Layout.astro';
                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
               />
 
+              <div class="flex items-center gap-2 text-sm">
+                <input
+                  type="checkbox"
+                  id="searchTitlesOnly"
+                  class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-2 focus:ring-orange-500"
+                />
+                <label for="searchTitlesOnly" class="text-gray-700 cursor-pointer select-none">
+                  Search titles only (uncheck to search manufacturers and codes too)
+                </label>
+              </div>
+
               <div class="flex gap-4 flex-wrap">
                 <select id="coeFilter" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500">
                   <option value="">All COE</option>
@@ -401,12 +412,25 @@ import Layout from '../layouts/Layout.astro';
       const searchTerm = document.getElementById('searchInput').value.toLowerCase();
       const coeFilter = document.getElementById('coeFilter').value;
       const mfgFilter = document.getElementById('manufacturerFilter').value;
+      const titlesOnly = document.getElementById('searchTitlesOnly').checked;
 
       filteredCatalog = catalog.filter(item => {
-        const matchesSearch = !searchTerm ||
-          item.name.toLowerCase().includes(searchTerm) ||
-          item.code.toLowerCase().includes(searchTerm) ||
-          item.manufacturer.toLowerCase().includes(searchTerm);
+        let matchesSearch = !searchTerm;
+
+        if (searchTerm) {
+          if (titlesOnly) {
+            // Search titles only
+            matchesSearch = item.name.toLowerCase().includes(searchTerm);
+          } else {
+            // Search titles, codes, manufacturer codes, and full manufacturer names
+            const mfrName = getManufacturerName(item.manufacturer);
+            matchesSearch =
+              item.name.toLowerCase().includes(searchTerm) ||
+              item.code.toLowerCase().includes(searchTerm) ||
+              item.manufacturer.toLowerCase().includes(searchTerm) ||
+              mfrName.toLowerCase().includes(searchTerm);
+          }
+        }
 
         const matchesCOE = !coeFilter || item.coe === coeFilter;
         const matchesMfg = !mfgFilter || item.manufacturer === mfgFilter;
@@ -819,6 +843,19 @@ import Layout from '../layouts/Layout.astro';
     window.expandItem = expandItem;
     window.handleFormKeyDown = handleFormKeyDown;
 
+    // Load and save search preferences
+    function loadSearchPreferences() {
+      const titlesOnly = localStorage.getItem('searchTitlesOnly');
+      if (titlesOnly !== null) {
+        document.getElementById('searchTitlesOnly').checked = titlesOnly === 'true';
+      }
+    }
+
+    function saveSearchPreferences() {
+      const titlesOnly = document.getElementById('searchTitlesOnly').checked;
+      localStorage.setItem('searchTitlesOnly', titlesOnly);
+    }
+
     // Event listeners
     document.getElementById('searchInput').addEventListener('input', filterCatalog);
     document.getElementById('searchInput').addEventListener('keydown', (event) => {
@@ -829,6 +866,10 @@ import Layout from '../layouts/Layout.astro';
         filterCatalog();
       }
     });
+    document.getElementById('searchTitlesOnly').addEventListener('change', () => {
+      saveSearchPreferences();
+      filterCatalog();
+    });
     document.getElementById('coeFilter').addEventListener('change', filterCatalog);
     document.getElementById('manufacturerFilter').addEventListener('change', filterCatalog);
     document.getElementById('exportBtn').addEventListener('click', exportJSON);
@@ -837,6 +878,7 @@ import Layout from '../layouts/Layout.astro';
     document.getElementById('clearBtn').addEventListener('click', clearCart);
 
     // Initialize
+    loadSearchPreferences();
     loadCatalog();
 
     // JSON to CSV Converter
