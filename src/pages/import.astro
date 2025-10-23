@@ -133,7 +133,7 @@ import Layout from '../layouts/Layout.astro';
               <span class="text-blue-600 text-xl">ℹ️</span>
               <div>
                 <p class="text-sm text-blue-900">
-                  <strong>Note:</strong> Specify quantity and type (rods, tubes, frit, etc.) for each item before export. You can add storage locations after import in the app.
+                  <strong>Note:</strong> Specify quantity, type, and location for each item before export. You can save and re-load your import list using the "Load JSON" button to continue editing.
                 </p>
               </div>
             </div>
@@ -209,11 +209,20 @@ import Layout from '../layouts/Layout.astro';
               </button>
 
               <button
+                id="loadBtn"
+                class="w-full mt-2 bg-blue-500 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-600 transition"
+              >
+                Load JSON
+              </button>
+
+              <button
                 id="clearBtn"
                 class="w-full mt-2 bg-gray-100 text-gray-700 px-6 py-2 rounded-lg font-medium hover:bg-gray-200 transition"
               >
                 Clear All
               </button>
+
+              <input type="file" id="fileInput" accept=".json" class="hidden" />
             </div>
           </div>
         </div>
@@ -332,7 +341,8 @@ import Layout from '../layouts/Layout.astro';
       importList.push({
         ...item,
         quantity: 1,
-        type: 'rods'  // Default type
+        type: 'rods',  // Default type
+        location: ''   // Default empty location
       });
 
       renderCart();
@@ -362,6 +372,14 @@ import Layout from '../layouts/Layout.astro';
       }
     }
 
+    // Update location
+    function updateLocation(code, location) {
+      const item = importList.find(i => i.code === code);
+      if (item) {
+        item.location = location;
+      }
+    }
+
     // Render cart
     function renderCart() {
       const container = document.getElementById('importCart');
@@ -381,8 +399,8 @@ import Layout from '../layouts/Layout.astro';
       }
 
       container.innerHTML = importList.map(item => `
-        <div class="p-3 border border-gray-200 rounded-lg">
-          <div class="flex justify-between items-start mb-2">
+        <div class="p-3 border border-gray-200 rounded-lg space-y-2">
+          <div class="flex justify-between items-start">
             <div class="flex-1 min-w-0">
               <div class="font-semibold text-sm text-gray-900 truncate">${item.name}</div>
               <div class="text-xs text-gray-500">${item.manufacturer} - COE ${item.coe}</div>
@@ -415,6 +433,13 @@ import Layout from '../layouts/Layout.astro';
               placeholder="Qty"
             />
           </div>
+          <input
+            type="text"
+            value="${item.location || ''}"
+            oninput="updateLocation('${item.code}', this.value)"
+            class="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-orange-500"
+            placeholder="Location (e.g., Shelf A, Box 3)"
+          />
         </div>
       `).join('');
     }
@@ -432,7 +457,8 @@ import Layout from '../layouts/Layout.astro';
           manufacturer: item.manufacturer,
           coe: item.coe,
           type: item.type,
-          quantity: item.quantity
+          quantity: item.quantity,
+          location: item.location || ''
         }))
       };
 
@@ -445,6 +471,54 @@ import Layout from '../layouts/Layout.astro';
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
+    }
+
+    // Load JSON
+    async function loadJSON() {
+      const input = document.getElementById('fileInput');
+      input.click();
+    }
+
+    // Handle file selection
+    async function handleFileLoad(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      try {
+        const text = await file.text();
+        const data = JSON.parse(text);
+
+        if (data.version !== '1.0') {
+          alert('Unsupported file version: ' + data.version);
+          return;
+        }
+
+        // Load items from file
+        importList = data.items.map(item => {
+          // Find the full catalog item data
+          const catalogItem = catalog.find(c => c.code === item.code);
+          if (!catalogItem) {
+            console.warn('Item not found in catalog:', item.code);
+            return null;
+          }
+
+          return {
+            ...catalogItem,
+            quantity: item.quantity || 1,
+            type: item.type || 'rods',
+            location: item.location || ''
+          };
+        }).filter(item => item !== null);
+
+        renderCart();
+        alert(`Loaded ${importList.length} items from ${file.name}`);
+      } catch (error) {
+        console.error('Error loading file:', error);
+        alert('Error loading file: ' + error.message);
+      }
+
+      // Reset file input
+      event.target.value = '';
     }
 
     // Clear cart
@@ -461,12 +535,15 @@ import Layout from '../layouts/Layout.astro';
     window.removeFromCart = removeFromCart;
     window.updateQuantity = updateQuantity;
     window.updateType = updateType;
+    window.updateLocation = updateLocation;
 
     // Event listeners
     document.getElementById('searchInput').addEventListener('input', filterCatalog);
     document.getElementById('coeFilter').addEventListener('change', filterCatalog);
     document.getElementById('manufacturerFilter').addEventListener('change', filterCatalog);
     document.getElementById('exportBtn').addEventListener('click', exportJSON);
+    document.getElementById('loadBtn').addEventListener('click', loadJSON);
+    document.getElementById('fileInput').addEventListener('change', handleFileLoad);
     document.getElementById('clearBtn').addEventListener('click', clearCart);
 
     // Initialize
