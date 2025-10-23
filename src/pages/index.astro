@@ -1,16 +1,164 @@
 ---
-
+import Layout from '../layouts/Layout.astro';
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Layout title="Molten - Professional Glass Inventory Management for iOS">
+  <!-- Hero Section -->
+  <section class="gradient-orange text-white py-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <h1 class="text-5xl md:text-6xl font-bold mb-6">
+        Professional Glass Inventory Management for iOS
+      </h1>
+      <p class="text-2xl md:text-3xl mb-8 text-white/90">
+        Stop searching through bins. Start creating more art.
+      </p>
+      <p class="text-xl mb-12 text-white/80 max-w-3xl mx-auto">
+        Molten is the complete inventory solution for glass artists working with hot glass, torch work, and kiln fusing.
+        Track over 1,000 types of glass, manage your inventory with precision, plan shopping trips, and document your
+        creative journey—all from your iPhone or iPad.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a href="https://apps.apple.com/app/molten"
+           class="bg-white text-orange-500 px-8 py-4 rounded-lg font-bold text-lg hover:bg-gray-100 transition">
+          Download on App Store
+        </a>
+        <a href="/features"
+           class="bg-white/10 backdrop-blur text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-white/20 transition border-2 border-white/30">
+          Explore Features
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Screenshots Preview -->
+  <section class="py-16 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="space-y-4">
+          <img src="/screenshots/01-catalog-browse.png" alt="Browse glass catalog" class="rounded-lg shadow-xl w-full" />
+          <h3 class="text-lg font-semibold text-center">Comprehensive Catalog</h3>
+        </div>
+        <div class="space-y-4">
+          <img src="/screenshots/05-inventory-view.png" alt="Track inventory" class="rounded-lg shadow-xl w-full" />
+          <h3 class="text-lg font-semibold text-center">Smart Tracking</h3>
+        </div>
+        <div class="space-y-4">
+          <img src="/screenshots/06-shopping-list.png" alt="Shopping lists" class="rounded-lg shadow-xl w-full" />
+          <h3 class="text-lg font-semibold text-center">Organized Shopping</h3>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Overview -->
+  <section class="py-20 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-4xl font-bold text-center mb-16">Why Molten?</h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+        <div class="flex gap-4">
+          <div class="text-4xl">📚</div>
+          <div>
+            <h3 class="text-xl font-bold mb-2">Comprehensive Glass Catalog</h3>
+            <p class="text-gray-600">
+              Browse over 1,000 types of glass from 20+ manufacturers with full COE coverage and detailed product information.
+            </p>
+          </div>
+        </div>
+
+        <div class="flex gap-4">
+          <div class="text-4xl">📦</div>
+          <div>
+            <h3 class="text-xl font-bold mb-2">Smart Inventory Tracking</h3>
+            <p class="text-gray-600">
+              Track multiple inventory types (rods, frit, sheet, tubes) with exact storage locations and precise quantities.
+            </p>
+          </div>
+        </div>
+
+        <div class="flex gap-4">
+          <div class="text-4xl">🛒</div>
+          <div>
+            <h3 class="text-xl font-bold mb-2">Intelligent Shopping Lists</h3>
+            <p class="text-gray-600">
+              Organize shopping by store, specify quantities, mark priorities, and auto-transfer checked items to inventory.
+            </p>
+          </div>
+        </div>
+
+        <div class="flex gap-4">
+          <div class="text-4xl">💰</div>
+          <div>
+            <h3 class="text-xl font-bold mb-2">Purchase History & Records</h3>
+            <p class="text-gray-600">
+              Maintain detailed purchase records with vendor tracking, pricing, and tax documentation for deductions.
+            </p>
+          </div>
+        </div>
+
+        <div class="flex gap-4">
+          <div class="text-4xl">🎨</div>
+          <div>
+            <h3 class="text-xl font-bold mb-2">Project Planning & Logging</h3>
+            <p class="text-gray-600">
+              Document your creative journey with project notes, photos, glass usage tracking, and lessons learned.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-center mt-12">
+        <a href="/features" class="gradient-orange text-white px-8 py-4 rounded-lg font-bold text-lg inline-block hover:opacity-90 transition">
+          Explore All Features →
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Privacy First -->
+  <section class="py-20 bg-white">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <div class="text-5xl mb-6">🔒</div>
+      <h2 class="text-4xl font-bold mb-8">Privacy First</h2>
+      <p class="text-xl text-gray-700 mb-8">
+        Your creative work and inventory data stays completely private. No tracking, no data mining, no third parties.
+      </p>
+      <div class="bg-gray-50 rounded-lg p-8 text-left">
+        <h3 class="text-2xl font-bold mb-6">Your Data, Your Control:</h3>
+        <ul class="space-y-4 text-lg text-gray-700">
+          <li class="flex gap-3">
+            <span class="text-green-500">✓</span>
+            <span>Local storage only—everything stays on your device</span>
+          </li>
+          <li class="flex gap-3">
+            <span class="text-green-500">✓</span>
+            <span>iCloud sync to your devices only (no cloud databases)</span>
+          </li>
+          <li class="flex gap-3">
+            <span class="text-green-500">✓</span>
+            <span>Nothing ever sold or shared with third parties</span>
+          </li>
+          <li class="flex gap-3">
+            <span class="text-green-500">✓</span>
+            <span>Complete privacy and ownership of your data</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="py-20 gradient-orange text-white">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <h2 class="text-4xl font-bold mb-6">Ready to Transform Your Studio?</h2>
+      <p class="text-xl mb-8 text-white/90">
+        Molten is designed for professional glass artists who need precise inventory control. Whether you're managing
+        a studio inventory or your personal collection, Molten brings order to your creative chaos.
+      </p>
+      <a href="https://apps.apple.com/app/molten"
+         class="bg-white text-orange-500 px-8 py-4 rounded-lg font-bold text-lg inline-block hover:bg-gray-100 transition">
+        Download Now
+      </a>
+    </div>
+  </section>
+</Layout>
