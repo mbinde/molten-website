@@ -539,6 +539,14 @@ import Layout from '../layouts/Layout.astro';
 
     // Event listeners
     document.getElementById('searchInput').addEventListener('input', filterCatalog);
+    document.getElementById('searchInput').addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' && filteredCatalog.length === 1) {
+        event.preventDefault();
+        addToCart(filteredCatalog[0].code);
+        document.getElementById('searchInput').value = '';
+        filterCatalog();
+      }
+    });
     document.getElementById('coeFilter').addEventListener('change', filterCatalog);
     document.getElementById('manufacturerFilter').addEventListener('change', filterCatalog);
     document.getElementById('exportBtn').addEventListener('click', exportJSON);
