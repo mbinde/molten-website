@@ -21,14 +21,122 @@ import Layout from '../layouts/Layout.astro';
 
       <!-- Instructions -->
       <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
-        <h2 class="text-2xl font-bold mb-4">How it works</h2>
-        <ol class="list-decimal list-inside space-y-2 text-gray-700">
-          <li>Search for glass items in the catalog below</li>
-          <li>Click "Add to Import List" for items you own</li>
-          <li>Specify quantities for each item in your cart</li>
-          <li>Click "Export JSON" to download your inventory file</li>
-          <li>Open the file in Molten on your iPhone to import</li>
-        </ol>
+        <h2 class="text-2xl font-bold mb-6">Complete Import Guide</h2>
+
+        <div class="space-y-6">
+          <!-- Step 1 -->
+          <div class="flex gap-4">
+            <div class="flex-shrink-0 w-8 h-8 rounded-full bg-orange-500 text-white flex items-center justify-center font-bold">
+              1
+            </div>
+            <div>
+              <h3 class="font-semibold text-lg mb-2">Build Your Import List</h3>
+              <p class="text-gray-600">Use the catalog browser below to search for glass items you own. Click "Add" to add them to your import list. Adjust quantities as needed.</p>
+            </div>
+          </div>
+
+          <!-- Step 2 -->
+          <div class="flex gap-4">
+            <div class="flex-shrink-0 w-8 h-8 rounded-full bg-orange-500 text-white flex items-center justify-center font-bold">
+              2
+            </div>
+            <div>
+              <h3 class="font-semibold text-lg mb-2">Export the JSON File</h3>
+              <p class="text-gray-600 mb-2">Click the "Export JSON" button in the import list panel. This will download a file named something like <code class="bg-gray-100 px-2 py-1 rounded text-sm">molten-import-2025-10-23.json</code></p>
+            </div>
+          </div>
+
+          <!-- Step 3 -->
+          <div class="flex gap-4">
+            <div class="flex-shrink-0 w-8 h-8 rounded-full bg-orange-500 text-white flex items-center justify-center font-bold">
+              3
+            </div>
+            <div>
+              <h3 class="font-semibold text-lg mb-2">Transfer to Your iPhone</h3>
+              <p class="text-gray-600 mb-3">Choose one of these methods:</p>
+              <ul class="space-y-2 text-gray-600">
+                <li class="flex gap-2">
+                  <span class="text-orange-500">•</span>
+                  <div>
+                    <strong>Email:</strong> Email the file to yourself, open the email on your iPhone, and tap the attachment
+                  </div>
+                </li>
+                <li class="flex gap-2">
+                  <span class="text-orange-500">•</span>
+                  <div>
+                    <strong>AirDrop:</strong> On Mac, right-click the file → Share → AirDrop to your iPhone
+                  </div>
+                </li>
+                <li class="flex gap-2">
+                  <span class="text-orange-500">•</span>
+                  <div>
+                    <strong>iCloud Drive:</strong> Save the file to iCloud Drive on your computer, then open Files app on iPhone → iCloud Drive
+                  </div>
+                </li>
+                <li class="flex gap-2">
+                  <span class="text-orange-500">•</span>
+                  <div>
+                    <strong>Direct on iPhone:</strong> Visit this page on your iPhone and export directly
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Step 4 -->
+          <div class="flex gap-4">
+            <div class="flex-shrink-0 w-8 h-8 rounded-full bg-orange-500 text-white flex items-center justify-center font-bold">
+              4
+            </div>
+            <div>
+              <h3 class="font-semibold text-lg mb-2">Import into Molten</h3>
+              <p class="text-gray-600 mb-3">Once you have the file on your iPhone:</p>
+              <ul class="space-y-2 text-gray-600">
+                <li class="flex gap-2">
+                  <span class="text-orange-500">•</span>
+                  <div>
+                    <strong>If you tapped the file attachment:</strong> Tap the share button → scroll and find "Molten" in the list of apps → tap to import
+                  </div>
+                </li>
+                <li class="flex gap-2">
+                  <span class="text-orange-500">•</span>
+                  <div>
+                    <strong>From Files app:</strong> Tap and hold the .json file → Share → Molten
+                  </div>
+                </li>
+                <li class="flex gap-2">
+                  <span class="text-orange-500">•</span>
+                  <div>
+                    <strong>From within Molten:</strong> Open Molten → Inventory tab → tap the menu button (⋯) → "Import from File" → select your file
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Step 5 -->
+          <div class="flex gap-4">
+            <div class="flex-shrink-0 w-8 h-8 rounded-full bg-orange-500 text-white flex items-center justify-center font-bold">
+              5
+            </div>
+            <div>
+              <h3 class="font-semibold text-lg mb-2">Review and Confirm</h3>
+              <p class="text-gray-600">Molten will show you a preview of what will be imported. Review the items and tap "Import" to add them to your inventory.</p>
+            </div>
+          </div>
+
+          <!-- Note -->
+          <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded">
+            <div class="flex gap-3">
+              <span class="text-blue-600 text-xl">ℹ️</span>
+              <div>
+                <p class="text-sm text-blue-900">
+                  <strong>Note:</strong> All items are imported as rod inventory with quantity 1 initially. You can edit the type (rods, tubes, frit, etc.), quantity, and add storage locations after import.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
