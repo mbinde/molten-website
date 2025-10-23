@@ -282,6 +282,28 @@ import Layout from '../layouts/Layout.astro';
       return manufacturerNames[code] || code;
     }
 
+    // Type subtypes mapping (from GlassItemTypeSystem.swift)
+    const typeSubtypes = {
+      "rod": ["standard", "cane", "pull"],
+      "stringer": ["1mm", "2mm", "Hand-pulled"],
+      "stringers": ["1mm", "2mm", "Hand-pulled"],  // Alias
+      "sheet": ["full", "half", "10x10", "other"],
+      "frit": ["#25", "#38", "#70", "#82", "#100", "coarse", "medium", "fine"],
+      "tube": ["thin wall", "thick wall", "standard"],
+      "tubes": ["thin wall", "thick wall", "standard"],  // Alias
+      "enamel": ["opaque", "transparent"]
+    };
+
+    // Get subtypes for a type
+    function getSubtypes(type) {
+      return typeSubtypes[type] || [];
+    }
+
+    // Check if type has subtypes
+    function hasSubtypes(type) {
+      return getSubtypes(type).length > 0;
+    }
+
     // Load catalog
     async function loadCatalog() {
       try {
@@ -397,6 +419,7 @@ import Layout from '../layouts/Layout.astro';
         ...item,
         quantity: 1,
         type: 'rods',  // Default type
+        subtype: '',   // Default no subtype
         location: '',  // Default empty location
         confirmed: false  // Start in expanded/unconfirmed state
       });
@@ -463,7 +486,17 @@ import Layout from '../layouts/Layout.astro';
       const item = importList.find(i => i.code === code);
       if (item) {
         item.type = type;
+        // Reset subtype when type changes
+        item.subtype = '';
         renderCart();
+      }
+    }
+
+    // Update subtype
+    function updateSubtype(code, subtype) {
+      const item = importList.find(i => i.code === code);
+      if (item) {
+        item.subtype = subtype;
       }
     }
 
@@ -498,12 +531,13 @@ import Layout from '../layouts/Layout.astro';
       container.innerHTML = importList.map(item => {
         if (item.confirmed) {
           // Collapsed state - single line with pencil icon
+          const typeDisplay = item.subtype ? `${item.type} (${item.subtype})` : item.type;
           return `
             <div class="p-3 border border-gray-200 rounded-lg bg-gray-50">
               <div class="flex items-center justify-between gap-2">
                 <div class="flex-1 min-w-0">
                   <div class="font-medium text-sm text-gray-900 truncate">${item.name}</div>
-                  <div class="text-xs text-gray-500">${item.quantity} ${item.type}${item.location ? ` • ${item.location}` : ''}</div>
+                  <div class="text-xs text-gray-500">${item.quantity} ${typeDisplay}${item.location ? ` • ${item.location}` : ''}</div>
                 </div>
                 <div class="flex items-center gap-2 flex-shrink-0">
                   <button
@@ -563,9 +597,21 @@ import Layout from '../layouts/Layout.astro';
                     <option value="frit" ${item.type === 'frit' ? 'selected' : ''}>Frit</option>
                     <option value="sheet" ${item.type === 'sheet' ? 'selected' : ''}>Sheet</option>
                     <option value="stringers" ${item.type === 'stringers' ? 'selected' : ''}>Stringers</option>
+                    <option value="enamel" ${item.type === 'enamel' ? 'selected' : ''}>Enamel</option>
                     <option value="other" ${item.type === 'other' ? 'selected' : ''}>Other</option>
                   </select>
                 </div>
+                ${hasSubtypes(item.type) ? `
+                <select
+                  onchange="updateSubtype('${item.code}', this.value)"
+                  class="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-orange-500"
+                >
+                  <option value="">No subtype</option>
+                  ${getSubtypes(item.type).map(st => `
+                    <option value="${st}" ${item.subtype === st ? 'selected' : ''}>${st}</option>
+                  `).join('')}
+                </select>
+                ` : ''}
                 <input
                   type="text"
                   value="${item.location || ''}"
@@ -604,6 +650,7 @@ import Layout from '../layouts/Layout.astro';
           manufacturer: item.manufacturer,
           coe: item.coe,
           type: item.type,
+          subtype: item.subtype || '',
           quantity: item.quantity,
           location: item.location || ''
         }))
@@ -653,6 +700,7 @@ import Layout from '../layouts/Layout.astro';
             ...catalogItem,
             quantity: item.quantity || 1,
             type: item.type || 'rods',
+            subtype: item.subtype || '',
             location: item.location || '',
             confirmed: true  // Loaded items are already configured
           };
@@ -683,6 +731,7 @@ import Layout from '../layouts/Layout.astro';
     window.removeFromCart = removeFromCart;
     window.updateQuantity = updateQuantity;
     window.updateType = updateType;
+    window.updateSubtype = updateSubtype;
     window.updateLocation = updateLocation;
     window.confirmItem = confirmItem;
     window.expandItem = expandItem;
