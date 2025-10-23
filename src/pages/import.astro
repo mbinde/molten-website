@@ -656,7 +656,7 @@ import Layout from '../layouts/Layout.astro';
                 </button>
               </div>
               <div class="space-y-2">
-                <div class="grid grid-cols-2 gap-2">
+                <div class="grid grid-cols-3 gap-2">
                   <input
                     type="number"
                     min="1"
@@ -664,14 +664,12 @@ import Layout from '../layouts/Layout.astro';
                     onchange="updateQuantity('${item.code}', this.value)"
                     onkeydown="handleFormKeyDown(event, '${item.code}')"
                     data-code="${item.code}"
-                    tabindex="0"
                     class="px-2 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-orange-500"
                     placeholder="Quantity"
                   />
                   <select
                     onchange="updateType('${item.code}', this.value)"
                     onkeydown="handleFormKeyDown(event, '${item.code}')"
-                    tabindex="0"
                     class="px-2 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-orange-500"
                   >
                     <option value="rods" ${item.type === 'rods' ? 'selected' : ''}>Rods</option>
@@ -682,32 +680,29 @@ import Layout from '../layouts/Layout.astro';
                     <option value="enamel" ${item.type === 'enamel' ? 'selected' : ''}>Enamel</option>
                     <option value="other" ${item.type === 'other' ? 'selected' : ''}>Other</option>
                   </select>
+                  ${hasSubtypes(item.type) ? `
+                  <select
+                    onchange="updateSubtype('${item.code}', this.value)"
+                    onkeydown="handleFormKeyDown(event, '${item.code}')"
+                    class="px-2 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-orange-500"
+                  >
+                    <option value="">No subtype</option>
+                    ${getSubtypes(item.type).map(st => `
+                      <option value="${st}" ${item.subtype === st ? 'selected' : ''}>${st}</option>
+                    `).join('')}
+                  </select>
+                  ` : '<div></div>'}
                 </div>
-                ${hasSubtypes(item.type) ? `
-                <select
-                  onchange="updateSubtype('${item.code}', this.value)"
-                  onkeydown="handleFormKeyDown(event, '${item.code}')"
-                  tabindex="0"
-                  class="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-orange-500"
-                >
-                  <option value="">No subtype</option>
-                  ${getSubtypes(item.type).map(st => `
-                    <option value="${st}" ${item.subtype === st ? 'selected' : ''}>${st}</option>
-                  `).join('')}
-                </select>
-                ` : ''}
                 <input
                   type="text"
                   value="${item.location || ''}"
                   oninput="updateLocation('${item.code}', this.value)"
                   onkeydown="handleFormKeyDown(event, '${item.code}')"
-                  tabindex="0"
                   class="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-orange-500"
                   placeholder="Location (e.g., Shelf A, Box 3)"
                 />
                 <button
                   onclick="confirmItem('${item.code}')"
-                  tabindex="0"
                   class="w-full px-4 py-2 bg-orange-500 text-white rounded-lg font-medium hover:bg-orange-600 transition"
                 >
                   Add to List
