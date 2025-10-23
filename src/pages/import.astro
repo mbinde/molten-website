@@ -20,10 +20,12 @@ import Layout from '../layouts/Layout.astro';
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
       <!-- Instructions -->
-      <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
-        <h2 class="text-2xl font-bold mb-6">Complete Import Guide</h2>
+      <details class="bg-white rounded-lg shadow-sm p-6 mb-8" open>
+        <summary class="text-2xl font-bold mb-6 cursor-pointer hover:text-orange-500 transition">
+          Complete Import Guide
+        </summary>
 
-        <div class="space-y-6">
+        <div class="space-y-6 mt-6">
           <!-- Step 1 -->
           <div class="flex gap-4">
             <div class="flex-shrink-0 w-8 h-8 rounded-full bg-orange-500 text-white flex items-center justify-center font-bold">
@@ -131,13 +133,13 @@ import Layout from '../layouts/Layout.astro';
               <span class="text-blue-600 text-xl">ℹ️</span>
               <div>
                 <p class="text-sm text-blue-900">
-                  <strong>Note:</strong> All items are imported as rod inventory with quantity 1 initially. You can edit the type (rods, tubes, frit, etc.), quantity, and add storage locations after import.
+                  <strong>Note:</strong> Specify quantity and type (rods, tubes, frit, etc.) for each item before export. You can add storage locations after import in the app.
                 </p>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </details>
 
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
@@ -329,7 +331,8 @@ import Layout from '../layouts/Layout.astro';
 
       importList.push({
         ...item,
-        quantity: 1
+        quantity: 1,
+        type: 'rods'  // Default type
       });
 
       renderCart();
@@ -346,6 +349,15 @@ import Layout from '../layouts/Layout.astro';
       const item = importList.find(i => i.code === code);
       if (item) {
         item.quantity = Math.max(1, parseInt(quantity) || 1);
+        renderCart();
+      }
+    }
+
+    // Update type
+    function updateType(code, type) {
+      const item = importList.find(i => i.code === code);
+      if (item) {
+        item.type = type;
         renderCart();
       }
     }
@@ -382,14 +394,27 @@ import Layout from '../layouts/Layout.astro';
               ✕
             </button>
           </div>
-          <input
-            type="number"
-            min="1"
-            value="${item.quantity}"
-            onchange="updateQuantity('${item.code}', this.value)"
-            class="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-orange-500"
-            placeholder="Quantity"
-          />
+          <div class="grid grid-cols-2 gap-2">
+            <select
+              onchange="updateType('${item.code}', this.value)"
+              class="px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-orange-500"
+            >
+              <option value="rods" ${item.type === 'rods' ? 'selected' : ''}>Rods</option>
+              <option value="tubes" ${item.type === 'tubes' ? 'selected' : ''}>Tubes</option>
+              <option value="frit" ${item.type === 'frit' ? 'selected' : ''}>Frit</option>
+              <option value="sheet" ${item.type === 'sheet' ? 'selected' : ''}>Sheet</option>
+              <option value="stringers" ${item.type === 'stringers' ? 'selected' : ''}>Stringers</option>
+              <option value="other" ${item.type === 'other' ? 'selected' : ''}>Other</option>
+            </select>
+            <input
+              type="number"
+              min="1"
+              value="${item.quantity}"
+              onchange="updateQuantity('${item.code}', this.value)"
+              class="px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-orange-500"
+              placeholder="Qty"
+            />
+          </div>
         </div>
       `).join('');
     }
@@ -406,6 +431,7 @@ import Layout from '../layouts/Layout.astro';
           name: item.name,
           manufacturer: item.manufacturer,
           coe: item.coe,
+          type: item.type,
           quantity: item.quantity
         }))
       };
@@ -434,6 +460,7 @@ import Layout from '../layouts/Layout.astro';
     window.addToCart = addToCart;
     window.removeFromCart = removeFromCart;
     window.updateQuantity = updateQuantity;
+    window.updateType = updateType;
 
     // Event listeners
     document.getElementById('searchInput').addEventListener('input', filterCatalog);
