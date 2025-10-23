@@ -151,7 +151,7 @@ import Layout from '../layouts/Layout.astro';
         </div>
       </details>
 
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
 
         <!-- Left Column: Catalog Browser -->
         <div class="lg:col-span-2">
@@ -195,17 +195,11 @@ import Layout from '../layouts/Layout.astro';
         </div>
 
         <!-- Right Column: Import Cart -->
-        <div class="lg:col-span-1">
+        <div class="lg:col-span-3">
           <div class="bg-white rounded-lg shadow-sm p-6 sticky top-4">
             <h2 class="text-2xl font-bold mb-4">Import List</h2>
 
-            <div id="importCart" class="space-y-3 mb-6 max-h-[400px] overflow-y-auto">
-              <div class="text-center text-gray-400 py-8 text-sm">
-                No items added yet
-              </div>
-            </div>
-
-            <div class="border-t pt-4">
+            <div class="border-b pb-4 mb-4">
               <div class="text-lg font-semibold mb-4">
                 Total: <span id="cartCount">0</span> items
               </div>
@@ -234,6 +228,12 @@ import Layout from '../layouts/Layout.astro';
 
               <input type="file" id="fileInput" accept=".json" class="hidden" />
             </div>
+
+            <div id="importCart" class="space-y-3 max-h-[600px] overflow-y-auto">
+              <div class="text-center text-gray-400 py-8 text-sm">
+                No items added yet
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -245,6 +245,42 @@ import Layout from '../layouts/Layout.astro';
     let catalog = [];
     let filteredCatalog = [];
     let importList = [];
+
+    // Manufacturers without product image permission
+    const noImagePermission = ['CiM', 'DS', 'GAF'];
+
+    // Manufacturer code to full name mapping (from GlassManufacturers.swift)
+    const manufacturerNames = {
+      "BB": "Boro Batch",
+      "BE": "Bullseye Glass",
+      "CHB": "Chinese Boro",
+      "CiM": "Creation is Messy",
+      "DH": "Double Helix",
+      "DS": "Delphi Superior",
+      "EF": "Effetre",
+      "GA": "Glass Alchemy",
+      "GAF": "Gaffer",
+      "GRE": "Greasy Glass",
+      "KUG": "Kugler",
+      "MA": "Molten Aura Labs",
+      "MOM": "Momka Glass",
+      "NS": "Northstar Glassworks",
+      "OC": "Oceanside Glass",
+      "OR": "Origin Glass",
+      "PAR": "Parramore Glass",
+      "PDX": "PDX Tubing Co",
+      "RE": "Reichenbach",
+      "TAG": "Trautmann Art Glass",
+      "UST": "UST Glass",
+      "VF": "Vetrofond",
+      "WM": "Wissmach Glass",
+      "Y96": "Youghiogheny Glass"
+    };
+
+    // Get full manufacturer name from code
+    function getManufacturerName(code) {
+      return manufacturerNames[code] || code;
+    }
 
     // Load catalog
     async function loadCatalog() {
@@ -305,9 +341,12 @@ import Layout from '../layouts/Layout.astro';
         return;
       }
 
-      container.innerHTML = filteredCatalog.slice(0, 50).map(item => `
+      container.innerHTML = filteredCatalog.slice(0, 50).map(item => {
+        const showImage = item.image_url && !noImagePermission.includes(item.manufacturer);
+        const mfrName = getManufacturerName(item.manufacturer);
+        return `
         <div class="flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50">
-          ${item.image_url ? `
+          ${showImage ? `
             <img src="${item.image_url}" alt="${item.name}" class="w-12 h-12 rounded object-cover" />
           ` : `
             <div class="w-12 h-12 bg-gray-200 rounded flex items-center justify-center text-xs text-gray-500">
@@ -316,7 +355,12 @@ import Layout from '../layouts/Layout.astro';
           `}
           <div class="flex-1 min-w-0">
             <div class="font-semibold text-gray-900 truncate">${item.name}</div>
-            <div class="text-sm text-gray-500">${item.manufacturer} - ${item.code}</div>
+            <div class="text-sm text-gray-500">
+              ${item.manufacturer_url ?
+                `<a href="${item.manufacturer_url}" target="_blank" class="hover:text-orange-500 hover:underline">${mfrName}</a>` :
+                mfrName
+              } - ${item.code}
+            </div>
             <div class="text-xs text-gray-400">COE ${item.coe}</div>
           </div>
           <button
@@ -326,7 +370,8 @@ import Layout from '../layouts/Layout.astro';
             Add
           </button>
         </div>
-      `).join('');
+      `;
+      }).join('');
 
       if (filteredCatalog.length > 50) {
         container.innerHTML += `
@@ -352,10 +397,50 @@ import Layout from '../layouts/Layout.astro';
         ...item,
         quantity: 1,
         type: 'rods',  // Default type
-        location: ''   // Default empty location
+        location: '',  // Default empty location
+        confirmed: false  // Start in expanded/unconfirmed state
       });
 
       renderCart();
+
+      // Focus on the quantity field for the newly added item
+      setTimeout(() => {
+        const quantityInput = document.querySelector(`input[data-code="${code}"][type="number"]`);
+        if (quantityInput) {
+          quantityInput.focus();
+          quantityInput.select();
+        }
+      }, 100);
+    }
+
+    // Confirm cart item (collapse it)
+    function confirmItem(code) {
+      const item = importList.find(i => i.code === code);
+      if (item) {
+        item.confirmed = true;
+        renderCart();
+
+        // Return focus to search
+        document.getElementById('searchInput').focus();
+      }
+    }
+
+    // Expand cart item for editing
+    function expandItem(code) {
+      const item = importList.find(i => i.code === code);
+      if (item) {
+        item.confirmed = false;
+        renderCart();
+
+        // Focus on quantity field
+        setTimeout(() => {
+          const quantityInput = document.querySelector(`input[data-code="${code}"][type="number"]`);
+          if (quantityInput) {
+            quantityInput.focus();
+            quantityInput.select();
+          }
+        }, 100);
+      }
     }
 
     // Remove from cart
@@ -396,8 +481,10 @@ import Layout from '../layouts/Layout.astro';
       const cartCount = document.getElementById('cartCount');
       const exportBtn = document.getElementById('exportBtn');
 
-      cartCount.textContent = importList.length;
-      exportBtn.disabled = importList.length === 0;
+      // Only count confirmed items
+      const confirmedCount = importList.filter(i => i.confirmed).length;
+      cartCount.textContent = confirmedCount;
+      exportBtn.disabled = confirmedCount === 0;
 
       if (importList.length === 0) {
         container.innerHTML = `
@@ -408,60 +495,110 @@ import Layout from '../layouts/Layout.astro';
         return;
       }
 
-      container.innerHTML = importList.map(item => `
-        <div class="p-3 border border-gray-200 rounded-lg space-y-2">
-          <div class="flex justify-between items-start">
-            <div class="flex-1 min-w-0">
-              <div class="font-semibold text-sm text-gray-900 truncate">${item.name}</div>
-              <div class="text-xs text-gray-500">${item.manufacturer} - COE ${item.coe}</div>
+      container.innerHTML = importList.map(item => {
+        if (item.confirmed) {
+          // Collapsed state - single line with pencil icon
+          return `
+            <div class="p-3 border border-gray-200 rounded-lg bg-gray-50">
+              <div class="flex items-center justify-between gap-2">
+                <div class="flex-1 min-w-0">
+                  <div class="font-medium text-sm text-gray-900 truncate">${item.name}</div>
+                  <div class="text-xs text-gray-500">${item.quantity} ${item.type}${item.location ? ` • ${item.location}` : ''}</div>
+                </div>
+                <div class="flex items-center gap-2 flex-shrink-0">
+                  <button
+                    onclick="expandItem('${item.code}')"
+                    class="p-2 text-gray-600 hover:text-orange-500 transition"
+                    title="Edit"
+                  >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                    </svg>
+                  </button>
+                  <button
+                    onclick="removeFromCart('${item.code}')"
+                    class="p-2 text-red-500 hover:text-red-700 transition"
+                    title="Remove"
+                  >
+                    ✕
+                  </button>
+                </div>
+              </div>
             </div>
-            <button
-              onclick="removeFromCart('${item.code}')"
-              class="text-red-500 hover:text-red-700 ml-2"
-            >
-              ✕
-            </button>
-          </div>
-          <div class="grid grid-cols-2 gap-2">
-            <select
-              onchange="updateType('${item.code}', this.value)"
-              class="px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-orange-500"
-            >
-              <option value="rods" ${item.type === 'rods' ? 'selected' : ''}>Rods</option>
-              <option value="tubes" ${item.type === 'tubes' ? 'selected' : ''}>Tubes</option>
-              <option value="frit" ${item.type === 'frit' ? 'selected' : ''}>Frit</option>
-              <option value="sheet" ${item.type === 'sheet' ? 'selected' : ''}>Sheet</option>
-              <option value="stringers" ${item.type === 'stringers' ? 'selected' : ''}>Stringers</option>
-              <option value="other" ${item.type === 'other' ? 'selected' : ''}>Other</option>
-            </select>
-            <input
-              type="number"
-              min="1"
-              value="${item.quantity}"
-              onchange="updateQuantity('${item.code}', this.value)"
-              class="px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-orange-500"
-              placeholder="Qty"
-            />
-          </div>
-          <input
-            type="text"
-            value="${item.location || ''}"
-            oninput="updateLocation('${item.code}', this.value)"
-            class="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-orange-500"
-            placeholder="Location (e.g., Shelf A, Box 3)"
-          />
-        </div>
-      `).join('');
+          `;
+        } else {
+          // Expanded state - full form with Add button
+          const mfrName = getManufacturerName(item.manufacturer);
+          return `
+            <div class="p-3 border-2 border-orange-300 rounded-lg bg-orange-50/50">
+              <div class="flex justify-between items-start mb-3">
+                <div class="flex-1 min-w-0">
+                  <div class="font-semibold text-sm text-gray-900 truncate">${item.name}</div>
+                  <div class="text-xs text-gray-500">${mfrName} - COE ${item.coe}</div>
+                </div>
+                <button
+                  onclick="removeFromCart('${item.code}')"
+                  class="text-red-500 hover:text-red-700 ml-2"
+                >
+                  ✕
+                </button>
+              </div>
+              <div class="space-y-2">
+                <div class="grid grid-cols-2 gap-2">
+                  <input
+                    type="number"
+                    min="1"
+                    value="${item.quantity}"
+                    onchange="updateQuantity('${item.code}', this.value)"
+                    data-code="${item.code}"
+                    class="px-2 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-orange-500"
+                    placeholder="Quantity"
+                  />
+                  <select
+                    onchange="updateType('${item.code}', this.value)"
+                    class="px-2 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-orange-500"
+                  >
+                    <option value="rods" ${item.type === 'rods' ? 'selected' : ''}>Rods</option>
+                    <option value="tubes" ${item.type === 'tubes' ? 'selected' : ''}>Tubes</option>
+                    <option value="frit" ${item.type === 'frit' ? 'selected' : ''}>Frit</option>
+                    <option value="sheet" ${item.type === 'sheet' ? 'selected' : ''}>Sheet</option>
+                    <option value="stringers" ${item.type === 'stringers' ? 'selected' : ''}>Stringers</option>
+                    <option value="other" ${item.type === 'other' ? 'selected' : ''}>Other</option>
+                  </select>
+                </div>
+                <input
+                  type="text"
+                  value="${item.location || ''}"
+                  oninput="updateLocation('${item.code}', this.value)"
+                  class="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-orange-500"
+                  placeholder="Location (e.g., Shelf A, Box 3)"
+                />
+                <button
+                  onclick="confirmItem('${item.code}')"
+                  class="w-full px-4 py-2 bg-orange-500 text-white rounded-lg font-medium hover:bg-orange-600 transition"
+                >
+                  Add to List
+                </button>
+              </div>
+            </div>
+          `;
+        }
+      }).join('');
     }
 
     // Export JSON
     function exportJSON() {
-      if (importList.length === 0) return;
+      // Only export confirmed items
+      const confirmedItems = importList.filter(i => i.confirmed);
+      if (confirmedItems.length === 0) {
+        alert('Please confirm at least one item before exporting.');
+        return;
+      }
 
       const exportData = {
         version: "1.0",
         generated: new Date().toISOString(),
-        items: importList.map(item => ({
+        items: confirmedItems.map(item => ({
           code: item.code,
           name: item.name,
           manufacturer: item.manufacturer,
@@ -503,7 +640,7 @@ import Layout from '../layouts/Layout.astro';
           return;
         }
 
-        // Load items from file
+        // Load items from file as confirmed (already set up)
         importList = data.items.map(item => {
           // Find the full catalog item data
           const catalogItem = catalog.find(c => c.code === item.code);
@@ -516,7 +653,8 @@ import Layout from '../layouts/Layout.astro';
             ...catalogItem,
             quantity: item.quantity || 1,
             type: item.type || 'rods',
-            location: item.location || ''
+            location: item.location || '',
+            confirmed: true  // Loaded items are already configured
           };
         }).filter(item => item !== null);
 
@@ -546,6 +684,8 @@ import Layout from '../layouts/Layout.astro';
     window.updateQuantity = updateQuantity;
     window.updateType = updateType;
     window.updateLocation = updateLocation;
+    window.confirmItem = confirmItem;
+    window.expandItem = expandItem;
 
     // Event listeners
     document.getElementById('searchInput').addEventListener('input', filterCatalog);
