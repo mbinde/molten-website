@@ -575,7 +575,7 @@ import Layout from '../layouts/Layout.astro';
             </div>
           </div>
           <button
-            onclick="addToCart('${item.code}')"
+            onclick="addToCart('${item.stable_id}')"
             class="px-4 py-2 bg-orange-500 text-white rounded-lg text-sm font-medium hover:bg-orange-600 transition flex-shrink-0"
           >
             Add
@@ -594,12 +594,12 @@ import Layout from '../layouts/Layout.astro';
     }
 
     // Add to cart
-    function addToCart(code) {
-      const item = catalog.find(i => i.code === code);
+    function addToCart(stable_id) {
+      const item = catalog.find(i => i.stable_id === stable_id);
       if (!item) return;
 
-      // Check if already in cart
-      if (importList.find(i => i.code === code)) {
+      // Check if already in cart (by stable_id)
+      if (importList.find(i => i.stable_id === stable_id)) {
         alert('Item already in import list');
         return;
       }
@@ -619,7 +619,7 @@ import Layout from '../layouts/Layout.astro';
 
       // Use a different approach: click the field to activate it
       setTimeout(() => {
-        const quantityInput = document.querySelector(`input[data-code="${code}"][type="number"]`);
+        const quantityInput = document.querySelector(`input[data-stable-id="${stable_id}"][type="number"]`);
         if (quantityInput) {
           quantityInput.click();
           quantityInput.select();
@@ -628,8 +628,8 @@ import Layout from '../layouts/Layout.astro';
     }
 
     // Confirm cart item (collapse it)
-    function confirmItem(code) {
-      const item = importList.find(i => i.code === code);
+    function confirmItem(stable_id) {
+      const item = importList.find(i => i.stable_id === stable_id);
       if (item) {
         item.confirmed = true;
         hasUnsavedChanges = true;
@@ -642,8 +642,8 @@ import Layout from '../layouts/Layout.astro';
     }
 
     // Expand cart item for editing
-    function expandItem(code) {
-      const item = importList.find(i => i.code === code);
+    function expandItem(stable_id) {
+      const item = importList.find(i => i.stable_id === stable_id);
       if (item) {
         item.confirmed = false;
         renderCart();
@@ -651,16 +651,16 @@ import Layout from '../layouts/Layout.astro';
     }
 
     // Remove from cart
-    function removeFromCart(code) {
-      importList = importList.filter(i => i.code !== code);
+    function removeFromCart(stable_id) {
+      importList = importList.filter(i => i.stable_id !== stable_id);
       hasUnsavedChanges = true;
       autoSave();
       renderCart();
     }
 
     // Update quantity
-    function updateQuantity(code, quantity) {
-      const item = importList.find(i => i.code === code);
+    function updateQuantity(stable_id, quantity) {
+      const item = importList.find(i => i.stable_id === stable_id);
       if (item) {
         item.quantity = Math.max(1, parseInt(quantity) || 1);
         hasUnsavedChanges = true;
@@ -670,8 +670,8 @@ import Layout from '../layouts/Layout.astro';
     }
 
     // Update type
-    function updateType(code, type) {
-      const item = importList.find(i => i.code === code);
+    function updateType(stable_id, type) {
+      const item = importList.find(i => i.stable_id === stable_id);
       if (item) {
         item.type = type;
         // Reset subtype when type changes
@@ -683,8 +683,8 @@ import Layout from '../layouts/Layout.astro';
     }
 
     // Update subtype
-    function updateSubtype(code, subtype) {
-      const item = importList.find(i => i.code === code);
+    function updateSubtype(stable_id, subtype) {
+      const item = importList.find(i => i.stable_id === stable_id);
       if (item) {
         item.subtype = subtype;
         hasUnsavedChanges = true;
@@ -693,8 +693,8 @@ import Layout from '../layouts/Layout.astro';
     }
 
     // Update location
-    function updateLocation(code, location) {
-      const item = importList.find(i => i.code === code);
+    function updateLocation(stable_id, location) {
+      const item = importList.find(i => i.stable_id === stable_id);
       if (item) {
         item.location = location;
         hasUnsavedChanges = true;
@@ -704,10 +704,10 @@ import Layout from '../layouts/Layout.astro';
     }
 
     // Handle Enter key in form fields (only for text/number inputs, not selects)
-    function handleFormKeyDown(event, code) {
+    function handleFormKeyDown(event, stable_id) {
       if (event.key === 'Enter') {
         event.preventDefault();
-        confirmItem(code);
+        confirmItem(stable_id);
       }
     }
 
@@ -749,7 +749,7 @@ import Layout from '../layouts/Layout.astro';
                 </div>
                 <div class="flex items-center gap-2 flex-shrink-0">
                   <button
-                    onclick="expandItem('${item.code}')"
+                    onclick="expandItem('${item.stable_id}')"
                     class="p-2 text-gray-600 hover:text-orange-500 transition"
                     title="Edit"
                   >
@@ -758,7 +758,7 @@ import Layout from '../layouts/Layout.astro';
                     </svg>
                   </button>
                   <button
-                    onclick="removeFromCart('${item.code}')"
+                    onclick="removeFromCart('${item.stable_id}')"
                     class="p-2 text-red-500 hover:text-red-700 transition"
                     title="Remove"
                   >
@@ -776,10 +776,10 @@ import Layout from '../layouts/Layout.astro';
               <div class="flex justify-between items-start mb-3">
                 <div class="flex-1 min-w-0">
                   <div class="font-semibold text-sm text-gray-900 truncate">${item.name}</div>
-                  <div class="text-xs text-gray-500">${mfrName} - COE ${item.coe}</div>
+                  <div class="text-xs text-gray-500">${mfrName} - ${item.code}</div>
                 </div>
                 <button
-                  onclick="removeFromCart('${item.code}')"
+                  onclick="removeFromCart('${item.stable_id}')"
                   class="text-red-500 hover:text-red-700 ml-2"
                 >
                   ✕
@@ -791,16 +791,16 @@ import Layout from '../layouts/Layout.astro';
                     type="number"
                     min="1"
                     value="${item.quantity}"
-                    oninput="updateQuantity('${item.code}', this.value)"
-                    onkeydown="handleFormKeyDown(event, '${item.code}')"
+                    oninput="updateQuantity('${item.stable_id}', this.value)"
+                    onkeydown="handleFormKeyDown(event, '${item.stable_id}')"
                     onfocus="this.select()"
-                    data-code="${item.code}"
+                    data-stable-id="${item.stable_id}"
                     tabindex="0"
                     class="px-2 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-orange-500"
                     placeholder="Quantity"
                   />
                   <select
-                    onchange="updateType('${item.code}', this.value)"
+                    onchange="updateType('${item.stable_id}', this.value)"
                     tabindex="0"
                     class="px-2 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-orange-500"
                   >
@@ -814,7 +814,7 @@ import Layout from '../layouts/Layout.astro';
                   </select>
                   ${hasSubtypes(item.type) ? `
                   <select
-                    onchange="updateSubtype('${item.code}', this.value)"
+                    onchange="updateSubtype('${item.stable_id}', this.value)"
                     tabindex="0"
                     class="px-2 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-orange-500"
                   >
@@ -828,14 +828,14 @@ import Layout from '../layouts/Layout.astro';
                 <input
                   type="text"
                   value="${item.location || ''}"
-                  oninput="updateLocation('${item.code}', this.value)"
-                  onkeydown="handleFormKeyDown(event, '${item.code}')"
+                  oninput="updateLocation('${item.stable_id}', this.value)"
+                  onkeydown="handleFormKeyDown(event, '${item.stable_id}')"
                   tabindex="0"
                   class="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-orange-500"
                   placeholder="Location (e.g., Shelf A, Box 3)"
                 />
                 <button
-                  onclick="confirmItem('${item.code}')"
+                  onclick="confirmItem('${item.stable_id}')"
                   tabindex="0"
                   class="w-full px-4 py-2 bg-orange-500 text-white rounded-lg font-medium hover:bg-orange-600 transition"
                 >
@@ -957,11 +957,10 @@ import Layout from '../layouts/Layout.astro';
         version: "1.0",
         generated: new Date().toISOString(),
         items: confirmedItems.map(item => ({
-          code: item.code,
+          code: item.stable_id,  // Use stable_id as code for iOS import
           name: item.name,
           manufacturer: item.manufacturer,
           type: item.type,
-          subtype: item.subtype || '',
           quantity: item.quantity,
           location: item.location || ''
         }))
@@ -1101,7 +1100,7 @@ import Layout from '../layouts/Layout.astro';
     document.getElementById('searchInput').addEventListener('keydown', (event) => {
       if (event.key === 'Enter' && filteredCatalog.length === 1) {
         event.preventDefault();
-        addToCart(filteredCatalog[0].code);
+        addToCart(filteredCatalog[0].stable_id);
         document.getElementById('searchInput').value = '';
         filterCatalog();
       }
