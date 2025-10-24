@@ -400,26 +400,54 @@ import Layout from '../layouts/Layout.astro';
 
     // Filter catalog
     function filterCatalog() {
-      const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+      const searchInput = document.getElementById('searchInput').value;
       const coeFilter = document.getElementById('coeFilter').value;
       const mfgFilter = document.getElementById('manufacturerFilter').value;
       const titlesOnly = document.getElementById('searchTitlesOnly').checked;
 
       filteredCatalog = catalog.filter(item => {
-        let matchesSearch = !searchTerm;
+        let matchesSearch = !searchInput;
 
-        if (searchTerm) {
-          if (titlesOnly) {
-            // Search titles only
-            matchesSearch = item.name.toLowerCase().includes(searchTerm);
+        if (searchInput) {
+          // Check if search is quoted (exact phrase search)
+          const isQuoted = searchInput.startsWith('"') && searchInput.endsWith('"');
+
+          if (isQuoted) {
+            // Remove quotes and search for exact phrase
+            const searchTerm = searchInput.slice(1, -1).toLowerCase();
+            if (titlesOnly) {
+              matchesSearch = item.name.toLowerCase().includes(searchTerm);
+            } else {
+              const mfrName = getManufacturerName(item.manufacturer);
+              matchesSearch =
+                item.name.toLowerCase().includes(searchTerm) ||
+                item.code.toLowerCase().includes(searchTerm) ||
+                item.manufacturer.toLowerCase().includes(searchTerm) ||
+                mfrName.toLowerCase().includes(searchTerm);
+            }
           } else {
-            // Search titles, codes, manufacturer codes, and full manufacturer names
-            const mfrName = getManufacturerName(item.manufacturer);
-            matchesSearch =
-              item.name.toLowerCase().includes(searchTerm) ||
-              item.code.toLowerCase().includes(searchTerm) ||
-              item.manufacturer.toLowerCase().includes(searchTerm) ||
-              mfrName.toLowerCase().includes(searchTerm);
+            // Multi-word AND search - all words must match
+            const searchWords = searchInput.toLowerCase().split(/\s+/).filter(w => w.length > 0);
+
+            if (titlesOnly) {
+              // All words must appear in the title
+              matchesSearch = searchWords.every(word =>
+                item.name.toLowerCase().includes(word)
+              );
+            } else {
+              // All words must appear somewhere in title, code, or manufacturer
+              const mfrName = getManufacturerName(item.manufacturer);
+              const combinedText = [
+                item.name.toLowerCase(),
+                item.code.toLowerCase(),
+                item.manufacturer.toLowerCase(),
+                mfrName.toLowerCase()
+              ].join(' ');
+
+              matchesSearch = searchWords.every(word =>
+                combinedText.includes(word)
+              );
+            }
           }
         }
 
@@ -612,7 +640,16 @@ import Layout from '../layouts/Layout.astro';
         return;
       }
 
-      container.innerHTML = importList.map(item => {
+      // Sort items: unconfirmed first, then confirmed in reverse chronological order
+      const sortedItems = [...importList].sort((a, b) => {
+        // Unconfirmed items always come first
+        if (!a.confirmed && b.confirmed) return -1;
+        if (a.confirmed && !b.confirmed) return 1;
+        // Within each group, reverse order (newest first)
+        return 0;
+      }).reverse();
+
+      container.innerHTML = sortedItems.map(item => {
         if (item.confirmed) {
           // Collapsed state - single line with pencil icon
           const typeDisplay = item.subtype ? `${item.type} (${item.subtype})` : item.type;
