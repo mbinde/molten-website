@@ -1083,9 +1083,12 @@ import Layout from '../layouts/Layout.astro';
     // Listen for guide toggle
     document.getElementById('importGuide').addEventListener('toggle', saveGuideState);
 
-    // Warn before leaving page if there are unsaved changes
+    // Warn before leaving page ONLY if auto-save is not working
     window.addEventListener('beforeunload', (event) => {
-      if (checkUnsavedChanges()) {
+      // Only warn if:
+      // 1. They have items in the list, AND
+      // 2. Auto-save is NOT available (incognito, cookies disabled, etc.)
+      if (importList.length > 0 && !autoSaveAvailable) {
         event.preventDefault();
         event.returnValue = '';
       }
