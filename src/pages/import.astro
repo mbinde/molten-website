@@ -314,8 +314,15 @@ import Layout from '../layouts/Layout.astro';
     let filteredCatalog = [];
     let importList = [];
 
-    // Manufacturers without product image permission
+    // Manufacturers without product image permission (from GlassManufacturers.swift productImagePermissions)
     const noImagePermission = ['CiM', 'DS', 'GAF'];
+
+    // Helper to check image permission (case-insensitive)
+    function hasImagePermission(manufacturerCode) {
+      if (!manufacturerCode) return false;
+      const upperCode = manufacturerCode.toUpperCase();
+      return !noImagePermission.some(code => code.toUpperCase() === upperCode);
+    }
 
     // Manufacturer code to full name mapping (from GlassManufacturers.swift)
     const manufacturerNames = {
@@ -494,7 +501,7 @@ import Layout from '../layouts/Layout.astro';
       const sortedCatalog = [...filteredCatalog].sort((a, b) => a.name.localeCompare(b.name));
 
       container.innerHTML = sortedCatalog.slice(0, 50).map(item => {
-        const showImage = item.image_url && !noImagePermission.includes(item.manufacturer);
+        const showImage = item.image_url && hasImagePermission(item.manufacturer);
         const mfrName = getManufacturerName(item.manufacturer);
         return `
         <div class="flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50">
