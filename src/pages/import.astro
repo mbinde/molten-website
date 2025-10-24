@@ -43,8 +43,8 @@ import Layout from '../layouts/Layout.astro';
               2
             </div>
             <div>
-              <h3 class="font-semibold text-lg mb-2">Export the JSON File</h3>
-              <p class="text-gray-600 mb-2">Click the "Export JSON" button in the import list panel. This will download a file named something like <code class="bg-gray-100 px-2 py-1 rounded text-sm">molten-import-2025-10-23.json</code></p>
+              <h3 class="font-semibold text-lg mb-2">Export the Import File</h3>
+              <p class="text-gray-600 mb-2">Click the "Export JSON" button in the import list panel. This will download a file named something like <code class="bg-gray-100 px-2 py-1 rounded text-sm">molten-import-2025-10-23.molten</code></p>
             </div>
           </div>
 
@@ -103,7 +103,7 @@ import Layout from '../layouts/Layout.astro';
                 <li class="flex gap-2">
                   <span class="text-orange-500">•</span>
                   <div>
-                    <strong>From Files app:</strong> Tap and hold the .json file → Share → Molten
+                    <strong>From Files app:</strong> Tap and hold the .molten file → Share → Molten
                   </div>
                 </li>
                 <li class="flex gap-2">
@@ -309,7 +309,7 @@ import Layout from '../layouts/Layout.astro';
                 Clear All
               </button>
 
-              <input type="file" id="fileInput" accept=".json" class="hidden" />
+              <input type="file" id="fileInput" accept=".json,.molten" class="hidden" />
             </div>
 
             <div id="importCart" class="space-y-3 max-h-[600px] overflow-y-auto">
@@ -970,7 +970,7 @@ import Layout from '../layouts/Layout.astro';
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `molten-import-${new Date().toISOString().split('T')[0]}.json`;
+      a.download = `molten-import-${new Date().toISOString().split('T')[0]}.molten`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
