@@ -630,7 +630,7 @@ import Layout from '../layouts/Layout.astro';
       }
     }
 
-    // Handle Enter key in form fields
+    // Handle Enter key in form fields (only for text/number inputs, not selects)
     function handleFormKeyDown(event, code) {
       if (event.key === 'Enter') {
         event.preventDefault();
@@ -658,14 +658,10 @@ import Layout from '../layouts/Layout.astro';
         return;
       }
 
-      // Sort items: unconfirmed first, then confirmed in reverse chronological order
-      const sortedItems = [...importList].sort((a, b) => {
-        // Unconfirmed items always come first
-        if (!a.confirmed && b.confirmed) return -1;
-        if (a.confirmed && !b.confirmed) return 1;
-        // Within each group, reverse order (newest first)
-        return 0;
-      }).reverse();
+      // Sort items: unconfirmed first (newest first), then confirmed (newest first)
+      const unconfirmed = importList.filter(i => !i.confirmed).reverse();
+      const confirmed = importList.filter(i => i.confirmed).reverse();
+      const sortedItems = [...unconfirmed, ...confirmed];
 
       container.innerHTML = sortedItems.map(item => {
         if (item.confirmed) {
@@ -732,7 +728,6 @@ import Layout from '../layouts/Layout.astro';
                   />
                   <select
                     onchange="updateType('${item.code}', this.value)"
-                    onkeydown="handleFormKeyDown(event, '${item.code}')"
                     tabindex="0"
                     class="px-2 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-orange-500"
                   >
@@ -747,11 +742,10 @@ import Layout from '../layouts/Layout.astro';
                   ${hasSubtypes(item.type) ? `
                   <select
                     onchange="updateSubtype('${item.code}', this.value)"
-                    onkeydown="handleFormKeyDown(event, '${item.code}')"
                     tabindex="0"
                     class="px-2 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-orange-500"
                   >
-                    <option value="">No subtype</option>
+                    <option value="">--</option>
                     ${getSubtypes(item.type).map(st => `
                       <option value="${st}" ${item.subtype === st ? 'selected' : ''}>${st}</option>
                     `).join('')}
@@ -769,6 +763,7 @@ import Layout from '../layouts/Layout.astro';
                 />
                 <button
                   onclick="confirmItem('${item.code}')"
+                  tabindex="0"
                   class="w-full px-4 py-2 bg-orange-500 text-white rounded-lg font-medium hover:bg-orange-600 transition"
                 >
                   Add to List
