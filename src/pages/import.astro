@@ -529,13 +529,13 @@ import Layout from '../layouts/Layout.astro';
           `}
           <div class="flex-1 min-w-0">
             <div class="font-semibold text-gray-900 truncate">${item.name}</div>
-            <div class="text-sm text-gray-500">
-              ${item.manufacturer_url ?
+            <div class="text-sm text-gray-500">${item.code}</div>
+            <div class="text-xs text-gray-400">
+              COE ${item.coe} • ${item.manufacturer_url ?
                 `<a href="${item.manufacturer_url}" target="_blank" class="hover:text-orange-500 hover:underline">${mfrName}</a>` :
                 mfrName
-              } - ${item.code}
+              }
             </div>
-            <div class="text-xs text-gray-400">COE ${item.coe}</div>
           </div>
           <button
             onclick="addToCart('${item.code}')"
