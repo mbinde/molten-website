@@ -372,6 +372,40 @@ import Layout from '../layouts/Layout.astro';
       return manufacturerNames[code] || code;
     }
 
+    // Manufacturer image mappings (from GlassManufacturers.swift)
+    const manufacturerImages = {
+      "EF": "effetre",
+      "DH": "dh",
+      "BB": "bb",
+      "CHB": "chb",
+      "CiM": "cim",
+      "DS": "ds",
+      "GA": "ga",
+      "GAF": "gaf",
+      "RE": "re",
+      "TAG": "tag",
+      "VF": "vf",
+      "NS": "ns",
+      "BE": "be",
+      "KUG": "kug",
+      "MA": "ma",
+      "OR": "or",
+      "MOM": "mom",
+      "GRE": "gre",
+      "OC": "oc",
+      "PAR": "par",
+      "PDX": "pdx",
+      "UST": "ust",
+      "WM": "wm",
+      "Y96": "y96"
+    };
+
+    // Get manufacturer default image URL
+    function getManufacturerImageUrl(manufacturerCode) {
+      const imageName = manufacturerImages[manufacturerCode];
+      return imageName ? `/manufacturer-images/${imageName}.png` : null;
+    }
+
     // Type subtypes mapping (from GlassItemTypeSystem.swift)
     const typeSubtypes = {
       "rod": ["standard", "cane", "pull"],
@@ -516,12 +550,15 @@ import Layout from '../layouts/Layout.astro';
       const sortedCatalog = [...filteredCatalog].sort((a, b) => a.name.localeCompare(b.name));
 
       container.innerHTML = sortedCatalog.slice(0, 50).map(item => {
-        const showImage = item.image_url && hasImagePermission(item.manufacturer);
+        const showProductImage = item.image_url && hasImagePermission(item.manufacturer);
+        const manufacturerImageUrl = getManufacturerImageUrl(item.manufacturer);
+        const showImage = showProductImage || manufacturerImageUrl;
+        const imageUrl = showProductImage ? item.image_url : manufacturerImageUrl;
         const mfrName = getManufacturerName(item.manufacturer);
         return `
         <div class="flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50">
           ${showImage ? `
-            <img src="${item.image_url}" alt="${item.name}" class="w-12 h-12 rounded object-cover" />
+            <img src="${imageUrl}" alt="${item.name}" class="w-12 h-12 rounded object-cover" />
           ` : `
             <div class="w-12 h-12 bg-gray-200 rounded flex items-center justify-center text-xs text-gray-500">
               No img
