@@ -132,8 +132,11 @@ import Layout from '../layouts/Layout.astro';
             <div class="flex gap-3">
               <span class="text-blue-600 text-xl">ℹ️</span>
               <div>
+                <p class="text-sm text-blue-900 mb-2">
+                  <strong>Auto-Save:</strong> Your import list is automatically saved in this browser. If you close the window and come back later, your items will still be here.
+                </p>
                 <p class="text-sm text-blue-900">
-                  <strong>Note:</strong> Specify quantity, type, and location for each item before export. You can save and re-load your import list using the "Load JSON" button to continue editing.
+                  <strong>Important:</strong> You still need to export the JSON file to import into Molten. To continue on a different browser or computer, export your JSON file and save it (see "Tips" below for backup recommendations).
                 </p>
               </div>
             </div>
@@ -800,18 +803,42 @@ import Layout from '../layouts/Layout.astro';
     let lastExportTime = null;
     let hasUnsavedChanges = false;
 
+    // Check if localStorage is available
+    function isLocalStorageAvailable() {
+      try {
+        const testKey = '__molten_test__';
+        localStorage.setItem(testKey, 'test');
+        localStorage.removeItem(testKey);
+        return true;
+      } catch (error) {
+        return false;
+      }
+    }
+
     // Auto-save to localStorage
     function autoSave() {
+      if (!isLocalStorageAvailable()) {
+        // Can't auto-save, so definitely has unsaved changes
+        hasUnsavedChanges = true;
+        return;
+      }
+
       try {
         localStorage.setItem('molten-import-draft', JSON.stringify(importList));
         hasUnsavedChanges = false;
       } catch (error) {
         console.error('Error auto-saving:', error);
+        // If save failed, mark as unsaved
+        hasUnsavedChanges = true;
       }
     }
 
     // Load auto-saved draft
     function loadAutoSave() {
+      if (!isLocalStorageAvailable()) {
+        return;
+      }
+
       try {
         const draft = localStorage.getItem('molten-import-draft');
         if (draft) {
@@ -924,7 +951,9 @@ import Layout from '../layouts/Layout.astro';
         }).filter(item => item !== null);
 
         // Clear auto-save since we've loaded from a file
-        localStorage.removeItem('molten-import-draft');
+        if (isLocalStorageAvailable()) {
+          localStorage.removeItem('molten-import-draft');
+        }
         hasUnsavedChanges = true;
         autoSave();
 
@@ -944,7 +973,9 @@ import Layout from '../layouts/Layout.astro';
       if (importList.length === 0) return;
       if (confirm('Clear all items from import list?')) {
         importList = [];
-        localStorage.removeItem('molten-import-draft');
+        if (isLocalStorageAvailable()) {
+          localStorage.removeItem('molten-import-draft');
+        }
         hasUnsavedChanges = false;
         renderCart();
       }
