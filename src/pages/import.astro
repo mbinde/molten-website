@@ -561,6 +561,8 @@ import Layout from '../layouts/Layout.astro';
         confirmed: false  // Start in expanded/unconfirmed state
       });
 
+      hasUnsavedChanges = true;
+      autoSave();
       renderCart();
 
       // Use a different approach: click the field to activate it
@@ -578,6 +580,8 @@ import Layout from '../layouts/Layout.astro';
       const item = importList.find(i => i.code === code);
       if (item) {
         item.confirmed = true;
+        hasUnsavedChanges = true;
+        autoSave();
         renderCart();
 
         // Return focus to search
@@ -597,6 +601,8 @@ import Layout from '../layouts/Layout.astro';
     // Remove from cart
     function removeFromCart(code) {
       importList = importList.filter(i => i.code !== code);
+      hasUnsavedChanges = true;
+      autoSave();
       renderCart();
     }
 
@@ -605,6 +611,8 @@ import Layout from '../layouts/Layout.astro';
       const item = importList.find(i => i.code === code);
       if (item) {
         item.quantity = Math.max(1, parseInt(quantity) || 1);
+        hasUnsavedChanges = true;
+        autoSave();
         // Don't re-render - just update the value
       }
     }
@@ -616,6 +624,8 @@ import Layout from '../layouts/Layout.astro';
         item.type = type;
         // Reset subtype when type changes
         item.subtype = '';
+        hasUnsavedChanges = true;
+        autoSave();
         renderCart();
       }
     }
@@ -625,6 +635,8 @@ import Layout from '../layouts/Layout.astro';
       const item = importList.find(i => i.code === code);
       if (item) {
         item.subtype = subtype;
+        hasUnsavedChanges = true;
+        autoSave();
       }
     }
 
@@ -633,6 +645,8 @@ import Layout from '../layouts/Layout.astro';
       const item = importList.find(i => i.code === code);
       if (item) {
         item.location = location;
+        hasUnsavedChanges = true;
+        autoSave();
         // Don't re-render - just update the value
       }
     }
@@ -782,6 +796,56 @@ import Layout from '../layouts/Layout.astro';
       }).join('');
     }
 
+    // Track if data has been saved/exported
+    let lastExportTime = null;
+    let hasUnsavedChanges = false;
+
+    // Auto-save to localStorage
+    function autoSave() {
+      try {
+        localStorage.setItem('molten-import-draft', JSON.stringify(importList));
+        hasUnsavedChanges = false;
+      } catch (error) {
+        console.error('Error auto-saving:', error);
+      }
+    }
+
+    // Load auto-saved draft
+    function loadAutoSave() {
+      try {
+        const draft = localStorage.getItem('molten-import-draft');
+        if (draft) {
+          const savedList = JSON.parse(draft);
+          if (savedList.length > 0) {
+            if (confirm(`Found ${savedList.length} items from a previous session. Would you like to restore them?`)) {
+              importList = savedList;
+              renderCart();
+              hasUnsavedChanges = true;
+            } else {
+              localStorage.removeItem('molten-import-draft');
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error loading auto-save:', error);
+      }
+    }
+
+    // Check if user has unsaved changes when leaving
+    function checkUnsavedChanges() {
+      if (importList.length === 0) {
+        return false;
+      }
+
+      // If they've never exported, they have unsaved changes
+      if (!lastExportTime) {
+        return true;
+      }
+
+      // Check if any items were added/modified since last export
+      return hasUnsavedChanges;
+    }
+
     // Export JSON
     function exportJSON() {
       // Only export confirmed items
@@ -814,6 +878,10 @@ import Layout from '../layouts/Layout.astro';
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
+
+      // Mark as exported
+      lastExportTime = Date.now();
+      hasUnsavedChanges = false;
     }
 
     // Load JSON
@@ -855,6 +923,11 @@ import Layout from '../layouts/Layout.astro';
           };
         }).filter(item => item !== null);
 
+        // Clear auto-save since we've loaded from a file
+        localStorage.removeItem('molten-import-draft');
+        hasUnsavedChanges = true;
+        autoSave();
+
         renderCart();
         alert(`Loaded ${importList.length} items from ${file.name}`);
       } catch (error) {
@@ -871,6 +944,8 @@ import Layout from '../layouts/Layout.astro';
       if (importList.length === 0) return;
       if (confirm('Clear all items from import list?')) {
         importList = [];
+        localStorage.removeItem('molten-import-draft');
+        hasUnsavedChanges = false;
         renderCart();
       }
     }
@@ -943,10 +1018,19 @@ import Layout from '../layouts/Layout.astro';
     // Listen for guide toggle
     document.getElementById('importGuide').addEventListener('toggle', saveGuideState);
 
+    // Warn before leaving page if there are unsaved changes
+    window.addEventListener('beforeunload', (event) => {
+      if (checkUnsavedChanges()) {
+        event.preventDefault();
+        event.returnValue = '';
+      }
+    });
+
     // Initialize
     loadSearchPreferences();
     loadGuideState();
     loadCatalog();
+    loadAutoSave();
 
     // JSON to CSV Converter
     function convertJSONtoCSV(jsonData) {
