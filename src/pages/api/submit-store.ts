@@ -1,6 +1,4 @@
 import type { APIRoute } from 'astro';
-import fs from 'fs/promises';
-import path from 'path';
 
 // IMPORTANT: Disable prerendering for API routes (required for Cloudflare)
 export const prerender = false;
@@ -100,27 +98,49 @@ function validateSubmission(data: any): { valid: boolean; errors: string[] } {
   };
 }
 
-// Load existing pending stores
-async function loadPendingStores(filePath: string): Promise<PendingStoresData> {
+// Load existing pending stores from KV
+async function loadPendingStores(kv: KVNamespace): Promise<PendingStoresData> {
   try {
-    const content = await fs.readFile(filePath, 'utf-8');
-    return JSON.parse(content);
+    const content = await kv.get('pending-stores', 'json');
+    if (content) {
+      return content as PendingStoresData;
+    }
   } catch (error) {
-    // File doesn't exist or is invalid, return empty structure
-    return {
-      version: '1.0',
-      submissions: []
-    };
+    console.error('Error loading from KV:', error);
   }
+
+  // Return empty structure if nothing found or error
+  return {
+    version: '1.0',
+    submissions: []
+  };
 }
 
-// Save pending stores
-async function savePendingStores(filePath: string, data: PendingStoresData): Promise<void> {
-  await fs.writeFile(filePath, JSON.stringify(data, null, 2), 'utf-8');
+// Save pending stores to KV
+async function savePendingStores(kv: KVNamespace, data: PendingStoresData): Promise<void> {
+  await kv.put('pending-stores', JSON.stringify(data, null, 2));
 }
 
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async ({ request, locals }) => {
   try {
+    // Get KV namespace from Cloudflare runtime
+    const kv = (locals.runtime as any)?.env?.STORE_DATA;
+    if (!kv) {
+      console.error('🚨 KV namespace STORE_DATA not found');
+      return new Response(
+        JSON.stringify({
+          error: 'Storage not configured. Please contact administrator.'
+        }),
+        {
+          status: 500,
+          headers: {
+            'Content-Type': 'application/json',
+            ...CORS_HEADERS
+          }
+        }
+      );
+    }
+
     // Parse request body
     const body = await request.json();
 
@@ -169,9 +189,8 @@ export const POST: APIRoute = async ({ request }) => {
       };
     }
 
-    // Load existing pending stores
-    const dataPath = path.join(process.cwd(), 'public', 'data', 'pending-stores.json');
-    const pendingData = await loadPendingStores(dataPath);
+    // Load existing pending stores from KV
+    const pendingData = await loadPendingStores(kv);
 
     // Check for duplicate stable_id
     const existingIndex = pendingData.submissions.findIndex(
@@ -186,8 +205,8 @@ export const POST: APIRoute = async ({ request }) => {
       pendingData.submissions.push(pendingStore);
     }
 
-    // Save updated data
-    await savePendingStores(dataPath, pendingData);
+    // Save updated data to KV
+    await savePendingStores(kv, pendingData);
 
     return new Response(
       JSON.stringify({

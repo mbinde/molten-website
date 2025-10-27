@@ -215,7 +215,7 @@ export const prerender = false;
   // Load submissions
   async function loadSubmissions() {
     try {
-      const response = await fetch('/data/pending-stores.json');
+      const response = await authenticatedFetch('/api/list-stores');
       const data = await response.json();
       submissions = data.submissions || [];
 

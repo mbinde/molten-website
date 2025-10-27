@@ -1,6 +1,4 @@
 import type { APIRoute } from 'astro';
-import fs from 'fs/promises';
-import path from 'path';
 import { requireAuth } from '../../lib/auth';
 
 // IMPORTANT: Disable prerendering for API routes (required for Cloudflare)
@@ -71,13 +69,25 @@ interface StoresOutput {
   stores: PublicStore[];
 }
 
-async function loadPendingStores(filePath: string): Promise<PendingStoresData> {
-  const content = await fs.readFile(filePath, 'utf-8');
-  return JSON.parse(content);
+async function loadPendingStores(kv: KVNamespace): Promise<PendingStoresData> {
+  try {
+    const content = await kv.get('pending-stores', 'json');
+    if (content) {
+      return content as PendingStoresData;
+    }
+  } catch (error) {
+    console.error('Error loading from KV:', error);
+  }
+
+  return {
+    version: '1.0',
+    submissions: []
+  };
 }
 
-async function saveStoresJSON(filePath: string, data: StoresOutput): Promise<void> {
-  await fs.writeFile(filePath, JSON.stringify(data, null, 2), 'utf-8');
+async function saveStoresJSON(kv: KVNamespace, data: StoresOutput): Promise<void> {
+  // Save to KV so it can be served via API
+  await kv.put('stores-json', JSON.stringify(data, null, 2));
 }
 
 /**
@@ -101,7 +111,7 @@ function getCoordinates(store: PendingStore): { latitude: number; longitude: num
   };
 }
 
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async ({ request, locals }) => {
   // Check authentication
   const auth = requireAuth(request);
   if (!auth.authorized) {
@@ -112,11 +122,18 @@ export const POST: APIRoute = async ({ request }) => {
   }
 
   try {
-    const pendingPath = path.join(process.cwd(), 'public', 'data', 'pending-stores.json');
-    const outputPath = path.join(process.cwd(), 'public', 'stores.json');
+    // Get KV namespace from Cloudflare runtime
+    const kv = (locals.runtime as any)?.env?.STORE_DATA;
+    if (!kv) {
+      console.error('🚨 KV namespace STORE_DATA not found');
+      return new Response(
+        JSON.stringify({ error: 'Storage not configured' }),
+        { status: 500, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+      );
+    }
 
-    // Load pending stores
-    const pendingData = await loadPendingStores(pendingPath);
+    // Load pending stores from KV
+    const pendingData = await loadPendingStores(kv);
 
     // Filter approved stores only
     const approvedStores = pendingData.submissions.filter(s => s.status === 'approved');
@@ -163,8 +180,8 @@ export const POST: APIRoute = async ({ request }) => {
       stores: publicStores
     };
 
-    // Save to public/stores.json
-    await saveStoresJSON(outputPath, output);
+    // Save to KV (accessible via /stores.json endpoint)
+    await saveStoresJSON(kv, output);
 
     return new Response(
       JSON.stringify({

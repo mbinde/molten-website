@@ -1,6 +1,4 @@
 import type { APIRoute } from 'astro';
-import fs from 'fs/promises';
-import path from 'path';
 import { requireAuth } from '../../lib/auth';
 
 // IMPORTANT: Disable prerendering for API routes (required for Cloudflare)
@@ -46,16 +44,27 @@ interface PendingStoresData {
   submissions: PendingStore[];
 }
 
-async function loadPendingStores(filePath: string): Promise<PendingStoresData> {
-  const content = await fs.readFile(filePath, 'utf-8');
-  return JSON.parse(content);
+async function loadPendingStores(kv: KVNamespace): Promise<PendingStoresData> {
+  try {
+    const content = await kv.get('pending-stores', 'json');
+    if (content) {
+      return content as PendingStoresData;
+    }
+  } catch (error) {
+    console.error('Error loading from KV:', error);
+  }
+
+  return {
+    version: '1.0',
+    submissions: []
+  };
 }
 
-async function savePendingStores(filePath: string, data: PendingStoresData): Promise<void> {
-  await fs.writeFile(filePath, JSON.stringify(data, null, 2), 'utf-8');
+async function savePendingStores(kv: KVNamespace, data: PendingStoresData): Promise<void> {
+  await kv.put('pending-stores', JSON.stringify(data, null, 2));
 }
 
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async ({ request, locals }) => {
   // Check authentication
   const auth = requireAuth(request);
   if (!auth.authorized) {
@@ -66,6 +75,16 @@ export const POST: APIRoute = async ({ request }) => {
   }
 
   try {
+    // Get KV namespace from Cloudflare runtime
+    const kv = (locals.runtime as any)?.env?.STORE_DATA;
+    if (!kv) {
+      console.error('🚨 KV namespace STORE_DATA not found');
+      return new Response(
+        JSON.stringify({ error: 'Storage not configured' }),
+        { status: 500, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+      );
+    }
+
     const body = await request.json();
     const { stable_id } = body;
 
@@ -76,8 +95,7 @@ export const POST: APIRoute = async ({ request }) => {
       );
     }
 
-    const dataPath = path.join(process.cwd(), 'public', 'data', 'pending-stores.json');
-    const pendingData = await loadPendingStores(dataPath);
+    const pendingData = await loadPendingStores(kv);
 
     const storeIndex = pendingData.submissions.findIndex(
       s => s.stable_id === stable_id
@@ -94,7 +112,7 @@ export const POST: APIRoute = async ({ request }) => {
     pendingData.submissions[storeIndex].status = 'rejected';
     pendingData.submissions[storeIndex].rejected_at = new Date().toISOString();
 
-    await savePendingStores(dataPath, pendingData);
+    await savePendingStores(kv, pendingData);
 
     return new Response(
       JSON.stringify({
