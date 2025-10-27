@@ -105,6 +105,90 @@ export const prerender = false;
           <div id="exportMessage" class="mt-4 hidden p-4 rounded-lg"></div>
         </div>
       </div>
+
+      <!-- Edit Modal -->
+      <div id="editModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-lg shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+          <div class="p-6">
+            <div class="flex justify-between items-center mb-6">
+              <h2 class="text-2xl font-bold">Edit Store</h2>
+              <button onclick="closeEditModal()" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+            </div>
+
+            <form id="editForm" class="space-y-4">
+              <input type="hidden" id="edit_stable_id">
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Store Name *</label>
+                <input type="text" id="edit_name" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500">
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Address Line 1 *</label>
+                <input type="text" id="edit_address_line1" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500">
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Address Line 2</label>
+                <input type="text" id="edit_address_line2" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500">
+              </div>
+
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">City *</label>
+                  <input type="text" id="edit_city" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">State *</label>
+                  <input type="text" id="edit_state" required maxlength="2" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500">
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">ZIP Code *</label>
+                <input type="text" id="edit_zip" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500">
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                <input type="tel" id="edit_phone" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500">
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Website URL</label>
+                <input type="url" id="edit_website_url" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500">
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+                <textarea id="edit_notes" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"></textarea>
+              </div>
+
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Latitude</label>
+                  <input type="number" step="any" id="edit_latitude" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Longitude</label>
+                  <input type="number" step="any" id="edit_longitude" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500">
+                </div>
+              </div>
+
+              <div class="flex gap-3 pt-4">
+                <button type="button" onclick="closeEditModal()" class="flex-1 bg-gray-200 text-gray-700 py-2 px-4 rounded-lg font-bold hover:bg-gray-300 transition">
+                  Cancel
+                </button>
+                <button type="submit" id="saveEditButton" class="flex-1 bg-orange-500 text-white py-2 px-4 rounded-lg font-bold hover:bg-orange-600 transition">
+                  Save Changes
+                </button>
+              </div>
+            </form>
+
+            <div id="editError" class="hidden mt-4 p-3 bg-red-50 border border-red-200 text-red-800 rounded-lg text-sm"></div>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 </Layout>
@@ -322,8 +406,8 @@ export const prerender = false;
           </div>
         ` : ''}
 
-        ${store.status === 'pending' ? `
-          <div class="flex gap-3 pt-4 border-t">
+        <div class="flex gap-3 pt-4 border-t">
+          ${store.status === 'pending' ? `
             <button
               onclick="approveStore('${store.stable_id}')"
               class="flex-1 bg-green-500 text-white py-2 px-4 rounded-lg font-bold hover:bg-green-600 transition"
@@ -336,8 +420,14 @@ export const prerender = false;
             >
               ✗ Reject
             </button>
-          </div>
-        ` : ''}
+          ` : ''}
+          <button
+            onclick="openEditModal('${store.stable_id}')"
+            class="flex-1 bg-blue-500 text-white py-2 px-4 rounded-lg font-bold hover:bg-blue-600 transition"
+          >
+            ✎ Edit
+          </button>
+        </div>
       </div>
     `).join('');
   }
@@ -437,6 +527,97 @@ export const prerender = false;
     } finally {
       exportButton.disabled = false;
       exportButton.textContent = 'Generate stores.json from Approved Stores';
+    }
+  });
+
+  // Edit modal functions
+  const editModal = document.getElementById('editModal');
+  const editForm = document.getElementById('editForm');
+  const editError = document.getElementById('editError');
+
+  window.openEditModal = function(stableId) {
+    const store = submissions.find(s => s.stable_id === stableId);
+    if (!store) return;
+
+    // Populate form fields
+    document.getElementById('edit_stable_id').value = store.stable_id;
+    document.getElementById('edit_name').value = store.name;
+    document.getElementById('edit_address_line1').value = store.address_line1;
+    document.getElementById('edit_address_line2').value = store.address_line2 || '';
+    document.getElementById('edit_city').value = store.city;
+    document.getElementById('edit_state').value = store.state;
+    document.getElementById('edit_zip').value = store.zip;
+    document.getElementById('edit_phone').value = store.phone || '';
+    document.getElementById('edit_website_url').value = store.website_url || '';
+    document.getElementById('edit_notes').value = store.notes || '';
+    document.getElementById('edit_latitude').value = store.latitude || '';
+    document.getElementById('edit_longitude').value = store.longitude || '';
+
+    // Show modal
+    editModal.classList.remove('hidden');
+    editError.classList.add('hidden');
+  };
+
+  window.closeEditModal = function() {
+    editModal.classList.add('hidden');
+    editForm.reset();
+    editError.classList.add('hidden');
+  };
+
+  // Handle edit form submission
+  editForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const stableId = document.getElementById('edit_stable_id').value;
+    const saveButton = document.getElementById('saveEditButton');
+
+    saveButton.disabled = true;
+    saveButton.textContent = 'Saving...';
+    editError.classList.add('hidden');
+
+    try {
+      const updates = {
+        name: document.getElementById('edit_name').value,
+        address_line1: document.getElementById('edit_address_line1').value,
+        address_line2: document.getElementById('edit_address_line2').value || undefined,
+        city: document.getElementById('edit_city').value,
+        state: document.getElementById('edit_state').value,
+        zip: document.getElementById('edit_zip').value,
+        phone: document.getElementById('edit_phone').value || undefined,
+        website_url: document.getElementById('edit_website_url').value || undefined,
+        notes: document.getElementById('edit_notes').value || undefined,
+        latitude: parseFloat(document.getElementById('edit_latitude').value) || undefined,
+        longitude: parseFloat(document.getElementById('edit_longitude').value) || undefined,
+      };
+
+      const response = await authenticatedFetch('/api/update-store', {
+        method: 'POST',
+        body: JSON.stringify({ stable_id: stableId, updates })
+      });
+
+      if (response.ok) {
+        closeEditModal();
+        await loadSubmissions();
+      } else {
+        const error = await response.json();
+        editError.textContent = error.error || 'Failed to update store';
+        editError.classList.remove('hidden');
+      }
+    } catch (error) {
+      if (error.message !== 'Unauthorized') {
+        editError.textContent = 'Network error. Please try again.';
+        editError.classList.remove('hidden');
+      }
+    } finally {
+      saveButton.disabled = false;
+      saveButton.textContent = 'Save Changes';
+    }
+  });
+
+  // Close modal when clicking outside
+  editModal?.addEventListener('click', (e) => {
+    if (e.target === editModal) {
+      closeEditModal();
     }
   });
 </script>
