@@ -3,6 +3,9 @@ import fs from 'fs/promises';
 import path from 'path';
 import { requireAuth } from '../../lib/auth';
 
+// IMPORTANT: Disable prerendering for API routes (required for Cloudflare)
+export const prerender = false;
+
 interface PendingStore {
   stable_id: string;
   name: string;

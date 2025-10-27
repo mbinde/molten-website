@@ -1,5 +1,8 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+
+// IMPORTANT: Disable prerendering for admin pages (required for Cloudflare)
+export const prerender = false;
 ---
 
 <Layout title="Store Approval Queue - Molten Admin">

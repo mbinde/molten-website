@@ -2,6 +2,9 @@ import type { APIRoute } from 'astro';
 import fs from 'fs/promises';
 import path from 'path';
 
+// IMPORTANT: Disable prerendering for API routes (required for Cloudflare)
+export const prerender = false;
+
 interface StoreSubmission {
   name: string;
   address_line1: string;
