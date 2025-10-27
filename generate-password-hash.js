@@ -8,8 +8,8 @@
  *   node generate-password-hash.js "password"   # Command line
  */
 
-const bcrypt = require('bcryptjs');
-const readline = require('readline');
+import bcrypt from 'bcryptjs';
+import readline from 'readline';
 
 async function promptPassword() {
   const rl = readline.createInterface({
