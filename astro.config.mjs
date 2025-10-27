@@ -5,9 +5,17 @@ import tailwindcss from '@tailwindcss/vite';
 
 // https://astro.build/config
 export default defineConfig({
-  output: 'hybrid', // Enables both static pages and API routes
+  output: 'server', // Full SSR mode (required for API routes on Cloudflare)
   adapter: cloudflare({
     mode: 'directory', // Use directory mode for Cloudflare Pages
+    routes: {
+      // Explicitly mark API routes as functions
+      extend: {
+        include: [{
+          pattern: '/api/*'
+        }]
+      }
+    }
   }),
   vite: {
     plugins: [tailwindcss()]
