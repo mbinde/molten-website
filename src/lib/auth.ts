@@ -1,5 +1,5 @@
 import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
+import jwt from '@tsndr/cloudflare-worker-jwt';
 
 // Validate bcrypt hash format
 function isValidBcryptHash(hash: string | undefined): boolean {
@@ -85,7 +85,7 @@ export async function verifyPassword(env: any, password: string): Promise<boolea
  * Generate JWT token for admin
  * SECURITY: Validates JWT_SECRET is properly configured
  */
-export function generateToken(env: any): string {
+export async function generateToken(env: any): Promise<string> {
   const JWT_SECRET = env.JWT_SECRET || 'dev-secret-change-in-production';
 
   // Validate JWT_SECRET before generating token
@@ -99,11 +99,15 @@ export function generateToken(env: any): string {
   }
 
   try {
-    return jwt.sign(
-      { admin: true },
-      JWT_SECRET,
-      { expiresIn: '24h' }
+    // Cloudflare Workers JWT library API
+    const token = await jwt.sign(
+      {
+        admin: true,
+        exp: Math.floor(Date.now() / 1000) + (24 * 60 * 60) // 24 hours from now
+      },
+      JWT_SECRET
     );
+    return token;
   } catch (error) {
     console.error('🚨 AUTH: Failed to generate JWT token:', error);
     throw new Error('Token generation failed');
@@ -114,7 +118,7 @@ export function generateToken(env: any): string {
  * Verify JWT token
  * SECURITY: Validates JWT_SECRET and token format
  */
-export function verifyToken(env: any, token: string): JWTPayload | null {
+export async function verifyToken(env: any, token: string): Promise<JWTPayload | null> {
   const JWT_SECRET = env.JWT_SECRET || 'dev-secret-change-in-production';
 
   // Reject empty/invalid tokens immediately
@@ -130,21 +134,37 @@ export function verifyToken(env: any, token: string): JWTPayload | null {
   }
 
   try {
-    const decoded = jwt.verify(token, JWT_SECRET) as JWTPayload;
+    // Cloudflare Workers JWT library API
+    const isValid = await jwt.verify(token, JWT_SECRET);
+
+    if (!isValid) {
+      console.error('🚨 AUTH: Token signature invalid');
+      return null;
+    }
+
+    // Decode the token to get payload
+    const decoded = jwt.decode(token);
 
     // Validate payload structure
-    if (!decoded || typeof decoded !== 'object') {
+    if (!decoded || !decoded.payload || typeof decoded.payload !== 'object') {
       console.error('🚨 AUTH: Invalid token payload structure');
       return null;
     }
 
+    const payload = decoded.payload as any;
+
     // Verify admin flag is explicitly true
-    if (decoded.admin !== true) {
+    if (payload.admin !== true) {
       console.error('🚨 AUTH: Token missing admin flag');
       return null;
     }
 
-    return decoded;
+    // Return payload with iat and exp
+    return {
+      admin: payload.admin,
+      iat: payload.iat || 0,
+      exp: payload.exp || 0
+    };
   } catch (error) {
     // Don't log full error (could contain sensitive data)
     if (error instanceof Error) {
@@ -173,7 +193,7 @@ export function extractToken(authHeader: string | null): string | null {
 /**
  * Middleware: Verify request has valid admin token
  */
-export function requireAuth(env: any, request: Request): { authorized: boolean; error?: string } {
+export async function requireAuth(env: any, request: Request): Promise<{ authorized: boolean; error?: string }> {
   const authHeader = request.headers.get('Authorization');
   const token = extractToken(authHeader);
 
@@ -181,7 +201,7 @@ export function requireAuth(env: any, request: Request): { authorized: boolean; 
     return { authorized: false, error: 'No authentication token provided' };
   }
 
-  const payload = verifyToken(env, token);
+  const payload = await verifyToken(env, token);
   if (!payload) {
     return { authorized: false, error: 'Invalid or expired token' };
   }

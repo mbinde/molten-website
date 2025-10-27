@@ -11,6 +11,7 @@
   "dependencies": {
     "@astrojs/cloudflare": "^12.6.10",
     "@tailwindcss/vite": "^4.1.16",
+    "@tsndr/cloudflare-worker-jwt": "^3.2.0",
     "astro": "^5.15.0",
     "bcryptjs": "^3.0.2",
     "jsonwebtoken": "^9.0.2",

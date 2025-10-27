@@ -75,7 +75,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     await recordSuccessfulLogin(kv, ip);
 
     // Generate JWT token (valid for 24 hours)
-    const token = generateToken(env);
+    const token = await generateToken(env);
 
     return new Response(
       JSON.stringify({

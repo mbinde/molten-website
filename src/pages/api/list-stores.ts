@@ -21,7 +21,7 @@ export const GET: APIRoute = async ({ request, locals }) => {
   const env = (locals.runtime as any)?.env;
 
   // Check authentication
-  const auth = requireAuth(env, request);
+  const auth = await requireAuth(env, request);
   if (!auth.authorized) {
     return new Response(
       JSON.stringify({ error: auth.error || 'Unauthorized' }),
