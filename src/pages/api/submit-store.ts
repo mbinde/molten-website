@@ -47,15 +47,11 @@ interface PendingStoresData {
   submissions: PendingStore[];
 }
 
-// Generate a stable_id slug from store name
-function generateStableId(name: string): string {
-  return name
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9\s-]/g, '') // Remove special characters
-    .replace(/\s+/g, '-')          // Replace spaces with hyphens
-    .replace(/-+/g, '-')           // Replace multiple hyphens with single
-    .replace(/^-|-$/g, '');        // Remove leading/trailing hyphens
+// Generate a unique hash ID for the store (12 lowercase hex characters)
+function generateStableId(): string {
+  const array = new Uint8Array(6); // 6 bytes = 12 hex chars
+  crypto.getRandomValues(array);
+  return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
 }
 
 // Validate required fields
@@ -162,8 +158,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
       );
     }
 
-    // Generate stable_id
-    const stableId = generateStableId(body.name);
+    // Generate unique hash ID
+    const stableId = generateStableId();
 
     // Create pending store object
     const pendingStore: PendingStore = {
@@ -192,18 +188,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
     // Load existing pending stores from KV
     const pendingData = await loadPendingStores(kv);
 
-    // Check for duplicate stable_id
-    const existingIndex = pendingData.submissions.findIndex(
-      s => s.stable_id === stableId
-    );
-
-    if (existingIndex !== -1) {
-      // Update existing submission (in case someone resubmits)
-      pendingData.submissions[existingIndex] = pendingStore;
-    } else {
-      // Add new submission
-      pendingData.submissions.push(pendingStore);
-    }
+    // Add new submission (hash IDs are unique, no duplicate checking needed)
+    pendingData.submissions.push(pendingStore);
 
     // Save updated data to KV
     await savePendingStores(kv, pendingData);
