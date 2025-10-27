@@ -1,0 +1,440 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="Store Approval Queue - Molten Admin">
+  <section class="py-16 min-h-screen bg-gray-50">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Login Form -->
+      <div id="loginGate" class="max-w-md mx-auto">
+        <div class="bg-white rounded-lg shadow-lg p-8">
+          <h1 class="text-2xl font-bold mb-4">Admin Login</h1>
+          <p class="text-gray-600 mb-6">Enter your admin password to access the store approval queue.</p>
+
+          <form id="loginForm">
+            <input
+              type="password"
+              id="passwordInput"
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent mb-4"
+              placeholder="Enter password"
+              autocomplete="current-password"
+              required
+            />
+
+            <button
+              type="submit"
+              id="loginButton"
+              class="w-full bg-orange-500 text-white py-2 px-4 rounded-lg font-bold hover:bg-orange-600 transition disabled:opacity-50"
+            >
+              Login
+            </button>
+          </form>
+
+          <div id="loginError" class="hidden mt-4 p-3 bg-red-50 border border-red-200 text-red-800 rounded-lg text-sm"></div>
+        </div>
+      </div>
+
+      <!-- Admin Content (hidden until authenticated) -->
+      <div id="adminContent" class="hidden">
+        <!-- Header -->
+        <div class="mb-8">
+          <h1 class="text-4xl font-bold mb-2">Store Approval Queue</h1>
+          <p class="text-lg text-gray-600">Review and approve store submissions</p>
+          <div class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <p class="text-sm text-blue-800">
+              <strong>✨ Auto-Geocoding:</strong> When you approve a store, the system automatically looks up its coordinates using OpenStreetMap (free, no API key needed). Check the browser console for geocoding results.
+            </p>
+          </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div class="bg-white rounded-lg shadow p-6">
+            <div class="text-3xl font-bold text-orange-500" id="pendingCount">0</div>
+            <div class="text-gray-600">Pending</div>
+          </div>
+          <div class="bg-white rounded-lg shadow p-6">
+            <div class="text-3xl font-bold text-green-500" id="approvedCount">0</div>
+            <div class="text-gray-600">Approved</div>
+          </div>
+          <div class="bg-white rounded-lg shadow p-6">
+            <div class="text-3xl font-bold text-gray-500" id="rejectedCount">0</div>
+            <div class="text-gray-600">Rejected</div>
+          </div>
+        </div>
+
+        <!-- Filter Tabs -->
+        <div class="mb-6 flex gap-2">
+          <button data-filter="pending" class="filter-btn px-4 py-2 rounded-lg font-medium bg-orange-500 text-white">
+            Pending
+          </button>
+          <button data-filter="approved" class="filter-btn px-4 py-2 rounded-lg font-medium bg-gray-200 text-gray-700">
+            Approved
+          </button>
+          <button data-filter="rejected" class="filter-btn px-4 py-2 rounded-lg font-medium bg-gray-200 text-gray-700">
+            Rejected
+          </button>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loadingState" class="text-center py-12">
+          <div class="text-gray-500">Loading submissions...</div>
+        </div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="hidden text-center py-12">
+          <div class="text-gray-500 text-lg">No submissions found</div>
+        </div>
+
+        <!-- Submissions List -->
+        <div id="submissionsList" class="space-y-6">
+          <!-- Dynamically populated -->
+        </div>
+
+        <!-- Export Button -->
+        <div class="mt-8 pt-8 border-t">
+          <button
+            id="exportButton"
+            class="bg-blue-500 text-white py-3 px-6 rounded-lg font-bold hover:bg-blue-600 transition"
+          >
+            Generate stores.json from Approved Stores
+          </button>
+          <div id="exportMessage" class="mt-4 hidden p-4 rounded-lg"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<script>
+  const TOKEN_KEY = 'molten_admin_token';
+  let currentFilter = 'pending';
+  let submissions = [];
+  let authToken = null;
+
+  // Elements
+  const loginGate = document.getElementById('loginGate');
+  const adminContent = document.getElementById('adminContent');
+  const loginForm = document.getElementById('loginForm');
+  const loginButton = document.getElementById('loginButton');
+  const loginError = document.getElementById('loginError');
+
+  // Check for existing token on page load
+  function checkExistingAuth() {
+    const stored = localStorage.getItem(TOKEN_KEY);
+    if (stored) {
+      authToken = stored;
+      showAdminInterface();
+    }
+  }
+
+  // Handle login form submission
+  loginForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const password = document.getElementById('passwordInput').value;
+    loginButton.disabled = true;
+    loginButton.textContent = 'Logging in...';
+    loginError.classList.add('hidden');
+
+    try {
+      const response = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password })
+      });
+
+      const result = await response.json();
+
+      if (response.ok && result.token) {
+        // Store token
+        authToken = result.token;
+        localStorage.setItem(TOKEN_KEY, authToken);
+
+        // Show admin interface
+        showAdminInterface();
+      } else {
+        // Show error
+        loginError.textContent = result.error || 'Invalid password';
+        loginError.classList.remove('hidden');
+      }
+    } catch (error) {
+      loginError.textContent = 'Network error. Please try again.';
+      loginError.classList.remove('hidden');
+    } finally {
+      loginButton.disabled = false;
+      loginButton.textContent = 'Login';
+    }
+  });
+
+  function showAdminInterface() {
+    loginGate.classList.add('hidden');
+    adminContent.classList.remove('hidden');
+    loadSubmissions();
+  }
+
+  function logout() {
+    localStorage.removeItem(TOKEN_KEY);
+    authToken = null;
+    adminContent.classList.add('hidden');
+    loginGate.classList.remove('hidden');
+    loginError.classList.add('hidden');
+    document.getElementById('passwordInput').value = '';
+  }
+
+  // Helper: Make authenticated API request
+  async function authenticatedFetch(url, options = {}) {
+    if (!authToken) {
+      throw new Error('Not authenticated');
+    }
+
+    const headers = {
+      ...options.headers,
+      'Authorization': `Bearer ${authToken}`,
+      'Content-Type': 'application/json'
+    };
+
+    const response = await fetch(url, { ...options, headers });
+
+    // If 401, token expired - logout
+    if (response.status === 401) {
+      alert('Session expired. Please log in again.');
+      logout();
+      throw new Error('Unauthorized');
+    }
+
+    return response;
+  }
+
+  // Check auth on page load
+  checkExistingAuth();
+
+  // Load submissions
+  async function loadSubmissions() {
+    try {
+      const response = await fetch('/data/pending-stores.json');
+      const data = await response.json();
+      submissions = data.submissions || [];
+
+      updateStats();
+      renderSubmissions();
+    } catch (error) {
+      console.error('Error loading submissions:', error);
+      document.getElementById('loadingState').innerHTML =
+        '<div class="text-red-500">Error loading submissions</div>';
+    }
+  }
+
+  // Update statistics
+  function updateStats() {
+    const pending = submissions.filter(s => s.status === 'pending').length;
+    const approved = submissions.filter(s => s.status === 'approved').length;
+    const rejected = submissions.filter(s => s.status === 'rejected').length;
+
+    document.getElementById('pendingCount').textContent = pending;
+    document.getElementById('approvedCount').textContent = approved;
+    document.getElementById('rejectedCount').textContent = rejected;
+  }
+
+  // Render submissions
+  function renderSubmissions() {
+    const filtered = submissions.filter(s => s.status === currentFilter);
+
+    const loadingState = document.getElementById('loadingState');
+    const emptyState = document.getElementById('emptyState');
+    const submissionsList = document.getElementById('submissionsList');
+
+    loadingState.classList.add('hidden');
+
+    if (filtered.length === 0) {
+      emptyState.classList.remove('hidden');
+      submissionsList.innerHTML = '';
+      return;
+    }
+
+    emptyState.classList.add('hidden');
+
+    submissionsList.innerHTML = filtered.map(store => `
+      <div class="bg-white rounded-lg shadow-lg p-6" data-id="${store.stable_id}">
+        <div class="flex justify-between items-start mb-4">
+          <div>
+            <h3 class="text-2xl font-bold">${store.name}</h3>
+            <div class="text-sm text-gray-500">ID: ${store.stable_id}</div>
+            <div class="text-sm text-gray-500">Submitted: ${new Date(store.submitted_at).toLocaleString()}</div>
+          </div>
+          <span class="px-3 py-1 rounded-full text-sm font-medium ${
+            store.status === 'pending' ? 'bg-orange-100 text-orange-800' :
+            store.status === 'approved' ? 'bg-green-100 text-green-800' :
+            'bg-gray-100 text-gray-800'
+          }">
+            ${store.status.charAt(0).toUpperCase() + store.status.slice(1)}
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div>
+            <div class="font-semibold text-gray-700 mb-1">Address</div>
+            <div class="text-gray-600">
+              ${store.address_line1}<br>
+              ${store.address_line2 ? store.address_line2 + '<br>' : ''}
+              ${store.city}, ${store.state} ${store.zip}
+            </div>
+          </div>
+
+          <div>
+            ${store.phone ? `
+              <div class="mb-2">
+                <div class="font-semibold text-gray-700">Phone</div>
+                <div class="text-gray-600">${store.phone}</div>
+              </div>
+            ` : ''}
+
+            ${store.website_url ? `
+              <div class="mb-2">
+                <div class="font-semibold text-gray-700">Website</div>
+                <div class="text-gray-600">
+                  <a href="${store.website_url}" target="_blank" class="text-orange-500 hover:underline">
+                    ${store.website_url}
+                  </a>
+                </div>
+              </div>
+            ` : ''}
+          </div>
+        </div>
+
+        ${store.notes ? `
+          <div class="mb-4">
+            <div class="font-semibold text-gray-700 mb-1">Notes</div>
+            <div class="text-gray-600">${store.notes}</div>
+          </div>
+        ` : ''}
+
+        ${store.submitter ? `
+          <div class="mb-4 p-3 bg-gray-50 rounded">
+            <div class="font-semibold text-gray-700 mb-1">Submitter Info</div>
+            <div class="text-sm text-gray-600">
+              ${store.submitter.name ? `Name: ${store.submitter.name}<br>` : ''}
+              ${store.submitter.email ? `Email: ${store.submitter.email}` : ''}
+            </div>
+          </div>
+        ` : ''}
+
+        ${store.status === 'pending' ? `
+          <div class="flex gap-3 pt-4 border-t">
+            <button
+              onclick="approveStore('${store.stable_id}')"
+              class="flex-1 bg-green-500 text-white py-2 px-4 rounded-lg font-bold hover:bg-green-600 transition"
+            >
+              ✓ Approve
+            </button>
+            <button
+              onclick="rejectStore('${store.stable_id}')"
+              class="flex-1 bg-red-500 text-white py-2 px-4 rounded-lg font-bold hover:bg-red-600 transition"
+            >
+              ✗ Reject
+            </button>
+          </div>
+        ` : ''}
+      </div>
+    `).join('');
+  }
+
+  // Filter tabs
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      currentFilter = btn.dataset.filter;
+
+      // Update button styles
+      document.querySelectorAll('.filter-btn').forEach(b => {
+        b.classList.remove('bg-orange-500', 'text-white');
+        b.classList.add('bg-gray-200', 'text-gray-700');
+      });
+      btn.classList.remove('bg-gray-200', 'text-gray-700');
+      btn.classList.add('bg-orange-500', 'text-white');
+
+      renderSubmissions();
+    });
+  });
+
+  // Approve/Reject actions (global scope for onclick)
+  window.approveStore = async function(stableId) {
+    if (!confirm('Approve this store submission? This will automatically geocode the address.')) return;
+
+    try {
+      const response = await authenticatedFetch('/api/approve-store', {
+        method: 'POST',
+        body: JSON.stringify({ stable_id: stableId })
+      });
+
+      if (response.ok) {
+        await loadSubmissions();
+      } else {
+        const error = await response.json();
+        alert('Error: ' + (error.error || 'Failed to approve store'));
+      }
+    } catch (error) {
+      if (error.message !== 'Unauthorized') {
+        alert('Network error. Please try again.');
+      }
+    }
+  };
+
+  window.rejectStore = async function(stableId) {
+    if (!confirm('Reject this store submission?')) return;
+
+    try {
+      const response = await authenticatedFetch('/api/reject-store', {
+        method: 'POST',
+        body: JSON.stringify({ stable_id: stableId })
+      });
+
+      if (response.ok) {
+        await loadSubmissions();
+      } else {
+        const error = await response.json();
+        alert('Error: ' + (error.error || 'Failed to reject store'));
+      }
+    } catch (error) {
+      if (error.message !== 'Unauthorized') {
+        alert('Network error. Please try again.');
+      }
+    }
+  };
+
+  // Export to stores.json
+  const exportButton = document.getElementById('exportButton');
+  const exportMessage = document.getElementById('exportMessage');
+
+  exportButton?.addEventListener('click', async () => {
+    try {
+      exportButton.disabled = true;
+      exportButton.textContent = 'Generating...';
+
+      const response = await authenticatedFetch('/api/generate-stores', {
+        method: 'POST'
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        exportMessage.className = 'mt-4 p-4 rounded-lg bg-green-50 border border-green-200 text-green-800';
+        exportMessage.textContent = result.message || `Successfully generated stores.json with ${result.count} stores`;
+      } else {
+        exportMessage.className = 'mt-4 p-4 rounded-lg bg-red-50 border border-red-200 text-red-800';
+        exportMessage.textContent = result.error || 'Failed to generate stores.json';
+      }
+
+      exportMessage.classList.remove('hidden');
+      setTimeout(() => exportMessage.classList.add('hidden'), 5000);
+
+    } catch (error) {
+      exportMessage.className = 'mt-4 p-4 rounded-lg bg-red-50 border border-red-200 text-red-800';
+      exportMessage.textContent = 'Network error. Please try again.';
+      exportMessage.classList.remove('hidden');
+    } finally {
+      exportButton.disabled = false;
+      exportButton.textContent = 'Generate stores.json from Approved Stores';
+    }
+  });
+</script>
+</Layout>
