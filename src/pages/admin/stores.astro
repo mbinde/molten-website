@@ -94,15 +94,24 @@ export const prerender = false;
           <!-- Dynamically populated -->
         </div>
 
-        <!-- Export Button -->
-        <div class="mt-8 pt-8 border-t">
-          <button
-            id="exportButton"
-            class="bg-blue-500 text-white py-3 px-6 rounded-lg font-bold hover:bg-blue-600 transition"
-          >
-            Generate stores.json from Approved Stores
-          </button>
-          <div id="exportMessage" class="mt-4 hidden p-4 rounded-lg"></div>
+        <!-- Admin Actions -->
+        <div class="mt-8 pt-8 border-t space-y-4">
+          <div class="flex gap-4">
+            <button
+              id="migrateButton"
+              class="bg-purple-500 text-white py-3 px-6 rounded-lg font-bold hover:bg-purple-600 transition"
+            >
+              🔄 Migrate Old IDs to Hash IDs
+            </button>
+            <button
+              id="exportButton"
+              class="bg-blue-500 text-white py-3 px-6 rounded-lg font-bold hover:bg-blue-600 transition"
+            >
+              Generate stores.json from Approved Stores
+            </button>
+          </div>
+          <div id="migrateMessage" class="hidden p-4 rounded-lg"></div>
+          <div id="exportMessage" class="hidden p-4 rounded-lg"></div>
         </div>
       </div>
 
@@ -493,6 +502,58 @@ export const prerender = false;
       }
     }
   };
+
+  // Migrate store IDs
+  const migrateButton = document.getElementById('migrateButton');
+  const migrateMessage = document.getElementById('migrateMessage');
+
+  migrateButton?.addEventListener('click', async () => {
+    if (!confirm('This will update all old-style store IDs (like "frantz-art-glass") to new hash IDs (like "a3f8c2d9e1b4"). Continue?')) {
+      return;
+    }
+
+    try {
+      migrateButton.disabled = true;
+      migrateButton.textContent = 'Migrating...';
+
+      const response = await authenticatedFetch('/api/migrate-store-ids', {
+        method: 'POST'
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        if (result.migrations && result.migrations.length > 0) {
+          migrateMessage.className = 'p-4 rounded-lg bg-green-50 border border-green-200 text-green-800';
+          let message = `✅ Migrated ${result.migrations.length} store(s):\n`;
+          result.migrations.forEach(m => {
+            message += `\n• ${m.name}: ${m.old_id} → ${m.new_id}`;
+          });
+          migrateMessage.innerHTML = message.replace(/\n/g, '<br>');
+        } else {
+          migrateMessage.className = 'p-4 rounded-lg bg-blue-50 border border-blue-200 text-blue-800';
+          migrateMessage.textContent = '✓ No stores needed migration - all IDs are already hash-based';
+        }
+
+        // Reload submissions to show new IDs
+        await loadSubmissions();
+      } else {
+        migrateMessage.className = 'p-4 rounded-lg bg-red-50 border border-red-200 text-red-800';
+        migrateMessage.textContent = result.error || 'Failed to migrate store IDs';
+      }
+
+      migrateMessage.classList.remove('hidden');
+      setTimeout(() => migrateMessage.classList.add('hidden'), 10000);
+
+    } catch (error) {
+      migrateMessage.className = 'p-4 rounded-lg bg-red-50 border border-red-200 text-red-800';
+      migrateMessage.textContent = 'Network error. Please try again.';
+      migrateMessage.classList.remove('hidden');
+    } finally {
+      migrateButton.disabled = false;
+      migrateButton.textContent = '🔄 Migrate Old IDs to Hash IDs';
+    }
+  });
 
   // Export to stores.json
   const exportButton = document.getElementById('exportButton');
