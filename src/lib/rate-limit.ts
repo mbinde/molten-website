@@ -1,6 +1,3 @@
-import fs from 'fs/promises';
-import path from 'path';
-
 interface IPAttempt {
   ip: string;
   attempts: number;
@@ -15,30 +12,32 @@ interface RateLimitData {
   lockedAt?: string;
 }
 
-const RATE_LIMIT_FILE = path.join(process.cwd(), 'public', 'data', 'rate-limit.json');
-
 const MAX_ATTEMPTS_PER_IP = 3;
 const IP_BLOCK_HOURS = 24;
 const TOTAL_ATTEMPTS_LOCKDOWN = 10;
 
-// Load rate limit data
-async function loadRateLimitData(): Promise<RateLimitData> {
+// Load rate limit data from KV
+async function loadRateLimitData(kv: KVNamespace): Promise<RateLimitData> {
   try {
-    const content = await fs.readFile(RATE_LIMIT_FILE, 'utf-8');
-    return JSON.parse(content);
+    const content = await kv.get('rate-limit', 'json');
+    if (content) {
+      return content as RateLimitData;
+    }
   } catch (error) {
-    // File doesn't exist, return empty structure
-    return {
-      ips: [],
-      totalFailedAttempts: 0,
-      isLocked: false
-    };
+    console.error('Error loading rate limit data from KV:', error);
   }
+
+  // Return empty structure
+  return {
+    ips: [],
+    totalFailedAttempts: 0,
+    isLocked: false
+  };
 }
 
-// Save rate limit data
-async function saveRateLimitData(data: RateLimitData): Promise<void> {
-  await fs.writeFile(RATE_LIMIT_FILE, JSON.stringify(data, null, 2), 'utf-8');
+// Save rate limit data to KV
+async function saveRateLimitData(kv: KVNamespace, data: RateLimitData): Promise<void> {
+  await kv.put('rate-limit', JSON.stringify(data, null, 2));
 }
 
 // Get client IP from request
@@ -57,14 +56,14 @@ export function getClientIP(request: Request): string {
 }
 
 // Check if system is locked down
-async function isSystemLocked(): Promise<boolean> {
-  const data = await loadRateLimitData();
+async function isSystemLocked(kv: KVNamespace): Promise<boolean> {
+  const data = await loadRateLimitData(kv);
   return data.isLocked;
 }
 
 // Check if IP is blocked
-async function isIPBlocked(ip: string): Promise<{ blocked: boolean; reason?: string }> {
-  const data = await loadRateLimitData();
+async function isIPBlocked(kv: KVNamespace, ip: string): Promise<{ blocked: boolean; reason?: string }> {
+  const data = await loadRateLimitData(kv);
 
   // Check if entire system is locked
   if (data.isLocked) {
@@ -96,8 +95,8 @@ async function isIPBlocked(ip: string): Promise<{ blocked: boolean; reason?: str
 }
 
 // Record failed login attempt
-export async function recordFailedAttempt(ip: string): Promise<void> {
-  const data = await loadRateLimitData();
+export async function recordFailedAttempt(kv: KVNamespace, ip: string): Promise<void> {
+  const data = await loadRateLimitData(kv);
 
   // Increment total attempts
   data.totalFailedAttempts++;
@@ -136,12 +135,12 @@ export async function recordFailedAttempt(ip: string): Promise<void> {
     console.warn(`🚫 IP ${ip} blocked until ${blockedUntil.toISOString()}`);
   }
 
-  await saveRateLimitData(data);
+  await saveRateLimitData(kv, data);
 }
 
 // Record successful login (reset IP attempts)
-export async function recordSuccessfulLogin(ip: string): Promise<void> {
-  const data = await loadRateLimitData();
+export async function recordSuccessfulLogin(kv: KVNamespace, ip: string): Promise<void> {
+  const data = await loadRateLimitData(kv);
 
   // Find IP record and reset attempts
   const ipRecord = data.ips.find(record => record.ip === ip);
@@ -151,17 +150,17 @@ export async function recordSuccessfulLogin(ip: string): Promise<void> {
     console.log(`✅ Successful login from ${ip}, attempts reset`);
   }
 
-  await saveRateLimitData(data);
+  await saveRateLimitData(kv, data);
 }
 
 // Main rate limit check
-export async function checkRateLimit(request: Request): Promise<{ allowed: boolean; error?: string }> {
+export async function checkRateLimit(kv: KVNamespace, request: Request): Promise<{ allowed: boolean; error?: string }> {
   const ip = getClientIP(request);
 
   console.log(`🔍 Login attempt from IP: ${ip}`);
 
   // Check if IP is blocked
-  const ipCheck = await isIPBlocked(ip);
+  const ipCheck = await isIPBlocked(kv, ip);
   if (ipCheck.blocked) {
     return {
       allowed: false,
@@ -173,28 +172,28 @@ export async function checkRateLimit(request: Request): Promise<{ allowed: boole
 }
 
 // Admin function: Unlock system
-export async function unlockSystem(): Promise<void> {
-  const data = await loadRateLimitData();
+export async function unlockSystem(kv: KVNamespace): Promise<void> {
+  const data = await loadRateLimitData(kv);
   data.isLocked = false;
   data.lockedAt = undefined;
   data.totalFailedAttempts = 0;
   console.log('✅ System unlocked');
-  await saveRateLimitData(data);
+  await saveRateLimitData(kv, data);
 }
 
 // Admin function: Unblock IP
-export async function unblockIP(ip: string): Promise<void> {
-  const data = await loadRateLimitData();
+export async function unblockIP(kv: KVNamespace, ip: string): Promise<void> {
+  const data = await loadRateLimitData(kv);
   const ipRecord = data.ips.find(record => record.ip === ip);
   if (ipRecord) {
     ipRecord.attempts = 0;
     ipRecord.blockedUntil = undefined;
     console.log(`✅ IP ${ip} unblocked`);
-    await saveRateLimitData(data);
+    await saveRateLimitData(kv, data);
   }
 }
 
 // Admin function: Get rate limit status
-export async function getRateLimitStatus(): Promise<RateLimitData> {
-  return await loadRateLimitData();
+export async function getRateLimitStatus(kv: KVNamespace): Promise<RateLimitData> {
+  return await loadRateLimitData(kv);
 }

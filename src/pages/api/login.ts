@@ -20,10 +20,20 @@ export const OPTIONS: APIRoute = async () => {
   });
 };
 
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async ({ request, locals }) => {
   try {
+    // Get KV namespace from Cloudflare runtime
+    const kv = (locals.runtime as any)?.env?.STORE_DATA;
+    if (!kv) {
+      console.error('🚨 KV namespace STORE_DATA not found');
+      return new Response(
+        JSON.stringify({ error: 'Storage not configured' }),
+        { status: 500, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+      );
+    }
+
     // Check rate limit FIRST
-    const rateLimitCheck = await checkRateLimit(request);
+    const rateLimitCheck = await checkRateLimit(kv, request);
     if (!rateLimitCheck.allowed) {
       return new Response(
         JSON.stringify({ error: rateLimitCheck.error || 'Too many failed attempts' }),
@@ -47,7 +57,7 @@ export const POST: APIRoute = async ({ request }) => {
     if (!isValid) {
       // Record failed attempt
       const ip = getClientIP(request);
-      await recordFailedAttempt(ip);
+      await recordFailedAttempt(kv, ip);
 
       // Add delay to prevent brute force
       await new Promise(resolve => setTimeout(resolve, 1000));
@@ -60,7 +70,7 @@ export const POST: APIRoute = async ({ request }) => {
 
     // Record successful login (resets IP attempts)
     const ip = getClientIP(request);
-    await recordSuccessfulLogin(ip);
+    await recordSuccessfulLogin(kv, ip);
 
     // Generate JWT token (valid for 24 hours)
     const token = generateToken();
