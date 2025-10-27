@@ -112,8 +112,11 @@ function getCoordinates(store: PendingStore): { latitude: number; longitude: num
 }
 
 export const POST: APIRoute = async ({ request, locals }) => {
+  // Get env from Cloudflare runtime
+  const env = (locals.runtime as any)?.env;
+
   // Check authentication
-  const auth = requireAuth(request);
+  const auth = requireAuth(env, request);
   if (!auth.authorized) {
     return new Response(
       JSON.stringify({ error: auth.error || 'Unauthorized' }),
@@ -123,7 +126,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
   try {
     // Get KV namespace from Cloudflare runtime
-    const kv = (locals.runtime as any)?.env?.STORE_DATA;
+    const kv = env?.STORE_DATA;
     if (!kv) {
       console.error('🚨 KV namespace STORE_DATA not found');
       return new Response(

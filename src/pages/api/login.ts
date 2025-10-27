@@ -41,6 +41,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
       );
     }
 
+    const env = (locals.runtime as any)?.env;
+
     const body = await request.json();
     const { password } = body;
 
@@ -52,7 +54,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     }
 
     // Verify password
-    const isValid = await verifyPassword(password);
+    const isValid = await verifyPassword(env, password);
 
     if (!isValid) {
       // Record failed attempt
@@ -73,7 +75,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     await recordSuccessfulLogin(kv, ip);
 
     // Generate JWT token (valid for 24 hours)
-    const token = generateToken();
+    const token = generateToken(env);
 
     return new Response(
       JSON.stringify({

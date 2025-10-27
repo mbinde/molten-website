@@ -1,16 +1,6 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
-// JWT secret from environment (MUST be set in production)
-const JWT_SECRET = import.meta.env.JWT_SECRET || 'dev-secret-change-in-production';
-
-// Admin password hash from environment
-// Generate with: node generate-password-hash.js
-const ADMIN_PASSWORD_HASH = import.meta.env.ADMIN_PASSWORD_HASH;
-
-// Plain password fallback for development only
-const ADMIN_PASSWORD_PLAIN = import.meta.env.ADMIN_PASSWORD;
-
 // Validate bcrypt hash format
 function isValidBcryptHash(hash: string | undefined): boolean {
   if (!hash || typeof hash !== 'string') return false;
@@ -21,7 +11,11 @@ function isValidBcryptHash(hash: string | undefined): boolean {
 }
 
 // Validate credentials are configured (fail closed if not)
-function validateCredentialsConfigured(): void {
+function validateCredentialsConfigured(env: any): void {
+  const ADMIN_PASSWORD_HASH = env.ADMIN_PASSWORD_HASH;
+  const ADMIN_PASSWORD_PLAIN = env.ADMIN_PASSWORD;
+  const JWT_SECRET = env.JWT_SECRET;
+
   const hasValidHash = isValidBcryptHash(ADMIN_PASSWORD_HASH);
   const hasPlainPassword = ADMIN_PASSWORD_PLAIN && typeof ADMIN_PASSWORD_PLAIN === 'string' && ADMIN_PASSWORD_PLAIN.length > 0;
 
@@ -36,13 +30,10 @@ function validateCredentialsConfigured(): void {
     console.warn('   For production, use ADMIN_PASSWORD_HASH instead');
   }
 
-  if (JWT_SECRET === 'dev-secret-change-in-production') {
+  if (!JWT_SECRET || JWT_SECRET === 'dev-secret-change-in-production') {
     console.warn('⚠️  WARNING: Using default JWT_SECRET (change for production)');
   }
 }
-
-// Run validation on module load
-validateCredentialsConfigured();
 
 interface JWTPayload {
   admin: boolean;
@@ -54,7 +45,13 @@ interface JWTPayload {
  * Verify admin password
  * SECURITY: Fails closed - returns false if credentials not properly configured
  */
-export async function verifyPassword(password: string): Promise<boolean> {
+export async function verifyPassword(env: any, password: string): Promise<boolean> {
+  // Validate configuration
+  validateCredentialsConfigured(env);
+
+  const ADMIN_PASSWORD_HASH = env.ADMIN_PASSWORD_HASH;
+  const ADMIN_PASSWORD_PLAIN = env.ADMIN_PASSWORD;
+
   // Reject empty/null/undefined passwords immediately
   if (!password || typeof password !== 'string' || password.trim().length === 0) {
     console.error('🚨 AUTH: Rejected empty password attempt');
@@ -73,16 +70,8 @@ export async function verifyPassword(password: string): Promise<boolean> {
 
   // Fall back to plain password comparison (development only)
   if (ADMIN_PASSWORD_PLAIN && typeof ADMIN_PASSWORD_PLAIN === 'string' && ADMIN_PASSWORD_PLAIN.length > 0) {
-    // Use constant-time comparison to prevent timing attacks
-    try {
-      // Create a fake hash to compare against for constant time
-      const plainHash = await bcrypt.hash(ADMIN_PASSWORD_PLAIN, 10);
-      const inputHash = await bcrypt.hash(password, 10);
-      return password === ADMIN_PASSWORD_PLAIN;
-    } catch (error) {
-      console.error('🚨 AUTH: Plain password comparison failed:', error);
-      return false;
-    }
+    // Simple comparison for development
+    return password === ADMIN_PASSWORD_PLAIN;
   }
 
   // FAIL CLOSED: No valid credentials configured
@@ -96,7 +85,9 @@ export async function verifyPassword(password: string): Promise<boolean> {
  * Generate JWT token for admin
  * SECURITY: Validates JWT_SECRET is properly configured
  */
-export function generateToken(): string {
+export function generateToken(env: any): string {
+  const JWT_SECRET = env.JWT_SECRET || 'dev-secret-change-in-production';
+
   // Validate JWT_SECRET before generating token
   if (!JWT_SECRET || typeof JWT_SECRET !== 'string' || JWT_SECRET.length < 32) {
     console.error('🚨 AUTH: JWT_SECRET is too short or missing - refusing to generate token');
@@ -123,7 +114,9 @@ export function generateToken(): string {
  * Verify JWT token
  * SECURITY: Validates JWT_SECRET and token format
  */
-export function verifyToken(token: string): JWTPayload | null {
+export function verifyToken(env: any, token: string): JWTPayload | null {
+  const JWT_SECRET = env.JWT_SECRET || 'dev-secret-change-in-production';
+
   // Reject empty/invalid tokens immediately
   if (!token || typeof token !== 'string' || token.trim().length === 0) {
     console.error('🚨 AUTH: Rejected empty/invalid token');
@@ -180,7 +173,7 @@ export function extractToken(authHeader: string | null): string | null {
 /**
  * Middleware: Verify request has valid admin token
  */
-export function requireAuth(request: Request): { authorized: boolean; error?: string } {
+export function requireAuth(env: any, request: Request): { authorized: boolean; error?: string } {
   const authHeader = request.headers.get('Authorization');
   const token = extractToken(authHeader);
 
@@ -188,7 +181,7 @@ export function requireAuth(request: Request): { authorized: boolean; error?: st
     return { authorized: false, error: 'No authentication token provided' };
   }
 
-  const payload = verifyToken(token);
+  const payload = verifyToken(env, token);
   if (!payload) {
     return { authorized: false, error: 'Invalid or expired token' };
   }
