@@ -7,15 +7,8 @@ import tailwindcss from '@tailwindcss/vite';
 export default defineConfig({
   output: 'server', // Full SSR mode (required for API routes on Cloudflare)
   adapter: cloudflare({
-    mode: 'directory', // Use directory mode for Cloudflare Pages
-    routes: {
-      // Explicitly mark API routes as functions
-      extend: {
-        include: [{
-          pattern: '/api/*'
-        }]
-      }
-    }
+    mode: 'directory' // Use directory mode for Cloudflare Pages
+    // Routing handled by public/_routes.json instead
   }),
   vite: {
     plugins: [tailwindcss()]
