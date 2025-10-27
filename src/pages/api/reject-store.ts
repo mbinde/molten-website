@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import { requireAuth } from '../../lib/auth';
+import { regenerateStoresJSON } from '../../lib/store-generator';
 
 // IMPORTANT: Disable prerendering for API routes (required for Cloudflare)
 export const prerender = false;
@@ -117,10 +118,15 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
     await savePendingStores(kv, pendingData);
 
+    // Auto-regenerate stores.json (removes the rejected store if it was previously approved)
+    const storeCount = await regenerateStoresJSON(kv);
+
     return new Response(
       JSON.stringify({
         message: 'Store rejected successfully',
-        stable_id
+        stable_id,
+        stores_json_updated: true,
+        total_approved_stores: storeCount
       }),
       { status: 200, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
     );
