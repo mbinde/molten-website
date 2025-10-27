@@ -6,6 +6,21 @@ import { requireAuth } from '../../lib/auth';
 // IMPORTANT: Disable prerendering for API routes (required for Cloudflare)
 export const prerender = false;
 
+// CORS headers for API routes
+const CORS_HEADERS = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+};
+
+// Handle OPTIONS preflight request
+export const OPTIONS: APIRoute = async () => {
+  return new Response(null, {
+    status: 204,
+    headers: CORS_HEADERS
+  });
+};
+
 interface PendingStore {
   stable_id: string;
   name: string;
@@ -107,7 +122,7 @@ export const POST: APIRoute = async ({ request }) => {
   if (!auth.authorized) {
     return new Response(
       JSON.stringify({ error: auth.error || 'Unauthorized' }),
-      { status: 401, headers: { 'Content-Type': 'application/json' } }
+      { status: 401, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
     );
   }
 
@@ -118,7 +133,7 @@ export const POST: APIRoute = async ({ request }) => {
     if (!stable_id) {
       return new Response(
         JSON.stringify({ error: 'stable_id is required' }),
-        { status: 400, headers: { 'Content-Type': 'application/json' } }
+        { status: 400, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
       );
     }
 
@@ -132,7 +147,7 @@ export const POST: APIRoute = async ({ request }) => {
     if (storeIndex === -1) {
       return new Response(
         JSON.stringify({ error: 'Store not found' }),
-        { status: 404, headers: { 'Content-Type': 'application/json' } }
+        { status: 404, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
       );
     }
 
@@ -165,14 +180,14 @@ export const POST: APIRoute = async ({ request }) => {
         message: 'Store approved successfully',
         stable_id
       }),
-      { status: 200, headers: { 'Content-Type': 'application/json' } }
+      { status: 200, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
     );
 
   } catch (error) {
     console.error('Error approving store:', error);
     return new Response(
       JSON.stringify({ error: 'Internal server error' }),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
+      { status: 500, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
     );
   }
 };
