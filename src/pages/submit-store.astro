@@ -293,6 +293,12 @@ export const prerender = true;
       return;
     }
 
+    // Don't search if it's only numbers (house number alone is not valid)
+    if (/^\d+$/.test(query.trim())) {
+      autocompleteDiv.classList.add('hidden');
+      return;
+    }
+
     // Debounce API calls (wait 300ms after user stops typing)
     autocompleteTimeout = setTimeout(async () => {
       try {
