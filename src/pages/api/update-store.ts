@@ -23,11 +23,11 @@ export const OPTIONS: APIRoute = async () => {
 interface PendingStore {
   stable_id: string;
   name: string;
-  address_line1: string;
+  address_line1?: string;
   address_line2?: string;
   city: string;
   state: string;
-  zip: string;
+  zip?: string;
   phone?: string;
   website_url?: string;
   notes?: string;
