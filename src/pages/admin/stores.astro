@@ -51,10 +51,14 @@ export const prerender = false;
         </div>
 
         <!-- Stats -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <div class="bg-white rounded-lg shadow p-6">
             <div class="text-3xl font-bold text-orange-500" id="pendingCount">0</div>
             <div class="text-gray-600">Pending</div>
+          </div>
+          <div class="bg-white rounded-lg shadow p-6">
+            <div class="text-3xl font-bold text-blue-500" id="editSuggestionsCount">0</div>
+            <div class="text-gray-600">Edit Suggestions</div>
           </div>
           <div class="bg-white rounded-lg shadow p-6">
             <div class="text-3xl font-bold text-green-500" id="approvedCount">0</div>
@@ -70,6 +74,9 @@ export const prerender = false;
         <div class="mb-6 flex gap-2">
           <button data-filter="pending" class="filter-btn px-4 py-2 rounded-lg font-medium bg-orange-500 text-white">
             Pending
+          </button>
+          <button data-filter="edit-suggestions" class="filter-btn px-4 py-2 rounded-lg font-medium bg-gray-200 text-gray-700">
+            Edit Suggestions
           </button>
           <button data-filter="approved" class="filter-btn px-4 py-2 rounded-lg font-medium bg-gray-200 text-gray-700">
             Approved
@@ -232,6 +239,7 @@ export const prerender = false;
   const TOKEN_KEY = 'molten_admin_token';
   let currentFilter = 'pending';
   let submissions = [];
+  let editSuggestions = [];
   let authToken = null;
 
   // Elements
@@ -293,6 +301,7 @@ export const prerender = false;
     loginGate.classList.add('hidden');
     adminContent.classList.remove('hidden');
     loadSubmissions();
+    loadEditSuggestions();
   }
 
   function logout() {
@@ -347,6 +356,21 @@ export const prerender = false;
     }
   }
 
+  // Load edit suggestions
+  async function loadEditSuggestions() {
+    try {
+      const response = await authenticatedFetch('/api/list-edit-suggestions');
+      editSuggestions = await response.json();
+
+      updateStats();
+      if (currentFilter === 'edit-suggestions') {
+        renderSubmissions();
+      }
+    } catch (error) {
+      console.error('Error loading edit suggestions:', error);
+    }
+  }
+
   // Update statistics
   function updateStats() {
     const pending = submissions.filter(s => s.status === 'pending').length;
@@ -354,12 +378,19 @@ export const prerender = false;
     const rejected = submissions.filter(s => s.status === 'rejected').length;
 
     document.getElementById('pendingCount').textContent = pending;
+    document.getElementById('editSuggestionsCount').textContent = editSuggestions.length;
     document.getElementById('approvedCount').textContent = approved;
     document.getElementById('rejectedCount').textContent = rejected;
   }
 
   // Render submissions
   function renderSubmissions() {
+    // Handle edit suggestions separately
+    if (currentFilter === 'edit-suggestions') {
+      renderEditSuggestions();
+      return;
+    }
+
     const filtered = submissions.filter(s => s.status === currentFilter);
 
     const loadingState = document.getElementById('loadingState');
@@ -494,6 +525,110 @@ export const prerender = false;
     });
   });
 
+  // Render edit suggestions
+  function renderEditSuggestions() {
+    const loadingState = document.getElementById('loadingState');
+    const emptyState = document.getElementById('emptyState');
+    const submissionsList = document.getElementById('submissionsList');
+
+    loadingState.classList.add('hidden');
+
+    if (editSuggestions.length === 0) {
+      emptyState.classList.remove('hidden');
+      submissionsList.innerHTML = '';
+      return;
+    }
+
+    emptyState.classList.add('hidden');
+
+    submissionsList.innerHTML = editSuggestions.map(suggestion => `
+      <div class="bg-white rounded-lg shadow-lg p-6 border-l-4 border-blue-500" data-id="${suggestion.id}">
+        <div class="flex justify-between items-start mb-4">
+          <div>
+            <h3 class="text-2xl font-bold">${suggestion.suggested_changes.name}</h3>
+            <div class="text-sm text-gray-500 mt-1">Original: ${suggestion.original_name}</div>
+            <div class="text-sm text-gray-500">Store ID: ${suggestion.store_stable_id}</div>
+            <div class="text-sm text-gray-500">Submitted: ${new Date(suggestion.submitted_at).toLocaleString()}</div>
+          </div>
+          <span class="px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+            Edit Suggestion
+          </span>
+        </div>
+
+        <div class="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded">
+          <div class="font-semibold text-gray-700 mb-1">Reason for Edit</div>
+          <div class="text-gray-700">${suggestion.edit_reason}</div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div>
+            <div class="font-semibold text-gray-700 mb-1">Address</div>
+            <div class="text-gray-600">
+              ${suggestion.suggested_changes.address_line1 || ''}<br>
+              ${suggestion.suggested_changes.address_line2 ? suggestion.suggested_changes.address_line2 + '<br>' : ''}
+              ${suggestion.suggested_changes.city}, ${suggestion.suggested_changes.state} ${suggestion.suggested_changes.zip}
+            </div>
+          </div>
+
+          <div>
+            ${suggestion.suggested_changes.phone ? `
+              <div class="mb-2">
+                <div class="font-semibold text-gray-700">Phone</div>
+                <div class="text-gray-600">${suggestion.suggested_changes.phone}</div>
+              </div>
+            ` : ''}
+
+            ${suggestion.suggested_changes.website_url ? `
+              <div class="mb-2">
+                <div class="font-semibold text-gray-700">Website</div>
+                <div class="text-gray-600">
+                  <a href="${suggestion.suggested_changes.website_url}" target="_blank" class="text-orange-500 hover:underline inline-flex items-center gap-1">
+                    ${suggestion.suggested_changes.website_url}
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                    </svg>
+                  </a>
+                </div>
+              </div>
+            ` : ''}
+          </div>
+        </div>
+
+        ${suggestion.suggested_changes.notes ? `
+          <div class="mb-4">
+            <div class="font-semibold text-gray-700 mb-1">Notes</div>
+            <div class="text-gray-600">${suggestion.suggested_changes.notes}</div>
+          </div>
+        ` : ''}
+
+        ${suggestion.submitter_name || suggestion.submitter_email ? `
+          <div class="mb-4 p-3 bg-gray-50 rounded">
+            <div class="font-semibold text-gray-700 mb-1">Submitter Info</div>
+            <div class="text-sm text-gray-600">
+              ${suggestion.submitter_name ? `Name: ${suggestion.submitter_name}<br>` : ''}
+              ${suggestion.submitter_email ? `Email: ${suggestion.submitter_email}` : ''}
+            </div>
+          </div>
+        ` : ''}
+
+        <div class="flex gap-3 pt-4 border-t">
+          <button
+            onclick="approveEditSuggestion('${suggestion.id}')"
+            class="flex-1 bg-green-500 text-white py-2 px-4 rounded-lg font-bold hover:bg-green-600 transition"
+          >
+            ✓ Apply Changes
+          </button>
+          <button
+            onclick="rejectEditSuggestion('${suggestion.id}')"
+            class="flex-1 bg-red-500 text-white py-2 px-4 rounded-lg font-bold hover:bg-red-600 transition"
+          >
+            ✗ Reject
+          </button>
+        </div>
+      </div>
+    `).join('');
+  }
+
   // Approve/Reject actions (global scope for onclick)
   window.approveStore = async function(stableId) {
 
@@ -529,6 +664,47 @@ export const prerender = false;
       } else {
         const error = await response.json();
         alert('Error: ' + (error.error || 'Failed to reject store'));
+      }
+    } catch (error) {
+      if (error.message !== 'Unauthorized') {
+        alert('Network error. Please try again.');
+      }
+    }
+  };
+
+  // Edit suggestion actions
+  window.approveEditSuggestion = async function(suggestionId) {
+    try {
+      const response = await authenticatedFetch('/api/handle-edit-suggestion', {
+        method: 'POST',
+        body: JSON.stringify({ action: 'approve', suggestionId })
+      });
+
+      if (response.ok) {
+        await loadEditSuggestions();
+      } else {
+        const error = await response.json();
+        alert('Error: ' + (error.error || 'Failed to approve edit suggestion'));
+      }
+    } catch (error) {
+      if (error.message !== 'Unauthorized') {
+        alert('Network error. Please try again.');
+      }
+    }
+  };
+
+  window.rejectEditSuggestion = async function(suggestionId) {
+    try {
+      const response = await authenticatedFetch('/api/handle-edit-suggestion', {
+        method: 'POST',
+        body: JSON.stringify({ action: 'reject', suggestionId })
+      });
+
+      if (response.ok) {
+        await loadEditSuggestions();
+      } else {
+        const error = await response.json();
+        alert('Error: ' + (error.error || 'Failed to reject edit suggestion'));
       }
     } catch (error) {
       if (error.message !== 'Unauthorized') {
