@@ -173,6 +173,40 @@ export const prerender = false;
                 <textarea id="edit_notes" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"></textarea>
               </div>
 
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Techniques Supported</label>
+                <div class="space-y-2">
+                  <label class="flex items-center">
+                    <input type="checkbox" id="edit_supports_casting" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
+                    <span class="ml-2 text-sm text-gray-700">Casting</span>
+                  </label>
+                  <label class="flex items-center">
+                    <input type="checkbox" id="edit_supports_flameworking_hard" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
+                    <span class="ml-2 text-sm text-gray-700">Flameworking - Hard</span>
+                  </label>
+                  <label class="flex items-center">
+                    <input type="checkbox" id="edit_supports_flameworking_soft" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
+                    <span class="ml-2 text-sm text-gray-700">Flameworking - Soft</span>
+                  </label>
+                  <label class="flex items-center">
+                    <input type="checkbox" id="edit_supports_fusing" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
+                    <span class="ml-2 text-sm text-gray-700">Fusing</span>
+                  </label>
+                  <label class="flex items-center">
+                    <input type="checkbox" id="edit_supports_glass_blowing" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
+                    <span class="ml-2 text-sm text-gray-700">Glass Blowing</span>
+                  </label>
+                  <label class="flex items-center">
+                    <input type="checkbox" id="edit_supports_stained_glass" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
+                    <span class="ml-2 text-sm text-gray-700">Stained Glass</span>
+                  </label>
+                  <label class="flex items-center">
+                    <input type="checkbox" id="edit_supports_other" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
+                    <span class="ml-2 text-sm text-gray-700">Other</span>
+                  </label>
+                </div>
+              </div>
+
               <div class="grid grid-cols-2 gap-4">
                 <div>
                   <label class="block text-sm font-medium text-gray-700 mb-1">Latitude</label>
@@ -614,6 +648,15 @@ export const prerender = false;
     document.getElementById('edit_latitude').value = store.latitude || '';
     document.getElementById('edit_longitude').value = store.longitude || '';
 
+    // Populate technique checkboxes
+    document.getElementById('edit_supports_casting').checked = store.supports_casting || false;
+    document.getElementById('edit_supports_flameworking_hard').checked = store.supports_flameworking_hard || false;
+    document.getElementById('edit_supports_flameworking_soft').checked = store.supports_flameworking_soft || false;
+    document.getElementById('edit_supports_fusing').checked = store.supports_fusing || false;
+    document.getElementById('edit_supports_glass_blowing').checked = store.supports_glass_blowing || false;
+    document.getElementById('edit_supports_stained_glass').checked = store.supports_stained_glass || false;
+    document.getElementById('edit_supports_other').checked = store.supports_other || false;
+
     // Show modal
     editModal.classList.remove('hidden');
     editError.classList.add('hidden');
@@ -649,6 +692,13 @@ export const prerender = false;
         notes: document.getElementById('edit_notes').value || undefined,
         latitude: parseFloat(document.getElementById('edit_latitude').value) || undefined,
         longitude: parseFloat(document.getElementById('edit_longitude').value) || undefined,
+        supports_casting: document.getElementById('edit_supports_casting').checked,
+        supports_flameworking_hard: document.getElementById('edit_supports_flameworking_hard').checked,
+        supports_flameworking_soft: document.getElementById('edit_supports_flameworking_soft').checked,
+        supports_fusing: document.getElementById('edit_supports_fusing').checked,
+        supports_glass_blowing: document.getElementById('edit_supports_glass_blowing').checked,
+        supports_stained_glass: document.getElementById('edit_supports_stained_glass').checked,
+        supports_other: document.getElementById('edit_supports_other').checked,
       };
 
       const response = await authenticatedFetch('/api/update-store', {

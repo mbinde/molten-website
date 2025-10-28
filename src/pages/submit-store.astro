@@ -156,6 +156,43 @@ export const prerender = true;
             ></textarea>
           </div>
 
+          <!-- Techniques Supported -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-3">
+              Techniques Supported <span class="text-gray-400">(Optional - select all that apply)</span>
+            </label>
+            <div class="space-y-2">
+              <label class="flex items-center">
+                <input type="checkbox" name="supports_casting" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
+                <span class="ml-2 text-gray-700">Casting</span>
+              </label>
+              <label class="flex items-center">
+                <input type="checkbox" name="supports_flameworking_hard" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
+                <span class="ml-2 text-gray-700">Flameworking - Hard (Borosilicate)</span>
+              </label>
+              <label class="flex items-center">
+                <input type="checkbox" name="supports_flameworking_soft" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
+                <span class="ml-2 text-gray-700">Flameworking - Soft (Soda-Lime)</span>
+              </label>
+              <label class="flex items-center">
+                <input type="checkbox" name="supports_fusing" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
+                <span class="ml-2 text-gray-700">Fusing</span>
+              </label>
+              <label class="flex items-center">
+                <input type="checkbox" name="supports_glass_blowing" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
+                <span class="ml-2 text-gray-700">Glass Blowing</span>
+              </label>
+              <label class="flex items-center">
+                <input type="checkbox" name="supports_stained_glass" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
+                <span class="ml-2 text-gray-700">Stained Glass</span>
+              </label>
+              <label class="flex items-center">
+                <input type="checkbox" name="supports_other" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
+                <span class="ml-2 text-gray-700">Other</span>
+              </label>
+            </div>
+          </div>
+
           <!-- Submitter Info -->
           <div class="border-t pt-6 mt-6">
             <h3 class="text-lg font-medium mb-4">Your Information (Optional)</h3>
@@ -225,6 +262,20 @@ export const prerender = true;
     // Get form data
     const formData = new FormData(form);
     const data = Object.fromEntries(formData.entries());
+
+    // Handle checkboxes explicitly (FormData only includes checked boxes)
+    const techniqueFields = [
+      'supports_casting',
+      'supports_flameworking_hard',
+      'supports_flameworking_soft',
+      'supports_fusing',
+      'supports_glass_blowing',
+      'supports_stained_glass',
+      'supports_other'
+    ];
+    techniqueFields.forEach(field => {
+      data[field] = formData.has(field);
+    });
 
     // Disable submit button
     const submitButton = form.querySelector('button[type="submit"]') as HTMLButtonElement;

@@ -41,6 +41,13 @@ interface PendingStore {
   rejected_at?: string;
   latitude?: number;
   longitude?: number;
+  supports_casting?: boolean;
+  supports_flameworking_hard?: boolean;
+  supports_flameworking_soft?: boolean;
+  supports_fusing?: boolean;
+  supports_glass_blowing?: boolean;
+  supports_stained_glass?: boolean;
+  supports_other?: boolean;
 }
 
 interface PendingStoresData {
@@ -127,7 +134,9 @@ export const POST: APIRoute = async ({ request, locals }) => {
     // Update allowed fields
     const allowedFields = [
       'name', 'address_line1', 'address_line2', 'city', 'state', 'zip',
-      'phone', 'website_url', 'notes', 'latitude', 'longitude'
+      'phone', 'website_url', 'notes', 'latitude', 'longitude',
+      'supports_casting', 'supports_flameworking_hard', 'supports_flameworking_soft',
+      'supports_fusing', 'supports_glass_blowing', 'supports_stained_glass', 'supports_other'
     ];
 
     for (const field of allowedFields) {

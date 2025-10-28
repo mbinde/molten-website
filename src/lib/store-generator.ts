@@ -23,6 +23,13 @@ interface PendingStore {
   approved_at?: string;
   latitude?: number;
   longitude?: number;
+  supports_casting?: boolean;
+  supports_flameworking_hard?: boolean;
+  supports_flameworking_soft?: boolean;
+  supports_fusing?: boolean;
+  supports_glass_blowing?: boolean;
+  supports_stained_glass?: boolean;
+  supports_other?: boolean;
 }
 
 interface PendingStoresData {
@@ -44,6 +51,13 @@ interface PublicStore {
   phone?: string;
   notes?: string;
   is_verified: boolean;
+  supports_casting: boolean;
+  supports_flameworking_hard: boolean;
+  supports_flameworking_soft: boolean;
+  supports_fusing: boolean;
+  supports_glass_blowing: boolean;
+  supports_stained_glass: boolean;
+  supports_other: boolean;
 }
 
 interface StoresOutput {
@@ -114,7 +128,14 @@ export async function regenerateStoresJSON(kv: KVNamespace): Promise<number> {
       website_url: store.website_url,
       phone: store.phone,
       notes: store.notes,
-      is_verified: true
+      is_verified: true,
+      supports_casting: store.supports_casting || false,
+      supports_flameworking_hard: store.supports_flameworking_hard || false,
+      supports_flameworking_soft: store.supports_flameworking_soft || false,
+      supports_fusing: store.supports_fusing || false,
+      supports_glass_blowing: store.supports_glass_blowing || false,
+      supports_stained_glass: store.supports_stained_glass || false,
+      supports_other: store.supports_other || false,
     };
   });
 

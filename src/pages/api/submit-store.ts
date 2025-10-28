@@ -30,6 +30,13 @@ interface StoreSubmission {
   notes?: string;
   submitter_name?: string;
   submitter_email?: string;
+  supports_casting?: boolean;
+  supports_flameworking_hard?: boolean;
+  supports_flameworking_soft?: boolean;
+  supports_fusing?: boolean;
+  supports_glass_blowing?: boolean;
+  supports_stained_glass?: boolean;
+  supports_other?: boolean;
 }
 
 interface PendingStore extends Omit<StoreSubmission, 'submitter_name' | 'submitter_email'> {
@@ -40,6 +47,10 @@ interface PendingStore extends Omit<StoreSubmission, 'submitter_name' | 'submitt
     name?: string;
     email?: string;
   };
+  latitude?: number;
+  longitude?: number;
+  approved_at?: string;
+  rejected_at?: string;
 }
 
 interface PendingStoresData {
@@ -174,7 +185,14 @@ export const POST: APIRoute = async ({ request, locals }) => {
       website_url: body.website_url?.trim() || undefined,
       notes: body.notes?.trim() || undefined,
       submitted_at: new Date().toISOString(),
-      status: 'pending'
+      status: 'pending',
+      supports_casting: body.supports_casting || false,
+      supports_flameworking_hard: body.supports_flameworking_hard || false,
+      supports_flameworking_soft: body.supports_flameworking_soft || false,
+      supports_fusing: body.supports_fusing || false,
+      supports_glass_blowing: body.supports_glass_blowing || false,
+      supports_stained_glass: body.supports_stained_glass || false,
+      supports_other: body.supports_other || false,
     };
 
     // Add submitter info if provided

@@ -40,6 +40,13 @@ interface PendingStore {
   approved_at?: string;
   latitude?: number;
   longitude?: number;
+  supports_casting?: boolean;
+  supports_flameworking_hard?: boolean;
+  supports_flameworking_soft?: boolean;
+  supports_fusing?: boolean;
+  supports_glass_blowing?: boolean;
+  supports_stained_glass?: boolean;
+  supports_other?: boolean;
 }
 
 interface PendingStoresData {
