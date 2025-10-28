@@ -262,6 +262,20 @@ export const prerender = true;
   const form = document.getElementById('storeSubmissionForm') as HTMLFormElement;
   const messageDiv = document.getElementById('formMessage') as HTMLDivElement;
 
+  // State name to abbreviation mapping
+  const stateAbbreviations: Record<string, string> = {
+    'Alabama': 'AL', 'Alaska': 'AK', 'Arizona': 'AZ', 'Arkansas': 'AR', 'California': 'CA',
+    'Colorado': 'CO', 'Connecticut': 'CT', 'Delaware': 'DE', 'Florida': 'FL', 'Georgia': 'GA',
+    'Hawaii': 'HI', 'Idaho': 'ID', 'Illinois': 'IL', 'Indiana': 'IN', 'Iowa': 'IA',
+    'Kansas': 'KS', 'Kentucky': 'KY', 'Louisiana': 'LA', 'Maine': 'ME', 'Maryland': 'MD',
+    'Massachusetts': 'MA', 'Michigan': 'MI', 'Minnesota': 'MN', 'Mississippi': 'MS', 'Missouri': 'MO',
+    'Montana': 'MT', 'Nebraska': 'NE', 'Nevada': 'NV', 'New Hampshire': 'NH', 'New Jersey': 'NJ',
+    'New Mexico': 'NM', 'New York': 'NY', 'North Carolina': 'NC', 'North Dakota': 'ND', 'Ohio': 'OH',
+    'Oklahoma': 'OK', 'Oregon': 'OR', 'Pennsylvania': 'PA', 'Rhode Island': 'RI', 'South Carolina': 'SC',
+    'South Dakota': 'SD', 'Tennessee': 'TN', 'Texas': 'TX', 'Utah': 'UT', 'Vermont': 'VT',
+    'Virginia': 'VA', 'Washington': 'WA', 'West Virginia': 'WV', 'Wisconsin': 'WI', 'Wyoming': 'WY'
+  };
+
   // Address autocomplete using Photon (OpenStreetMap)
   const addressInput = document.getElementById('address_line1') as HTMLInputElement;
   const autocompleteDiv = document.getElementById('addressAutocomplete') as HTMLDivElement;
@@ -285,6 +299,8 @@ export const prerender = true;
         // Call Photon API (OpenStreetMap autocomplete)
         const response = await fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(query)}&limit=5&countrycodes=us`);
         const data = await response.json();
+
+        console.log('Photon API response:', data);
 
         if (data.features && data.features.length > 0) {
           // Show suggestions
@@ -339,7 +355,11 @@ export const prerender = true;
               const addressLine1 = housenumber && street ? `${housenumber} ${street}` : street;
               (document.getElementById('address_line1') as HTMLInputElement).value = addressLine1;
               (document.getElementById('city') as HTMLInputElement).value = city;
-              (document.getElementById('state') as HTMLInputElement).value = state.substring(0, 2).toUpperCase(); // Get state abbreviation
+
+              // Convert state name to abbreviation
+              const stateAbbr = stateAbbreviations[state] || state.substring(0, 2).toUpperCase();
+              (document.getElementById('state') as HTMLInputElement).value = stateAbbr;
+
               (document.getElementById('zip') as HTMLInputElement).value = postcode;
 
               // Hide autocomplete
