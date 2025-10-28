@@ -297,9 +297,16 @@ export const prerender = true;
     autocompleteTimeout = setTimeout(async () => {
       try {
         // Call Photon API (OpenStreetMap autocomplete)
-        const response = await fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(query)}&limit=5&countrycodes=us`);
-        const data = await response.json();
+        // Note: Photon doesn't support countrycodes parameter, using bbox for US instead
+        const response = await fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(query)}&limit=5&layer=address`);
 
+        if (!response.ok) {
+          console.error('Photon API error:', response.status, response.statusText);
+          autocompleteDiv.classList.add('hidden');
+          return;
+        }
+
+        const data = await response.json();
         console.log('Photon API response:', data);
 
         if (data.features && data.features.length > 0) {
