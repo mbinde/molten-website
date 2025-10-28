@@ -26,7 +26,7 @@ interface StoreSubmission {
   state: string;
   zip: string;
   phone?: string;
-  website_url?: string;
+  website_url: string;
   notes?: string;
   submitter_name?: string;
   submitter_email?: string;
@@ -87,6 +87,10 @@ function validateSubmission(data: any): { valid: boolean; errors: string[] } {
 
   if (!data.zip || typeof data.zip !== 'string' || data.zip.trim().length === 0) {
     errors.push('ZIP code is required');
+  }
+
+  if (!data.website_url || typeof data.website_url !== 'string' || data.website_url.trim().length === 0) {
+    errors.push('Website URL is required');
   }
 
   // Validate state format (2 uppercase letters)
