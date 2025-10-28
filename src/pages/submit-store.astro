@@ -321,9 +321,21 @@ export const prerender = true;
             const name = props.name || '';
             const street = props.street || '';
             const housenumber = props.housenumber || '';
-            const city = props.city || '';
-            const state = props.state || '';
             const postcode = props.postcode || '';
+            const state = props.state || '';
+
+            // Smart city detection: prefer city over township/county
+            let city = props.city || '';
+
+            // If city contains "Township" and we have a county, use county instead
+            if (city.includes('Township') && props.county) {
+              city = props.county.replace(' County', '');
+            }
+
+            // If still no city, try other fields
+            if (!city) {
+              city = props.county?.replace(' County', '') || props.district || '';
+            }
 
             // Build display text
             let displayText = '';
@@ -346,6 +358,7 @@ export const prerender = true;
                 data-street="${street || name}"
                 data-housenumber="${housenumber}"
                 data-city="${city}"
+                data-county="${props.county || ''}"
                 data-state="${state}"
                 data-postcode="${postcode}"
               >
@@ -359,9 +372,15 @@ export const prerender = true;
             btn.addEventListener('click', () => {
               const street = btn.getAttribute('data-street') || '';
               const housenumber = btn.getAttribute('data-housenumber') || '';
-              const city = btn.getAttribute('data-city') || '';
+              let city = btn.getAttribute('data-city') || '';
+              const county = btn.getAttribute('data-county') || '';
               const state = btn.getAttribute('data-state') || '';
               const postcode = btn.getAttribute('data-postcode') || '';
+
+              // Additional city cleanup: if still a township, use county
+              if (city.includes('Township') && county) {
+                city = county.replace(' County', '');
+              }
 
               // Fill in form fields
               const addressLine1 = housenumber && street ? `${housenumber} ${street}` : street;
