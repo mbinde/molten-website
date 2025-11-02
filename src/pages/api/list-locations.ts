@@ -41,7 +41,7 @@ export const GET: APIRoute = async ({ request, locals }) => {
     }
 
     // Load pending stores from KV
-    const content = await kv.get('pending-stores', 'json');
+    const content = await kv.get('pending-locations', 'json');
 
     if (!content) {
       // Return empty list if no stores yet

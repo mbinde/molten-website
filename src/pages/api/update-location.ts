@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
 import { requireAuth } from '../../lib/auth';
-import { regenerateStoresJSON } from '../../lib/store-generator';
+import { regenerateLocationsJSON } from '../../lib/location-generator';
 
 // IMPORTANT: Disable prerendering for API routes (required for Cloudflare)
 export const prerender = false;
@@ -20,14 +20,14 @@ export const OPTIONS: APIRoute = async () => {
   });
 };
 
-interface PendingStore {
+interface PendingLocation {
   stable_id: string;
   name: string;
-  address_line1: string;
+  address_line1?: string;
   address_line2?: string;
   city: string;
   state: string;
-  zip: string;
+  zip?: string;
   country?: string;
   phone?: string;
   website_url?: string;
@@ -44,6 +44,7 @@ interface PendingStore {
     comments?: string;
   };
   approved_at?: string;
+  rejected_at?: string;
   latitude?: number;
   longitude?: number;
   // Retail glass offerings
@@ -72,16 +73,16 @@ interface PendingStore {
   rentals_supports_other?: boolean;
 }
 
-interface PendingStoresData {
+interface PendingLocationsData {
   version: string;
-  submissions: PendingStore[];
+  submissions: PendingLocation[];
 }
 
-async function loadPendingStores(kv: KVNamespace): Promise<PendingStoresData> {
+async function loadPendingLocations(kv: KVNamespace): Promise<PendingLocationsData> {
   try {
-    const content = await kv.get('pending-stores', 'json');
+    const content = await kv.get('pending-locations', 'json');
     if (content) {
-      return content as PendingStoresData;
+      return content as PendingLocationsData;
     }
   } catch (error) {
     console.error('Error loading from KV:', error);
@@ -93,67 +94,8 @@ async function loadPendingStores(kv: KVNamespace): Promise<PendingStoresData> {
   };
 }
 
-async function savePendingStores(kv: KVNamespace, data: PendingStoresData): Promise<void> {
-  await kv.put('pending-stores', JSON.stringify(data, null, 2));
-}
-
-/**
- * Geocode address using Nominatim (OpenStreetMap) - FREE, no API key needed
- * Rate limit: 1 request/second (perfect for manual approvals)
- * Docs: https://nominatim.org/release-docs/latest/api/Search/
- */
-async function geocodeAddress(store: PendingStore): Promise<{ latitude: number; longitude: number } | null> {
-  try {
-    // Build address string
-    const addressParts = [
-      store.address_line1,
-      store.address_line2,
-      store.city,
-      store.state,
-      store.zip
-    ].filter(Boolean);
-    const address = addressParts.join(', ');
-
-    console.log(`🌍 Geocoding: ${address}`);
-
-    // Call Nominatim API
-    const url = new URL('https://nominatim.openstreetmap.org/search');
-    url.searchParams.set('q', address);
-    url.searchParams.set('format', 'json');
-    url.searchParams.set('limit', '1');
-    url.searchParams.set('addressdetails', '1');
-
-    const response = await fetch(url.toString(), {
-      headers: {
-        'User-Agent': 'Molten-Glass-App/1.0 (moltenglass.app; store submission system)'
-      }
-    });
-
-    if (!response.ok) {
-      console.error(`Nominatim API error: ${response.status}`);
-      return null;
-    }
-
-    const results = await response.json();
-
-    if (results && results.length > 0) {
-      const lat = parseFloat(results[0].lat);
-      const lon = parseFloat(results[0].lon);
-
-      console.log(`✅ Geocoded: ${lat}, ${lon}`);
-
-      return {
-        latitude: lat,
-        longitude: lon
-      };
-    } else {
-      console.warn(`⚠️  No geocoding results for: ${address}`);
-      return null;
-    }
-  } catch (error) {
-    console.error('Geocoding error:', error);
-    return null;
-  }
+async function savePendingLocations(kv: KVNamespace, data: PendingLocationsData): Promise<void> {
+  await kv.put('pending-locations', JSON.stringify(data, null, 2));
 }
 
 export const POST: APIRoute = async ({ request, locals }) => {
@@ -181,7 +123,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     }
 
     const body = await request.json();
-    const { stable_id } = body;
+    const { stable_id, updates } = body;
 
     if (!stable_id) {
       return new Response(
@@ -190,58 +132,70 @@ export const POST: APIRoute = async ({ request, locals }) => {
       );
     }
 
-    const pendingData = await loadPendingStores(kv);
+    if (!updates || typeof updates !== 'object') {
+      return new Response(
+        JSON.stringify({ error: 'updates object is required' }),
+        { status: 400, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+      );
+    }
 
-    const storeIndex = pendingData.submissions.findIndex(
+    const pendingData = await loadPendingLocations(kv);
+
+    const locationIndex = pendingData.submissions.findIndex(
       s => s.stable_id === stable_id
     );
 
-    if (storeIndex === -1) {
+    if (locationIndex === -1) {
       return new Response(
-        JSON.stringify({ error: 'Store not found' }),
+        JSON.stringify({ error: 'Location not found' }),
         { status: 404, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
       );
     }
 
-    const store = pendingData.submissions[storeIndex];
+    const location = pendingData.submissions[locationIndex];
 
-    // Geocode the address if not already geocoded
-    if (!store.latitude || !store.longitude || (store.latitude === 0 && store.longitude === 0)) {
-      console.log(`📍 Attempting to geocode store: ${store.name}`);
-      const coords = await geocodeAddress(store);
+    // Update allowed fields
+    const allowedFields = [
+      'name', 'address_line1', 'address_line2', 'city', 'state', 'zip', 'country',
+      'phone', 'website_url', 'retail_url', 'classes_url', 'rentals_url', 'notes', 'latitude', 'longitude',
+      'status',  // Allow status updates (e.g., moving rejected back to pending)
+      'retail_supports_casting', 'retail_supports_flameworking_hard', 'retail_supports_flameworking_soft',
+      'retail_supports_fusing', 'retail_supports_glass_blowing', 'retail_supports_stained_glass', 'retail_supports_other',
+      'classes_supports_casting', 'classes_supports_flameworking_hard', 'classes_supports_flameworking_soft',
+      'classes_supports_fusing', 'classes_supports_glass_blowing', 'classes_supports_stained_glass', 'classes_supports_other',
+      'rentals_supports_casting', 'rentals_supports_flameworking_hard', 'rentals_supports_flameworking_soft',
+      'rentals_supports_fusing', 'rentals_supports_glass_blowing', 'rentals_supports_stained_glass', 'rentals_supports_other'
+    ];
 
-      if (coords) {
-        store.latitude = coords.latitude;
-        store.longitude = coords.longitude;
-      } else {
-        console.warn(`⚠️  Could not geocode ${store.name}, will use 0,0 coordinates`);
-        store.latitude = 0;
-        store.longitude = 0;
+    for (const field of allowedFields) {
+      if (updates[field] !== undefined) {
+        (location as any)[field] = updates[field];
       }
     }
 
-    // Update status to approved
-    store.status = 'approved';
-    store.approved_at = new Date().toISOString();
+    pendingData.submissions[locationIndex] = store;
+    await savePendingLocations(kv, pendingData);
 
-    pendingData.submissions[storeIndex] = store;
-    await savePendingStores(kv, pendingData);
-
-    // Auto-regenerate stores.json with the newly approved store
-    const storeCount = await regenerateStoresJSON(kv);
+    // Auto-regenerate stores.json if this is an approved store
+    let storesUpdated = false;
+    let totalStores = 0;
+    if (location.status === 'approved') {
+      totalStores = await regenerateLocationsJSON(kv);
+      storesUpdated = true;
+    }
 
     return new Response(
       JSON.stringify({
-        message: 'Store approved successfully',
+        message: 'Location updated successfully',
         stable_id,
-        stores_json_updated: true,
-        total_approved_stores: storeCount
+        locations_json_updated: storesUpdated,
+        total_approved_locations: totalStores
       }),
       { status: 200, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
     );
 
   } catch (error) {
-    console.error('Error approving store:', error);
+    console.error('Error updating location:', error);
     return new Response(
       JSON.stringify({ error: 'Internal server error' }),
       { status: 500, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }

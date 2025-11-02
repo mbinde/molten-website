@@ -20,16 +20,16 @@ export const GET: APIRoute = async ({ locals }) => {
       );
     }
 
-    // Get generated stores from KV
-    const storesJSON = await kv.get('stores-json', 'text');
+    // Get generated locations from KV
+    const locationsJSON = await kv.get('locations-json', 'text');
 
-    if (!storesJSON) {
-      // Return empty stores list if not generated yet
+    if (!locationsJSON) {
+      // Return empty locations list if not generated yet
       const emptyResponse = {
         version: '1.0',
         generated: new Date().toISOString(),
-        store_count: 0,
-        stores: []
+        location_count: 0,
+        locations: []
       };
 
       return new Response(
@@ -46,7 +46,7 @@ export const GET: APIRoute = async ({ locals }) => {
     }
 
     return new Response(
-      storesJSON,
+      locationsJSON,
       {
         status: 200,
         headers: {
@@ -58,7 +58,7 @@ export const GET: APIRoute = async ({ locals }) => {
     );
 
   } catch (error) {
-    console.error('Error serving stores.json:', error);
+    console.error('Error serving locations.json:', error);
     return new Response(
       JSON.stringify({ error: 'Internal server error' }),
       {

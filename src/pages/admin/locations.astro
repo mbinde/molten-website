@@ -5,14 +5,14 @@ import Layout from '../../layouts/Layout.astro';
 export const prerender = false;
 ---
 
-<Layout title="Store Approval Queue - Molten Admin">
+<Layout title="Locations Approval Queue - Molten Admin">
   <section class="py-16 min-h-screen bg-gray-50">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
       <!-- Login Form -->
       <div id="loginGate" class="max-w-md mx-auto">
         <div class="bg-white rounded-lg shadow-lg p-8">
           <h1 class="text-2xl font-bold mb-4">Admin Login</h1>
-          <p class="text-gray-600 mb-6">Enter your admin password to access the store approval queue.</p>
+          <p class="text-gray-600 mb-6">Enter your admin password to access the locations approval queue.</p>
 
           <form id="loginForm">
             <input
@@ -41,49 +41,33 @@ export const prerender = false;
       <div id="adminContent" class="hidden">
         <!-- Header -->
         <div class="mb-8">
-          <h1 class="text-4xl font-bold mb-2">Store Approval Queue</h1>
-          <p class="text-lg text-gray-600">Review and approve store submissions</p>
+          <h1 class="text-4xl font-bold mb-2">Locations Approval Queue</h1>
+          <p class="text-lg text-gray-600">Review and approve location submissions</p>
           <div class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
             <p class="text-sm text-blue-800">
-              <strong>✨ Auto-Geocoding:</strong> When you approve a store, the system automatically looks up its coordinates using OpenStreetMap (free, no API key needed). The public stores.json file is also regenerated automatically.
+              <strong>✨ Auto-Geocoding:</strong> When you approve a location, the system automatically looks up its coordinates using OpenStreetMap (free, no API key needed). The public locations.json file is also regenerated automatically.
             </p>
           </div>
         </div>
 
-        <!-- Stats -->
+        <!-- Stats (clickable to filter) -->
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div class="bg-white rounded-lg shadow p-6">
+          <div data-filter="pending" class="stat-box bg-white rounded-lg shadow p-6 cursor-pointer hover:shadow-lg transition-all border-2 border-orange-500">
             <div class="text-3xl font-bold text-orange-500" id="pendingCount">0</div>
             <div class="text-gray-600">Pending</div>
           </div>
-          <div class="bg-white rounded-lg shadow p-6">
+          <div data-filter="edit-suggestions" class="stat-box bg-white rounded-lg shadow p-6 cursor-pointer hover:shadow-lg transition-all border-2 border-transparent">
             <div class="text-3xl font-bold text-blue-500" id="editSuggestionsCount">0</div>
             <div class="text-gray-600">Edit Suggestions</div>
           </div>
-          <div class="bg-white rounded-lg shadow p-6">
+          <div data-filter="approved" class="stat-box bg-white rounded-lg shadow p-6 cursor-pointer hover:shadow-lg transition-all border-2 border-transparent">
             <div class="text-3xl font-bold text-green-500" id="approvedCount">0</div>
             <div class="text-gray-600">Approved</div>
           </div>
-          <div class="bg-white rounded-lg shadow p-6">
+          <div data-filter="rejected" class="stat-box bg-white rounded-lg shadow p-6 cursor-pointer hover:shadow-lg transition-all border-2 border-transparent">
             <div class="text-3xl font-bold text-gray-500" id="rejectedCount">0</div>
             <div class="text-gray-600">Rejected</div>
           </div>
-        </div>
-
-        <!-- Filter Tabs -->
-        <div class="mb-6 flex gap-2">
-          <button data-filter="pending" class="filter-btn px-4 py-2 rounded-lg font-medium bg-orange-500 text-white">
-            Pending
-          </button>
-          <button data-filter="edit-suggestions" class="filter-btn px-4 py-2 rounded-lg font-medium bg-gray-200 text-gray-700">
-            Edit Suggestions
-          </button>
-          <button data-filter="approved" class="filter-btn px-4 py-2 rounded-lg font-medium bg-gray-200 text-gray-700">
-            Approved
-          </button>
-          <button data-filter="rejected" class="filter-btn px-4 py-2 rounded-lg font-medium bg-gray-200 text-gray-700">
-            Rejected
-          </button>
         </div>
 
         <!-- Loading State -->
@@ -432,7 +416,7 @@ export const prerender = false;
   // Load submissions
   async function loadSubmissions() {
     try {
-      const response = await authenticatedFetch('/api/list-stores');
+      const response = await authenticatedFetch('/api/list-locations');
       const data = await response.json();
       submissions = data.submissions || [];
 
@@ -586,6 +570,14 @@ export const prerender = false;
               ✗ Reject
             </button>
           ` : ''}
+          ${store.status === 'rejected' ? `
+            <button
+              onclick="moveToPending('${store.stable_id}')"
+              class="flex-1 bg-orange-500 text-white py-2 px-4 rounded-lg font-bold hover:bg-orange-600 transition"
+            >
+              ↻ Move to Pending
+            </button>
+          ` : ''}
           <button
             onclick="openEditModal('${store.stable_id}')"
             class="flex-1 bg-blue-500 text-white py-2 px-4 rounded-lg font-bold hover:bg-blue-600 transition"
@@ -597,18 +589,32 @@ export const prerender = false;
     `).join('');
   }
 
-  // Filter tabs
-  document.querySelectorAll('.filter-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      currentFilter = btn.dataset.filter;
+  // Stat box click handlers (filter by clicking on stats)
+  document.querySelectorAll('.stat-box').forEach(box => {
+    box.addEventListener('click', () => {
+      currentFilter = box.dataset.filter;
 
-      // Update button styles
-      document.querySelectorAll('.filter-btn').forEach(b => {
-        b.classList.remove('bg-orange-500', 'text-white');
-        b.classList.add('bg-gray-200', 'text-gray-700');
+      // Update stat box visual states - add colored border to active, remove from others
+      document.querySelectorAll('.stat-box').forEach(b => {
+        b.classList.remove('border-orange-500', 'border-blue-500', 'border-green-500', 'border-gray-500');
+        b.classList.add('border-transparent');
       });
-      btn.classList.remove('bg-gray-200', 'text-gray-700');
-      btn.classList.add('bg-orange-500', 'text-white');
+
+      // Add appropriate colored border to the active box
+      const filter = box.dataset.filter;
+      if (filter === 'pending') {
+        box.classList.remove('border-transparent');
+        box.classList.add('border-orange-500');
+      } else if (filter === 'edit-suggestions') {
+        box.classList.remove('border-transparent');
+        box.classList.add('border-blue-500');
+      } else if (filter === 'approved') {
+        box.classList.remove('border-transparent');
+        box.classList.add('border-green-500');
+      } else if (filter === 'rejected') {
+        box.classList.remove('border-transparent');
+        box.classList.add('border-gray-500');
+      }
 
       renderSubmissions();
     });
@@ -722,7 +728,7 @@ export const prerender = false;
   window.approveStore = async function(stableId) {
 
     try {
-      const response = await authenticatedFetch('/api/approve-store', {
+      const response = await authenticatedFetch('/api/approve-location', {
         method: 'POST',
         body: JSON.stringify({ stable_id: stableId })
       });
@@ -743,7 +749,7 @@ export const prerender = false;
   window.rejectStore = async function(stableId) {
 
     try {
-      const response = await authenticatedFetch('/api/reject-store', {
+      const response = await authenticatedFetch('/api/reject-location', {
         method: 'POST',
         body: JSON.stringify({ stable_id: stableId })
       });
@@ -753,6 +759,30 @@ export const prerender = false;
       } else {
         const error = await response.json();
         alert('Error: ' + (error.error || 'Failed to reject store'));
+      }
+    } catch (error) {
+      if (error.message !== 'Unauthorized') {
+        alert('Network error. Please try again.');
+      }
+    }
+  };
+
+  window.moveToPending = async function(stableId) {
+    try {
+      // Use the update-location API to change status back to pending
+      const response = await authenticatedFetch('/api/update-location', {
+        method: 'POST',
+        body: JSON.stringify({
+          stable_id: stableId,
+          updates: { status: 'pending' }
+        })
+      });
+
+      if (response.ok) {
+        await loadSubmissions();
+      } else {
+        const error = await response.json();
+        alert('Error: ' + (error.error || 'Failed to move location to pending'));
       }
     } catch (error) {
       if (error.message !== 'Unauthorized') {
@@ -934,7 +964,7 @@ export const prerender = false;
         rentals_supports_other: document.getElementById('edit_rentals_supports_other').checked,
       };
 
-      const response = await authenticatedFetch('/api/update-store', {
+      const response = await authenticatedFetch('/api/update-location', {
         method: 'POST',
         body: JSON.stringify({ stable_id: stableId, updates })
       });

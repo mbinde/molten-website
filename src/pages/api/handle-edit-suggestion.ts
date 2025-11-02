@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { regenerateStoresJSON } from '../../lib/store-generator';
+import { regenerateLocationsJSON } from '../../lib/location-generator';
 
 export const POST: APIRoute = async ({ request }) => {
   try {
@@ -36,13 +36,13 @@ export const POST: APIRoute = async ({ request }) => {
       const storeData = await kv.get(storeKey);
 
       if (!storeData) {
-        return new Response(JSON.stringify({ error: 'Store not found' }), {
+        return new Response(JSON.stringify({ error: 'Location not found' }), {
           status: 404,
           headers: { 'Content-Type': 'application/json' },
         });
       }
 
-      const store = JSON.parse(storeData);
+      const location = JSON.parse(storeData);
 
       // Apply the suggested changes
       const updatedStore = {
@@ -58,7 +58,7 @@ export const POST: APIRoute = async ({ request }) => {
       await kv.delete(suggestionId);
 
       // Regenerate stores.json
-      await regenerateStoresJSON(kv);
+      await regenerateLocationsJSON(kv);
 
       return new Response(
         JSON.stringify({ message: 'Edit suggestion approved and applied' }),

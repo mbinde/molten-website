@@ -19,7 +19,7 @@ export const OPTIONS: APIRoute = async () => {
   });
 };
 
-interface PendingStore {
+interface PendingLocation {
   stable_id: string;
   name: string;
   address_line1: string;
@@ -41,9 +41,9 @@ interface PendingStore {
   longitude?: number;
 }
 
-interface PendingStoresData {
+interface PendingLocationsData {
   version: string;
-  submissions: PendingStore[];
+  submissions: PendingLocation[];
 }
 
 interface PublicStore {
@@ -69,11 +69,11 @@ interface StoresOutput {
   stores: PublicStore[];
 }
 
-async function loadPendingStores(kv: KVNamespace): Promise<PendingStoresData> {
+async function loadPendingLocations(kv: KVNamespace): Promise<PendingLocationsData> {
   try {
-    const content = await kv.get('pending-stores', 'json');
+    const content = await kv.get('pending-locations', 'json');
     if (content) {
-      return content as PendingStoresData;
+      return content as PendingLocationsData;
     }
   } catch (error) {
     console.error('Error loading from KV:', error);
@@ -96,10 +96,10 @@ async function saveStoresJSON(kv: KVNamespace, data: StoresOutput): Promise<void
  */
 function getCoordinates(store: PendingStore): { latitude: number; longitude: number } {
   // Use coordinates from approval (geocoded via Nominatim)
-  if (store.latitude && store.longitude) {
+  if (location.latitude && location.longitude) {
     return {
-      latitude: store.latitude,
-      longitude: store.longitude
+      latitude: location.latitude,
+      longitude: location.longitude
     };
   }
 
@@ -136,7 +136,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     }
 
     // Load pending stores from KV
-    const pendingData = await loadPendingStores(kv);
+    const pendingData = await loadPendingLocations(kv);
 
     // Filter approved stores only
     const approvedStores = pendingData.submissions.filter(s => s.status === 'approved');
@@ -156,18 +156,18 @@ export const POST: APIRoute = async ({ request, locals }) => {
       const coords = getCoordinates(store);
 
       return {
-        stable_id: store.stable_id,
-        name: store.name,
-        address_line1: store.address_line1,
-        address_line2: store.address_line2,
-        city: store.city,
-        state: store.state,
-        zip: store.zip,
+        stable_id: location.stable_id,
+        name: location.name,
+        address_line1: location.address_line1,
+        address_line2: location.address_line2,
+        city: location.city,
+        state: location.state,
+        zip: location.zip,
         latitude: coords.latitude,
         longitude: coords.longitude,
-        website_url: store.website_url,
-        phone: store.phone,
-        notes: store.notes,
+        website_url: location.website_url,
+        phone: location.phone,
+        notes: location.notes,
         is_verified: true // All approved stores are marked as verified
       };
     });

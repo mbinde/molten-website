@@ -18,7 +18,7 @@ export const OPTIONS: APIRoute = async () => {
   });
 };
 
-interface StoreSubmission {
+interface LocationSubmission {
   name: string;
   address_line1: string;
   address_line2?: string;
@@ -62,7 +62,7 @@ interface StoreSubmission {
   rentals_supports_other?: boolean;
 }
 
-interface PendingStore extends Omit<StoreSubmission, 'submitter_name' | 'submitter_phone' | 'submitter_email' | 'submitter_comments'> {
+interface PendingLocation extends Omit< LocationSubmission, 'submitter_name' | 'submitter_phone' | 'submitter_email' | 'submitter_comments'> {
   stable_id: string;
   submitted_at: string;
   status: 'pending' | 'approved' | 'rejected';
@@ -78,9 +78,9 @@ interface PendingStore extends Omit<StoreSubmission, 'submitter_name' | 'submitt
   rejected_at?: string;
 }
 
-interface PendingStoresData {
+interface PendingLocationsData {
   version: string;
-  submissions: PendingStore[];
+  submissions: PendingLocation[];
 }
 
 // Generate a unique hash ID for the store (12 lowercase hex characters)
@@ -132,11 +132,11 @@ function validateSubmission(data: any): { valid: boolean; errors: string[] } {
 }
 
 // Load existing pending stores from KV
-async function loadPendingStores(kv: KVNamespace): Promise<PendingStoresData> {
+async function loadPendingLocations(kv: KVNamespace): Promise<PendingLocationsData> {
   try {
-    const content = await kv.get('pending-stores', 'json');
+    const content = await kv.get('pending-locations', 'json');
     if (content) {
-      return content as PendingStoresData;
+      return content as PendingLocationsData;
     }
   } catch (error) {
     console.error('Error loading from KV:', error);
@@ -150,8 +150,8 @@ async function loadPendingStores(kv: KVNamespace): Promise<PendingStoresData> {
 }
 
 // Save pending stores to KV
-async function savePendingStores(kv: KVNamespace, data: PendingStoresData): Promise<void> {
-  await kv.put('pending-stores', JSON.stringify(data, null, 2));
+async function savePendingLocations(kv: KVNamespace, data: PendingLocationsData): Promise<void> {
+  await kv.put('pending-locations', JSON.stringify(data, null, 2));
 }
 
 export const POST: APIRoute = async ({ request, locals }) => {
@@ -199,7 +199,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     const stableId = generateStableId();
 
     // Create pending store object
-    const pendingStore: PendingStore = {
+    const pendingLocation: PendingStore = {
       stable_id: stableId,
       name: body.name.trim(),
       address_line1: body.address_line1.trim(),
@@ -244,7 +244,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
     // Add submitter info if provided
     if (body.submitter_name || body.submitter_phone || body.submitter_email || body.submitter_comments) {
-      pendingStore.submitter = {
+      pendingLocation.submitter = {
         name: body.submitter_name?.trim() || undefined,
         phone: body.submitter_phone?.trim() || undefined,
         email: body.submitter_email?.trim() || undefined,
@@ -253,17 +253,17 @@ export const POST: APIRoute = async ({ request, locals }) => {
     }
 
     // Load existing pending stores from KV
-    const pendingData = await loadPendingStores(kv);
+    const pendingData = await loadPendingLocations(kv);
 
     // Add new submission (hash IDs are unique, no duplicate checking needed)
-    pendingData.submissions.push(pendingStore);
+    pendingData.submissions.push(pendingLocation);
 
     // Save updated data to KV
-    await savePendingStores(kv, pendingData);
+    await savePendingLocations(kv, pendingData);
 
     return new Response(
       JSON.stringify({
-        message: 'Thank you! Your store submission has been received and will be reviewed shortly.',
+        message: 'Thank you! Your location submission has been received and will be reviewed shortly.',
         stable_id: stableId
       }),
       {
@@ -276,7 +276,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     );
 
   } catch (error) {
-    console.error('Error processing store submission:', error);
+    console.error('Error processing location submission:', error);
 
     return new Response(
       JSON.stringify({

@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
 import { requireAuth } from '../../lib/auth';
-import { regenerateStoresJSON } from '../../lib/store-generator';
+import { regenerateLocationsJSON } from '../../lib/location-generator';
 
 // IMPORTANT: Disable prerendering for API routes (required for Cloudflare)
 export const prerender = false;
@@ -20,7 +20,7 @@ export const OPTIONS: APIRoute = async () => {
   });
 };
 
-interface PendingStore {
+interface PendingLocation {
   stable_id: string;
   name: string;
   address_line1: string;
@@ -40,16 +40,16 @@ interface PendingStore {
   rejected_at?: string;
 }
 
-interface PendingStoresData {
+interface PendingLocationsData {
   version: string;
-  submissions: PendingStore[];
+  submissions: PendingLocation[];
 }
 
-async function loadPendingStores(kv: KVNamespace): Promise<PendingStoresData> {
+async function loadPendingLocations(kv: KVNamespace): Promise<PendingLocationsData> {
   try {
-    const content = await kv.get('pending-stores', 'json');
+    const content = await kv.get('pending-locations', 'json');
     if (content) {
-      return content as PendingStoresData;
+      return content as PendingLocationsData;
     }
   } catch (error) {
     console.error('Error loading from KV:', error);
@@ -61,8 +61,8 @@ async function loadPendingStores(kv: KVNamespace): Promise<PendingStoresData> {
   };
 }
 
-async function savePendingStores(kv: KVNamespace, data: PendingStoresData): Promise<void> {
-  await kv.put('pending-stores', JSON.stringify(data, null, 2));
+async function savePendingLocations(kv: KVNamespace, data: PendingLocationsData): Promise<void> {
+  await kv.put('pending-locations', JSON.stringify(data, null, 2));
 }
 
 export const POST: APIRoute = async ({ request, locals }) => {
@@ -99,40 +99,40 @@ export const POST: APIRoute = async ({ request, locals }) => {
       );
     }
 
-    const pendingData = await loadPendingStores(kv);
+    const pendingData = await loadPendingLocations(kv);
 
-    const storeIndex = pendingData.submissions.findIndex(
+    const locationIndex = pendingData.submissions.findIndex(
       s => s.stable_id === stable_id
     );
 
-    if (storeIndex === -1) {
+    if (locationIndex === -1) {
       return new Response(
-        JSON.stringify({ error: 'Store not found' }),
+        JSON.stringify({ error: 'Location not found' }),
         { status: 404, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
       );
     }
 
     // Update status to rejected
-    pendingData.submissions[storeIndex].status = 'rejected';
-    pendingData.submissions[storeIndex].rejected_at = new Date().toISOString();
+    pendingData.submissions[locationIndex].status = 'rejected';
+    pendingData.submissions[locationIndex].rejected_at = new Date().toISOString();
 
-    await savePendingStores(kv, pendingData);
+    await savePendingLocations(kv, pendingData);
 
     // Auto-regenerate stores.json (removes the rejected store if it was previously approved)
-    const storeCount = await regenerateStoresJSON(kv);
+    const storeCount = await regenerateLocationsJSON(kv);
 
     return new Response(
       JSON.stringify({
-        message: 'Store rejected successfully',
+        message: 'Location rejected successfully',
         stable_id,
-        stores_json_updated: true,
-        total_approved_stores: storeCount
+        locations_json_updated: true,
+        total_approved_locations: storeCount
       }),
       { status: 200, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
     );
 
   } catch (error) {
-    console.error('Error rejecting store:', error);
+    console.error('Error rejecting location:', error);
     return new Response(
       JSON.stringify({ error: 'Internal server error' }),
       { status: 500, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
