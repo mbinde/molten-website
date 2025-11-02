@@ -21,16 +21,21 @@ export const GET: APIRoute = async ({ locals }) => {
     }
 
     // Get generated locations from KV (with fallback to old key)
+    console.log('📖 Attempting to read locations-json from KV...');
     let locationsJSON = await kv.get('locations-json', 'text');
 
-    // Fallback to old key for backward compatibility
-    if (!locationsJSON) {
+    if (locationsJSON) {
+      console.log(`✅ Found locations-json in KV (${locationsJSON.length} bytes)`);
+    } else {
+      // Fallback to old key for backward compatibility
       console.log('⚠️  locations-json not found, checking old stores-json key...');
       locationsJSON = await kv.get('stores-json', 'text');
       if (locationsJSON) {
         console.log('✅ Found data in stores-json, will use it (migration recommended)');
         // Note: The old JSON has store_count/stores, but we'll return it as-is for now
         // The client should handle both formats, or you can run migration to update it
+      } else {
+        console.log('❌ No data found in either locations-json or stores-json');
       }
     }
 
@@ -56,6 +61,8 @@ export const GET: APIRoute = async ({ locals }) => {
       );
     }
 
+    console.log(`📤 Serving locations.json (${locationsJSON.length} bytes)`);
+
     return new Response(
       locationsJSON,
       {
@@ -63,7 +70,7 @@ export const GET: APIRoute = async ({ locals }) => {
         headers: {
           'Content-Type': 'application/json',
           'Access-Control-Allow-Origin': '*',
-          'Cache-Control': 'public, max-age=300' // Cache for 5 minutes
+          'Cache-Control': 'no-cache, no-store, must-revalidate' // Disable caching for debugging
         }
       }
     );
