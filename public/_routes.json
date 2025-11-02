@@ -3,7 +3,9 @@
   "include": [
     "/api/*",
     "/admin/*",
-    "/stores.json"
+    "/locations.json",
+    "/locations-direct.json",
+    "/test.json"
   ],
   "exclude": []
 }
