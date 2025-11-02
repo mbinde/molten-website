@@ -141,20 +141,23 @@ export const prerender = false;
                 <input type="text" id="edit_address_line2" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500">
               </div>
 
-              <div class="grid grid-cols-2 gap-4">
+              <div class="grid grid-cols-4 gap-4">
                 <div>
                   <label class="block text-sm font-medium text-gray-700 mb-1">City *</label>
                   <input type="text" id="edit_city" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500">
                 </div>
                 <div>
                   <label class="block text-sm font-medium text-gray-700 mb-1">State *</label>
-                  <input type="text" id="edit_state" required maxlength="2" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500">
+                  <input type="text" id="edit_state" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500">
                 </div>
-              </div>
-
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">ZIP Code</label>
-                <input type="text" id="edit_zip" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">ZIP</label>
+                  <input type="text" id="edit_zip" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Country</label>
+                  <input type="text" id="edit_country" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500">
+                </div>
               </div>
 
               <div>
@@ -163,8 +166,23 @@ export const prerender = false;
               </div>
 
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Website URL</label>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Main Website URL</label>
                 <input type="url" id="edit_website_url" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500">
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Retail URL (if different)</label>
+                <input type="url" id="edit_retail_url" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500">
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Classes URL (if different)</label>
+                <input type="url" id="edit_classes_url" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500">
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Rentals URL (if different)</label>
+                <input type="url" id="edit_rentals_url" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500">
               </div>
 
               <div>
@@ -172,35 +190,106 @@ export const prerender = false;
                 <textarea id="edit_notes" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"></textarea>
               </div>
 
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Techniques Supported</label>
-                <div class="space-y-2">
+              <!-- Retail Glass Section -->
+              <div class="border-t pt-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Retail Glass</label>
+                <div class="grid grid-cols-2 gap-2">
                   <label class="flex items-center">
-                    <input type="checkbox" id="edit_supports_casting" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
+                    <input type="checkbox" id="edit_retail_supports_casting" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
                     <span class="ml-2 text-sm text-gray-700">Casting</span>
                   </label>
                   <label class="flex items-center">
-                    <input type="checkbox" id="edit_supports_flameworking_hard" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
+                    <input type="checkbox" id="edit_retail_supports_flameworking_hard" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
                     <span class="ml-2 text-sm text-gray-700">Flameworking - Hard</span>
                   </label>
                   <label class="flex items-center">
-                    <input type="checkbox" id="edit_supports_flameworking_soft" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
+                    <input type="checkbox" id="edit_retail_supports_flameworking_soft" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
                     <span class="ml-2 text-sm text-gray-700">Flameworking - Soft</span>
                   </label>
                   <label class="flex items-center">
-                    <input type="checkbox" id="edit_supports_fusing" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
+                    <input type="checkbox" id="edit_retail_supports_fusing" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
                     <span class="ml-2 text-sm text-gray-700">Fusing</span>
                   </label>
                   <label class="flex items-center">
-                    <input type="checkbox" id="edit_supports_glass_blowing" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
+                    <input type="checkbox" id="edit_retail_supports_glass_blowing" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
                     <span class="ml-2 text-sm text-gray-700">Glass Blowing</span>
                   </label>
                   <label class="flex items-center">
-                    <input type="checkbox" id="edit_supports_stained_glass" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
+                    <input type="checkbox" id="edit_retail_supports_stained_glass" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
                     <span class="ml-2 text-sm text-gray-700">Stained Glass</span>
                   </label>
                   <label class="flex items-center">
-                    <input type="checkbox" id="edit_supports_other" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
+                    <input type="checkbox" id="edit_retail_supports_other" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
+                    <span class="ml-2 text-sm text-gray-700">Other</span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Classes Section -->
+              <div class="border-t pt-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Classes</label>
+                <div class="grid grid-cols-2 gap-2">
+                  <label class="flex items-center">
+                    <input type="checkbox" id="edit_classes_supports_casting" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
+                    <span class="ml-2 text-sm text-gray-700">Casting</span>
+                  </label>
+                  <label class="flex items-center">
+                    <input type="checkbox" id="edit_classes_supports_flameworking_hard" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
+                    <span class="ml-2 text-sm text-gray-700">Flameworking - Hard</span>
+                  </label>
+                  <label class="flex items-center">
+                    <input type="checkbox" id="edit_classes_supports_flameworking_soft" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
+                    <span class="ml-2 text-sm text-gray-700">Flameworking - Soft</span>
+                  </label>
+                  <label class="flex items-center">
+                    <input type="checkbox" id="edit_classes_supports_fusing" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
+                    <span class="ml-2 text-sm text-gray-700">Fusing</span>
+                  </label>
+                  <label class="flex items-center">
+                    <input type="checkbox" id="edit_classes_supports_glass_blowing" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
+                    <span class="ml-2 text-sm text-gray-700">Glass Blowing</span>
+                  </label>
+                  <label class="flex items-center">
+                    <input type="checkbox" id="edit_classes_supports_stained_glass" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
+                    <span class="ml-2 text-sm text-gray-700">Stained Glass</span>
+                  </label>
+                  <label class="flex items-center">
+                    <input type="checkbox" id="edit_classes_supports_other" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
+                    <span class="ml-2 text-sm text-gray-700">Other</span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Rentals Section -->
+              <div class="border-t pt-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Rentals</label>
+                <div class="grid grid-cols-2 gap-2">
+                  <label class="flex items-center">
+                    <input type="checkbox" id="edit_rentals_supports_casting" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
+                    <span class="ml-2 text-sm text-gray-700">Casting</span>
+                  </label>
+                  <label class="flex items-center">
+                    <input type="checkbox" id="edit_rentals_supports_flameworking_hard" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
+                    <span class="ml-2 text-sm text-gray-700">Flameworking - Hard</span>
+                  </label>
+                  <label class="flex items-center">
+                    <input type="checkbox" id="edit_rentals_supports_flameworking_soft" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
+                    <span class="ml-2 text-sm text-gray-700">Flameworking - Soft</span>
+                  </label>
+                  <label class="flex items-center">
+                    <input type="checkbox" id="edit_rentals_supports_fusing" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
+                    <span class="ml-2 text-sm text-gray-700">Fusing</span>
+                  </label>
+                  <label class="flex items-center">
+                    <input type="checkbox" id="edit_rentals_supports_glass_blowing" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
+                    <span class="ml-2 text-sm text-gray-700">Glass Blowing</span>
+                  </label>
+                  <label class="flex items-center">
+                    <input type="checkbox" id="edit_rentals_supports_stained_glass" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
+                    <span class="ml-2 text-sm text-gray-700">Stained Glass</span>
+                  </label>
+                  <label class="flex items-center">
+                    <input type="checkbox" id="edit_rentals_supports_other" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
                     <span class="ml-2 text-sm text-gray-700">Other</span>
                   </label>
                 </div>
@@ -730,20 +819,42 @@ export const prerender = false;
     document.getElementById('edit_city').value = store.city;
     document.getElementById('edit_state').value = store.state;
     document.getElementById('edit_zip').value = store.zip;
+    document.getElementById('edit_country').value = store.country || '';
     document.getElementById('edit_phone').value = store.phone || '';
     document.getElementById('edit_website_url').value = store.website_url || '';
+    document.getElementById('edit_retail_url').value = store.retail_url || '';
+    document.getElementById('edit_classes_url').value = store.classes_url || '';
+    document.getElementById('edit_rentals_url').value = store.rentals_url || '';
     document.getElementById('edit_notes').value = store.notes || '';
     document.getElementById('edit_latitude').value = store.latitude || '';
     document.getElementById('edit_longitude').value = store.longitude || '';
 
-    // Populate technique checkboxes
-    document.getElementById('edit_supports_casting').checked = store.supports_casting || false;
-    document.getElementById('edit_supports_flameworking_hard').checked = store.supports_flameworking_hard || false;
-    document.getElementById('edit_supports_flameworking_soft').checked = store.supports_flameworking_soft || false;
-    document.getElementById('edit_supports_fusing').checked = store.supports_fusing || false;
-    document.getElementById('edit_supports_glass_blowing').checked = store.supports_glass_blowing || false;
-    document.getElementById('edit_supports_stained_glass').checked = store.supports_stained_glass || false;
-    document.getElementById('edit_supports_other').checked = store.supports_other || false;
+    // Populate retail technique checkboxes
+    document.getElementById('edit_retail_supports_casting').checked = store.retail_supports_casting || false;
+    document.getElementById('edit_retail_supports_flameworking_hard').checked = store.retail_supports_flameworking_hard || false;
+    document.getElementById('edit_retail_supports_flameworking_soft').checked = store.retail_supports_flameworking_soft || false;
+    document.getElementById('edit_retail_supports_fusing').checked = store.retail_supports_fusing || false;
+    document.getElementById('edit_retail_supports_glass_blowing').checked = store.retail_supports_glass_blowing || false;
+    document.getElementById('edit_retail_supports_stained_glass').checked = store.retail_supports_stained_glass || false;
+    document.getElementById('edit_retail_supports_other').checked = store.retail_supports_other || false;
+
+    // Populate classes technique checkboxes
+    document.getElementById('edit_classes_supports_casting').checked = store.classes_supports_casting || false;
+    document.getElementById('edit_classes_supports_flameworking_hard').checked = store.classes_supports_flameworking_hard || false;
+    document.getElementById('edit_classes_supports_flameworking_soft').checked = store.classes_supports_flameworking_soft || false;
+    document.getElementById('edit_classes_supports_fusing').checked = store.classes_supports_fusing || false;
+    document.getElementById('edit_classes_supports_glass_blowing').checked = store.classes_supports_glass_blowing || false;
+    document.getElementById('edit_classes_supports_stained_glass').checked = store.classes_supports_stained_glass || false;
+    document.getElementById('edit_classes_supports_other').checked = store.classes_supports_other || false;
+
+    // Populate rentals technique checkboxes
+    document.getElementById('edit_rentals_supports_casting').checked = store.rentals_supports_casting || false;
+    document.getElementById('edit_rentals_supports_flameworking_hard').checked = store.rentals_supports_flameworking_hard || false;
+    document.getElementById('edit_rentals_supports_flameworking_soft').checked = store.rentals_supports_flameworking_soft || false;
+    document.getElementById('edit_rentals_supports_fusing').checked = store.rentals_supports_fusing || false;
+    document.getElementById('edit_rentals_supports_glass_blowing').checked = store.rentals_supports_glass_blowing || false;
+    document.getElementById('edit_rentals_supports_stained_glass').checked = store.rentals_supports_stained_glass || false;
+    document.getElementById('edit_rentals_supports_other').checked = store.rentals_supports_other || false;
 
     // Show clickable current website URL
     const websiteDisplay = document.getElementById('currentWebsiteDisplay');
@@ -788,18 +899,39 @@ export const prerender = false;
         city: document.getElementById('edit_city').value,
         state: document.getElementById('edit_state').value,
         zip: document.getElementById('edit_zip').value,
+        country: document.getElementById('edit_country').value || undefined,
         phone: document.getElementById('edit_phone').value || undefined,
         website_url: document.getElementById('edit_website_url').value || undefined,
+        retail_url: document.getElementById('edit_retail_url').value || undefined,
+        classes_url: document.getElementById('edit_classes_url').value || undefined,
+        rentals_url: document.getElementById('edit_rentals_url').value || undefined,
         notes: document.getElementById('edit_notes').value || undefined,
         latitude: parseFloat(document.getElementById('edit_latitude').value) || undefined,
         longitude: parseFloat(document.getElementById('edit_longitude').value) || undefined,
-        supports_casting: document.getElementById('edit_supports_casting').checked,
-        supports_flameworking_hard: document.getElementById('edit_supports_flameworking_hard').checked,
-        supports_flameworking_soft: document.getElementById('edit_supports_flameworking_soft').checked,
-        supports_fusing: document.getElementById('edit_supports_fusing').checked,
-        supports_glass_blowing: document.getElementById('edit_supports_glass_blowing').checked,
-        supports_stained_glass: document.getElementById('edit_supports_stained_glass').checked,
-        supports_other: document.getElementById('edit_supports_other').checked,
+        // Retail glass
+        retail_supports_casting: document.getElementById('edit_retail_supports_casting').checked,
+        retail_supports_flameworking_hard: document.getElementById('edit_retail_supports_flameworking_hard').checked,
+        retail_supports_flameworking_soft: document.getElementById('edit_retail_supports_flameworking_soft').checked,
+        retail_supports_fusing: document.getElementById('edit_retail_supports_fusing').checked,
+        retail_supports_glass_blowing: document.getElementById('edit_retail_supports_glass_blowing').checked,
+        retail_supports_stained_glass: document.getElementById('edit_retail_supports_stained_glass').checked,
+        retail_supports_other: document.getElementById('edit_retail_supports_other').checked,
+        // Classes
+        classes_supports_casting: document.getElementById('edit_classes_supports_casting').checked,
+        classes_supports_flameworking_hard: document.getElementById('edit_classes_supports_flameworking_hard').checked,
+        classes_supports_flameworking_soft: document.getElementById('edit_classes_supports_flameworking_soft').checked,
+        classes_supports_fusing: document.getElementById('edit_classes_supports_fusing').checked,
+        classes_supports_glass_blowing: document.getElementById('edit_classes_supports_glass_blowing').checked,
+        classes_supports_stained_glass: document.getElementById('edit_classes_supports_stained_glass').checked,
+        classes_supports_other: document.getElementById('edit_classes_supports_other').checked,
+        // Rentals
+        rentals_supports_casting: document.getElementById('edit_rentals_supports_casting').checked,
+        rentals_supports_flameworking_hard: document.getElementById('edit_rentals_supports_flameworking_hard').checked,
+        rentals_supports_flameworking_soft: document.getElementById('edit_rentals_supports_flameworking_soft').checked,
+        rentals_supports_fusing: document.getElementById('edit_rentals_supports_fusing').checked,
+        rentals_supports_glass_blowing: document.getElementById('edit_rentals_supports_glass_blowing').checked,
+        rentals_supports_stained_glass: document.getElementById('edit_rentals_supports_stained_glass').checked,
+        rentals_supports_other: document.getElementById('edit_rentals_supports_other').checked,
       };
 
       const response = await authenticatedFetch('/api/update-store', {
