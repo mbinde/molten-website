@@ -33,6 +33,7 @@ interface StoreSubmission {
   notes?: string;
   submitter_name?: string;
   submitter_email?: string;
+  submitter_comments?: string;
   // Retail glass offerings
   retail_supports_casting?: boolean;
   retail_supports_flameworking_hard?: boolean;
@@ -59,13 +60,14 @@ interface StoreSubmission {
   rentals_supports_other?: boolean;
 }
 
-interface PendingStore extends Omit<StoreSubmission, 'submitter_name' | 'submitter_email'> {
+interface PendingStore extends Omit<StoreSubmission, 'submitter_name' | 'submitter_email' | 'submitter_comments'> {
   stable_id: string;
   submitted_at: string;
   status: 'pending' | 'approved' | 'rejected';
   submitter?: {
     name?: string;
     email?: string;
+    comments?: string;
   };
   latitude?: number;
   longitude?: number;
@@ -240,10 +242,11 @@ export const POST: APIRoute = async ({ request, locals }) => {
     };
 
     // Add submitter info if provided
-    if (body.submitter_name || body.submitter_email) {
+    if (body.submitter_name || body.submitter_email || body.submitter_comments) {
       pendingStore.submitter = {
         name: body.submitter_name?.trim() || undefined,
-        email: body.submitter_email?.trim() || undefined
+        email: body.submitter_email?.trim() || undefined,
+        comments: body.submitter_comments?.trim() || undefined
       };
     }
 

@@ -22,6 +22,7 @@ interface PendingStore {
   submitter?: {
     name?: string;
     email?: string;
+    comments?: string;
   };
   approved_at?: string;
   latitude?: number;
