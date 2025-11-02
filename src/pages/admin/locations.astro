@@ -39,32 +39,6 @@ export const prerender = false;
 
       <!-- Admin Content (hidden until authenticated) -->
       <div id="adminContent" class="hidden">
-        <!-- Migration Banner (shown if migration is needed) -->
-        <div id="migrationBanner" class="hidden mb-6 p-4 bg-yellow-50 border-2 border-yellow-300 rounded-lg">
-          <div class="flex items-start gap-3">
-            <div class="flex-1">
-              <p class="font-semibold text-yellow-900 mb-1">⚠️ Data Migration Recommended</p>
-              <p class="text-sm text-yellow-800 mb-3">
-                Your data is currently stored using old key names. Click below to migrate to the new structure (this is safe and won't lose any data).
-              </p>
-              <button
-                onclick="runQuickMigration()"
-                id="quickMigrateBtn"
-                class="bg-yellow-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-yellow-700 transition text-sm"
-              >
-                Migrate Now (One-Time)
-              </button>
-              <button
-                onclick="dismissMigrationBanner()"
-                class="ml-2 text-yellow-800 px-4 py-2 rounded-lg font-medium hover:bg-yellow-100 transition text-sm"
-              >
-                Dismiss
-              </button>
-            </div>
-          </div>
-          <div id="migrationResult" class="hidden mt-3 text-sm"></div>
-        </div>
-
         <!-- Header -->
         <div class="mb-8">
           <h1 class="text-4xl font-bold mb-2">Locations Approval Queue</h1>
@@ -401,7 +375,6 @@ export const prerender = false;
     adminContent.classList.remove('hidden');
     loadSubmissions();
     loadEditSuggestions();
-    checkIfMigrationNeeded();
   }
 
   function logout() {
@@ -435,73 +408,6 @@ export const prerender = false;
     }
 
     return response;
-  }
-
-  // Migration banner functions
-  window.runQuickMigration = async function() {
-    const btn = document.getElementById('quickMigrateBtn');
-    const result = document.getElementById('migrationResult');
-
-    btn.disabled = true;
-    btn.textContent = 'Migrating...';
-    result.classList.remove('hidden');
-    result.className = 'mt-3 text-sm text-yellow-800';
-    result.textContent = '⏳ Running migration...';
-
-    try {
-      const response = await authenticatedFetch('/api/migrate-to-locations', {
-        method: 'POST'
-      });
-
-      const data = await response.json();
-
-      if (response.ok && data.success) {
-        result.className = 'mt-3 text-sm text-green-800 font-semibold';
-        result.textContent = `✅ Migration complete! Migrated ${data.total_locations} locations. Reloading...`;
-
-        // Reload the page after 2 seconds
-        setTimeout(() => {
-          window.location.reload();
-        }, 2000);
-      } else {
-        result.className = 'mt-3 text-sm text-red-800';
-        result.textContent = `❌ Migration failed: ${data.error || 'Unknown error'}`;
-        btn.disabled = false;
-        btn.textContent = 'Try Again';
-      }
-    } catch (error) {
-      console.error('Migration error:', error);
-      result.className = 'mt-3 text-sm text-red-800';
-      result.textContent = `❌ Network error: ${error instanceof Error ? error.message : 'Unknown error'}`;
-      btn.disabled = false;
-      btn.textContent = 'Try Again';
-    }
-  };
-
-  window.dismissMigrationBanner = function() {
-    document.getElementById('migrationBanner').classList.add('hidden');
-    localStorage.setItem('migration_banner_dismissed', 'true');
-  };
-
-  async function checkIfMigrationNeeded() {
-    // Don't show if user already dismissed it
-    if (localStorage.getItem('migration_banner_dismissed') === 'true') {
-      return;
-    }
-
-    try {
-      // Check if we're using the old key by looking at response headers or data
-      // For now, we'll just show the banner if there's data (user can dismiss if not needed)
-      const response = await authenticatedFetch('/api/list-locations');
-      const data = await response.json();
-
-      // Show banner if there are submissions (might be using old key)
-      if (data.submissions && data.submissions.length > 0) {
-        document.getElementById('migrationBanner').classList.remove('hidden');
-      }
-    } catch (error) {
-      console.error('Error checking migration status:', error);
-    }
   }
 
   // Check auth on page load
