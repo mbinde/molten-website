@@ -174,10 +174,12 @@ export const prerender = false;
         button.textContent = 'Try Again';
       }
     } catch (error) {
+      console.error('Migration error:', error);
       status.innerHTML = `
         <div class="p-4 bg-red-50 border border-red-200 rounded-lg">
           <div class="font-bold text-red-800 mb-2">❌ Network Error</div>
           <div class="text-sm text-red-700">Failed to connect to the server. Please try again.</div>
+          <div class="text-xs text-red-600 mt-2 font-mono">${error instanceof Error ? error.message : String(error)}</div>
         </div>
       `;
       button.disabled = false;
