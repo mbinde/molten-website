@@ -1,10 +1,6 @@
-# Astro Starter Kit: Minimal
+# Molten Glass Website
 
-```sh
-npm create astro@latest -- --template minimal
-```
-
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+Community-sourced directory of locations that support the glass art community.
 
 ## 🚀 Project Structure
 
@@ -38,6 +34,35 @@ All commands are run from the root of the project, from a terminal:
 | `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
 | `npm run astro -- --help` | Get help using the Astro CLI                     |
 
+## ⚠️ Important: Cloudflare Routes Configuration
+
+**CRITICAL**: When adding new API routes or JSON endpoints, you MUST update `/public/_routes.json` to include them in Cloudflare's SSR routing.
+
+### Example: Adding a new endpoint
+
+If you create a new file like `/src/pages/my-data.json.ts`, add it to the `include` array:
+
+```json
+{
+  "version": 1,
+  "include": [
+    "/api/*",
+    "/admin/*",
+    "/locations.json",
+    "/my-data.json"  // <- Add your new endpoint here
+  ],
+  "exclude": []
+}
+```
+
+**Without this**, Cloudflare Pages will try to serve your endpoint as a static file, resulting in empty responses (zero bytes) even though your code is correct and KV data exists.
+
+### Symptoms of missing route configuration:
+- Endpoint returns completely empty (0 bytes)
+- No errors in logs
+- KV data exists and is accessible via other endpoints
+- Works locally but fails in production
+
 ## 👀 Want to learn more?
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+Feel free to check [Astro documentation](https://docs.astro.build) or [Cloudflare Pages documentation](https://developers.cloudflare.com/pages/).
