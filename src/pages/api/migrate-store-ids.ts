@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
 import { requireAuth } from '../../lib/auth';
-import { regenerateStoresJSON } from '../../lib/store-generator';
+import { regenerateLocationsJSON } from '../../lib/location-generator';
 
 // IMPORTANT: Disable prerendering for API routes (required for Cloudflare)
 export const prerender = false;
@@ -20,7 +20,7 @@ export const OPTIONS: APIRoute = async () => {
   });
 };
 
-interface PendingStore {
+interface PendingLocation {
   stable_id: string;
   name: string;
   address_line1: string;
@@ -43,16 +43,16 @@ interface PendingStore {
   longitude?: number;
 }
 
-interface PendingStoresData {
+interface PendingLocationsData {
   version: string;
-  submissions: PendingStore[];
+  submissions: PendingLocation[];
 }
 
-async function loadPendingStores(kv: KVNamespace): Promise<PendingStoresData> {
+async function loadPendingLocations(kv: KVNamespace): Promise<PendingLocationsData> {
   try {
-    const content = await kv.get('pending-stores', 'json');
+    const content = await kv.get('pending-locations', 'json');
     if (content) {
-      return content as PendingStoresData;
+      return content as PendingLocationsData;
     }
   } catch (error) {
     console.error('Error loading from KV:', error);
@@ -64,11 +64,11 @@ async function loadPendingStores(kv: KVNamespace): Promise<PendingStoresData> {
   };
 }
 
-async function savePendingStores(kv: KVNamespace, data: PendingStoresData): Promise<void> {
-  await kv.put('pending-stores', JSON.stringify(data, null, 2));
+async function savePendingLocations(kv: KVNamespace, data: PendingLocationsData): Promise<void> {
+  await kv.put('pending-locations', JSON.stringify(data, null, 2));
 }
 
-// Generate a unique hash ID for the store (12 lowercase hex characters)
+// Generate a unique hash ID for the location (12 lowercase hex characters)
 function generateHashId(): string {
   const array = new Uint8Array(6); // 6 bytes = 12 hex chars
   crypto.getRandomValues(array);
@@ -106,48 +106,48 @@ export const POST: APIRoute = async ({ request, locals }) => {
       );
     }
 
-    const pendingData = await loadPendingStores(kv);
+    const pendingData = await loadPendingLocations(kv);
     const migrations: Array<{ old_id: string; new_id: string; name: string }> = [];
 
     // Migrate old-style IDs to hash IDs
-    for (const store of pendingData.submissions) {
-      if (isOldStyleId(store.stable_id)) {
-        const oldId = store.stable_id;
+    for (const location of pendingData.submissions) {
+      if (isOldStyleId(location.stable_id)) {
+        const oldId = location.stable_id;
         const newId = generateHashId();
-        store.stable_id = newId;
-        migrations.push({ old_id: oldId, new_id: newId, name: store.name });
-        console.log(`Migrated "${store.name}": ${oldId} → ${newId}`);
+        location.stable_id = newId;
+        migrations.push({ old_id: oldId, new_id: newId, name: location.name });
+        console.log(`Migrated "${location.name}": ${oldId} → ${newId}`);
       }
     }
 
     if (migrations.length > 0) {
-      await savePendingStores(kv, pendingData);
+      await savePendingLocations(kv, pendingData);
 
-      // Auto-regenerate stores.json with new IDs
-      const storeCount = await regenerateStoresJSON(kv);
+      // Auto-regenerate locations.json with new IDs
+      const locationCount = await regenerateLocationsJSON(kv);
 
       return new Response(
         JSON.stringify({
-          message: 'Successfully migrated store IDs',
+          message: 'Successfully migrated location IDs',
           migrations,
-          stores_json_updated: true,
-          total_stores: storeCount
+          locations_json_updated: true,
+          total_locations: locationCount
         }),
         { status: 200, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
       );
     } else {
       return new Response(
         JSON.stringify({
-          message: 'No stores needed migration',
+          message: 'No locations needed migration',
           migrations: [],
-          stores_json_updated: false
+          locations_json_updated: false
         }),
         { status: 200, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
       );
     }
 
   } catch (error) {
-    console.error('Error migrating store IDs:', error);
+    console.error('Error migrating location IDs:', error);
     return new Response(
       JSON.stringify({ error: 'Internal server error' }),
       { status: 500, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
