@@ -50,13 +50,24 @@ export const POST: APIRoute = async ({ request, locals }) => {
     }
 
     // Use shared regeneration function
+    console.log('🔄 Starting locations.json regeneration...');
     const locationCount = await regenerateLocationsJSON(kv);
+    console.log(`✅ Generated locations.json with ${locationCount} approved locations`);
+
+    // Verify it was saved by reading it back
+    const verification = await kv.get('locations-json', 'text');
+    if (verification) {
+      console.log(`✓ Verified: locations-json exists in KV (${verification.length} bytes)`);
+    } else {
+      console.warn('⚠️  Warning: locations-json not found in KV after generation');
+    }
 
     return new Response(
       JSON.stringify({
         message: `Successfully generated locations.json with ${locationCount} approved locations`,
         count: locationCount,
-        path: '/locations.json'
+        path: '/locations.json',
+        verified: !!verification
       }),
       { status: 200, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
     );
