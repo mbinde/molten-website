@@ -90,9 +90,9 @@ export const prerender = true;
               />
             </div>
 
-            <!-- City, State, ZIP Row -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div class="md:col-span-2">
+            <!-- City, State, ZIP, Country Row -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div>
                 <label for="city" class="block text-sm font-medium text-gray-700 mb-2">
                   City <span class="text-red-500">*</span>
                 </label>
@@ -108,34 +108,45 @@ export const prerender = true;
 
               <div>
                 <label for="state" class="block text-sm font-medium text-gray-700 mb-2">
-                  State <span class="text-red-500">*</span>
+                  State/Province <span class="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
                   id="state"
                   name="state"
                   required
-                  maxlength="2"
-                  pattern="[A-Z]{2}"
-                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent uppercase"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                   placeholder="WA"
                 />
               </div>
-            </div>
 
-            <div>
-              <label for="zip" class="block text-sm font-medium text-gray-700 mb-2">
-                ZIP Code <span class="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                id="zip"
-                name="zip"
-                required
-                pattern="[0-9]{5}(-[0-9]{4})?"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                placeholder="98119"
-              />
+              <div>
+                <label for="zip" class="block text-sm font-medium text-gray-700 mb-2">
+                  Postal Code <span class="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="zip"
+                  name="zip"
+                  required
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  placeholder="98119"
+                />
+              </div>
+
+              <div>
+                <label for="country" class="block text-sm font-medium text-gray-700 mb-2">
+                  Country <span class="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="country"
+                  name="country"
+                  required
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  placeholder="USA"
+                />
+              </div>
             </div>
 
             <!-- Phone -->
@@ -148,7 +159,7 @@ export const prerender = true;
                 id="phone"
                 name="phone"
                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                placeholder="(206) 284-5600"
+                placeholder="+1 (206) 284-5600"
               />
             </div>
 

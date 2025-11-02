@@ -25,6 +25,7 @@ interface StoreSubmission {
   city: string;
   state: string;
   zip: string;
+  country: string;
   phone?: string;
   website_url: string;
   retail_url?: string;
@@ -111,19 +112,16 @@ function validateSubmission(data: any): { valid: boolean; errors: string[] } {
     errors.push('ZIP code is required');
   }
 
+  if (!data.country || typeof data.country !== 'string' || data.country.trim().length === 0) {
+    errors.push('Country is required');
+  }
+
   if (!data.website_url || typeof data.website_url !== 'string' || data.website_url.trim().length === 0) {
     errors.push('Website URL is required');
   }
 
-  // Validate state format (2 uppercase letters)
-  if (data.state && !/^[A-Z]{2}$/.test(data.state)) {
-    errors.push('State must be a 2-letter abbreviation (e.g., WA, CA, TX)');
-  }
-
-  // Validate ZIP format (5 or 9 digits)
-  if (data.zip && !/^\d{5}(-\d{4})?$/.test(data.zip)) {
-    errors.push('ZIP code must be in format 12345 or 12345-6789');
-  }
+  // Note: Removed restrictive validation for state/province and postal code
+  // to support international addresses
 
   return {
     valid: errors.length === 0,
@@ -205,8 +203,9 @@ export const POST: APIRoute = async ({ request, locals }) => {
       address_line1: body.address_line1.trim(),
       address_line2: body.address_line2?.trim() || undefined,
       city: body.city.trim(),
-      state: body.state.trim().toUpperCase(),
+      state: body.state.trim(),
       zip: body.zip.trim(),
+      country: body.country.trim(),
       phone: body.phone?.trim() || undefined,
       website_url: body.website_url?.trim() || undefined,
       retail_url: body.retail_url?.trim() || undefined,

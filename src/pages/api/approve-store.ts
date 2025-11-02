@@ -28,6 +28,7 @@ interface PendingStore {
   city: string;
   state: string;
   zip: string;
+  country?: string;
   phone?: string;
   website_url?: string;
   retail_url?: string;

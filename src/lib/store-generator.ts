@@ -11,6 +11,7 @@ interface PendingStore {
   city: string;
   state: string;
   zip?: string;
+  country?: string;
   phone?: string;
   website_url?: string;
   retail_url?: string;
@@ -66,6 +67,7 @@ interface PublicStore {
   city: string;
   state: string;
   zip?: string;
+  country?: string;
   latitude: number;
   longitude: number;
   website_url?: string;
@@ -164,6 +166,7 @@ export async function regenerateStoresJSON(kv: KVNamespace): Promise<number> {
       city: store.city,
       state: store.state,
       zip: store.zip,
+      country: store.country,
       latitude: coords.latitude,
       longitude: coords.longitude,
       website_url: store.website_url,

@@ -28,6 +28,7 @@ interface PendingStore {
   city: string;
   state: string;
   zip?: string;
+  country?: string;
   phone?: string;
   website_url?: string;
   retail_url?: string;
@@ -154,7 +155,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
     // Update allowed fields
     const allowedFields = [
-      'name', 'address_line1', 'address_line2', 'city', 'state', 'zip',
+      'name', 'address_line1', 'address_line2', 'city', 'state', 'zip', 'country',
       'phone', 'website_url', 'retail_url', 'classes_url', 'rentals_url', 'notes', 'latitude', 'longitude',
       'retail_supports_casting', 'retail_supports_flameworking_hard', 'retail_supports_flameworking_soft',
       'retail_supports_fusing', 'retail_supports_glass_blowing', 'retail_supports_stained_glass', 'retail_supports_other',
