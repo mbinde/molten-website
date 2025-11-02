@@ -30,6 +30,9 @@ interface PendingStore {
   zip?: string;
   phone?: string;
   website_url?: string;
+  retail_url?: string;
+  classes_url?: string;
+  rentals_url?: string;
   notes?: string;
   submitted_at: string;
   status: 'pending' | 'approved' | 'rejected';
@@ -41,13 +44,30 @@ interface PendingStore {
   rejected_at?: string;
   latitude?: number;
   longitude?: number;
-  supports_casting?: boolean;
-  supports_flameworking_hard?: boolean;
-  supports_flameworking_soft?: boolean;
-  supports_fusing?: boolean;
-  supports_glass_blowing?: boolean;
-  supports_stained_glass?: boolean;
-  supports_other?: boolean;
+  // Retail glass offerings
+  retail_supports_casting?: boolean;
+  retail_supports_flameworking_hard?: boolean;
+  retail_supports_flameworking_soft?: boolean;
+  retail_supports_fusing?: boolean;
+  retail_supports_glass_blowing?: boolean;
+  retail_supports_stained_glass?: boolean;
+  retail_supports_other?: boolean;
+  // Classes offerings
+  classes_supports_casting?: boolean;
+  classes_supports_flameworking_hard?: boolean;
+  classes_supports_flameworking_soft?: boolean;
+  classes_supports_fusing?: boolean;
+  classes_supports_glass_blowing?: boolean;
+  classes_supports_stained_glass?: boolean;
+  classes_supports_other?: boolean;
+  // Rentals offerings
+  rentals_supports_casting?: boolean;
+  rentals_supports_flameworking_hard?: boolean;
+  rentals_supports_flameworking_soft?: boolean;
+  rentals_supports_fusing?: boolean;
+  rentals_supports_glass_blowing?: boolean;
+  rentals_supports_stained_glass?: boolean;
+  rentals_supports_other?: boolean;
 }
 
 interface PendingStoresData {
@@ -134,9 +154,13 @@ export const POST: APIRoute = async ({ request, locals }) => {
     // Update allowed fields
     const allowedFields = [
       'name', 'address_line1', 'address_line2', 'city', 'state', 'zip',
-      'phone', 'website_url', 'notes', 'latitude', 'longitude',
-      'supports_casting', 'supports_flameworking_hard', 'supports_flameworking_soft',
-      'supports_fusing', 'supports_glass_blowing', 'supports_stained_glass', 'supports_other'
+      'phone', 'website_url', 'retail_url', 'classes_url', 'rentals_url', 'notes', 'latitude', 'longitude',
+      'retail_supports_casting', 'retail_supports_flameworking_hard', 'retail_supports_flameworking_soft',
+      'retail_supports_fusing', 'retail_supports_glass_blowing', 'retail_supports_stained_glass', 'retail_supports_other',
+      'classes_supports_casting', 'classes_supports_flameworking_hard', 'classes_supports_flameworking_soft',
+      'classes_supports_fusing', 'classes_supports_glass_blowing', 'classes_supports_stained_glass', 'classes_supports_other',
+      'rentals_supports_casting', 'rentals_supports_flameworking_hard', 'rentals_supports_flameworking_soft',
+      'rentals_supports_fusing', 'rentals_supports_glass_blowing', 'rentals_supports_stained_glass', 'rentals_supports_other'
     ];
 
     for (const field of allowedFields) {

@@ -1,0 +1,35 @@
+{
+  "non_glass_suppliers": [
+    {
+      "name": "A.R.T. CO. (Artist's Reliable Tool Company)",
+      "website_url": "https://www.artcoinc.com",
+      "reason": "Tool and equipment manufacturer only - sells lampworking tools, torches, safety gear, and accessories but no glass rods, tubes, or sheets",
+      "state": "CA"
+    },
+    {
+      "name": "CattWalk Lampwork Tools",
+      "website_url": "https://www.cattwalk.com",
+      "reason": "Lampwork tool manufacturer only - specializes in marvers, bead molds, presses, and metal foils but does not sell glass supplies",
+      "state": "NJ"
+    },
+    {
+      "name": "Phillips Safety Products",
+      "website_url": "https://phillips-safety.com",
+      "reason": "Safety equipment manufacturer only - sells laser safety glasses, radiation protection, welding safety glasses, and glassworking protective eyewear but no glass materials",
+      "state": "NJ"
+    },
+    {
+      "name": "Corning Museum of Glass",
+      "website_url": "https://home.cmog.org",
+      "reason": "Museum with retail shop - sells finished art glass products, gifts, jewelry, books, and museum merchandise but not raw glass supplies for artists",
+      "state": "NY"
+    },
+    {
+      "name": "Kiln Frog",
+      "website_url": "https://kilnfrog.com",
+      "reason": "Kiln manufacturer only - does not sell glass supplies",
+      "state": "TX"
+    }
+  ],
+  "note": "These businesses were mentioned in the Reddit list but do not sell raw glass materials (sheets, rods, tubes, frit) for glass artists. Consider whether they should be added to a separate 'Tools & Equipment' or 'Related Businesses' section."
+}

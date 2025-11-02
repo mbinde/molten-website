@@ -30,6 +30,9 @@ interface PendingStore {
   zip: string;
   phone?: string;
   website_url?: string;
+  retail_url?: string;
+  classes_url?: string;
+  rentals_url?: string;
   notes?: string;
   submitted_at: string;
   status: 'pending' | 'approved' | 'rejected';
@@ -40,13 +43,30 @@ interface PendingStore {
   approved_at?: string;
   latitude?: number;
   longitude?: number;
-  supports_casting?: boolean;
-  supports_flameworking_hard?: boolean;
-  supports_flameworking_soft?: boolean;
-  supports_fusing?: boolean;
-  supports_glass_blowing?: boolean;
-  supports_stained_glass?: boolean;
-  supports_other?: boolean;
+  // Retail glass offerings
+  retail_supports_casting?: boolean;
+  retail_supports_flameworking_hard?: boolean;
+  retail_supports_flameworking_soft?: boolean;
+  retail_supports_fusing?: boolean;
+  retail_supports_glass_blowing?: boolean;
+  retail_supports_stained_glass?: boolean;
+  retail_supports_other?: boolean;
+  // Classes offerings
+  classes_supports_casting?: boolean;
+  classes_supports_flameworking_hard?: boolean;
+  classes_supports_flameworking_soft?: boolean;
+  classes_supports_fusing?: boolean;
+  classes_supports_glass_blowing?: boolean;
+  classes_supports_stained_glass?: boolean;
+  classes_supports_other?: boolean;
+  // Rentals offerings
+  rentals_supports_casting?: boolean;
+  rentals_supports_flameworking_hard?: boolean;
+  rentals_supports_flameworking_soft?: boolean;
+  rentals_supports_fusing?: boolean;
+  rentals_supports_glass_blowing?: boolean;
+  rentals_supports_stained_glass?: boolean;
+  rentals_supports_other?: boolean;
 }
 
 interface PendingStoresData {

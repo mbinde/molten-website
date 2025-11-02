@@ -13,6 +13,9 @@ interface PendingStore {
   zip?: string;
   phone?: string;
   website_url?: string;
+  retail_url?: string;
+  classes_url?: string;
+  rentals_url?: string;
   notes?: string;
   submitted_at: string;
   status: 'pending' | 'approved' | 'rejected';
@@ -23,13 +26,30 @@ interface PendingStore {
   approved_at?: string;
   latitude?: number;
   longitude?: number;
-  supports_casting?: boolean;
-  supports_flameworking_hard?: boolean;
-  supports_flameworking_soft?: boolean;
-  supports_fusing?: boolean;
-  supports_glass_blowing?: boolean;
-  supports_stained_glass?: boolean;
-  supports_other?: boolean;
+  // Retail glass offerings
+  retail_supports_casting?: boolean;
+  retail_supports_flameworking_hard?: boolean;
+  retail_supports_flameworking_soft?: boolean;
+  retail_supports_fusing?: boolean;
+  retail_supports_glass_blowing?: boolean;
+  retail_supports_stained_glass?: boolean;
+  retail_supports_other?: boolean;
+  // Classes offerings
+  classes_supports_casting?: boolean;
+  classes_supports_flameworking_hard?: boolean;
+  classes_supports_flameworking_soft?: boolean;
+  classes_supports_fusing?: boolean;
+  classes_supports_glass_blowing?: boolean;
+  classes_supports_stained_glass?: boolean;
+  classes_supports_other?: boolean;
+  // Rentals offerings (for future use)
+  rentals_supports_casting?: boolean;
+  rentals_supports_flameworking_hard?: boolean;
+  rentals_supports_flameworking_soft?: boolean;
+  rentals_supports_fusing?: boolean;
+  rentals_supports_glass_blowing?: boolean;
+  rentals_supports_stained_glass?: boolean;
+  rentals_supports_other?: boolean;
 }
 
 interface PendingStoresData {
@@ -48,16 +68,36 @@ interface PublicStore {
   latitude: number;
   longitude: number;
   website_url?: string;
+  retail_url?: string;
+  classes_url?: string;
+  rentals_url?: string;
   phone?: string;
   notes?: string;
   is_verified: boolean;
-  supports_casting: boolean;
-  supports_flameworking_hard: boolean;
-  supports_flameworking_soft: boolean;
-  supports_fusing: boolean;
-  supports_glass_blowing: boolean;
-  supports_stained_glass: boolean;
-  supports_other: boolean;
+  // Retail glass offerings
+  retail_supports_casting: boolean;
+  retail_supports_flameworking_hard: boolean;
+  retail_supports_flameworking_soft: boolean;
+  retail_supports_fusing: boolean;
+  retail_supports_glass_blowing: boolean;
+  retail_supports_stained_glass: boolean;
+  retail_supports_other: boolean;
+  // Classes offerings
+  classes_supports_casting: boolean;
+  classes_supports_flameworking_hard: boolean;
+  classes_supports_flameworking_soft: boolean;
+  classes_supports_fusing: boolean;
+  classes_supports_glass_blowing: boolean;
+  classes_supports_stained_glass: boolean;
+  classes_supports_other: boolean;
+  // Rentals offerings
+  rentals_supports_casting: boolean;
+  rentals_supports_flameworking_hard: boolean;
+  rentals_supports_flameworking_soft: boolean;
+  rentals_supports_fusing: boolean;
+  rentals_supports_glass_blowing: boolean;
+  rentals_supports_stained_glass: boolean;
+  rentals_supports_other: boolean;
 }
 
 interface StoresOutput {
@@ -126,16 +166,36 @@ export async function regenerateStoresJSON(kv: KVNamespace): Promise<number> {
       latitude: coords.latitude,
       longitude: coords.longitude,
       website_url: store.website_url,
+      retail_url: store.retail_url,
+      classes_url: store.classes_url,
+      rentals_url: store.rentals_url,
       phone: store.phone,
       notes: store.notes,
       is_verified: true,
-      supports_casting: store.supports_casting || false,
-      supports_flameworking_hard: store.supports_flameworking_hard || false,
-      supports_flameworking_soft: store.supports_flameworking_soft || false,
-      supports_fusing: store.supports_fusing || false,
-      supports_glass_blowing: store.supports_glass_blowing || false,
-      supports_stained_glass: store.supports_stained_glass || false,
-      supports_other: store.supports_other || false,
+      // Retail glass offerings
+      retail_supports_casting: store.retail_supports_casting || false,
+      retail_supports_flameworking_hard: store.retail_supports_flameworking_hard || false,
+      retail_supports_flameworking_soft: store.retail_supports_flameworking_soft || false,
+      retail_supports_fusing: store.retail_supports_fusing || false,
+      retail_supports_glass_blowing: store.retail_supports_glass_blowing || false,
+      retail_supports_stained_glass: store.retail_supports_stained_glass || false,
+      retail_supports_other: store.retail_supports_other || false,
+      // Classes offerings
+      classes_supports_casting: store.classes_supports_casting || false,
+      classes_supports_flameworking_hard: store.classes_supports_flameworking_hard || false,
+      classes_supports_flameworking_soft: store.classes_supports_flameworking_soft || false,
+      classes_supports_fusing: store.classes_supports_fusing || false,
+      classes_supports_glass_blowing: store.classes_supports_glass_blowing || false,
+      classes_supports_stained_glass: store.classes_supports_stained_glass || false,
+      classes_supports_other: store.classes_supports_other || false,
+      // Rentals offerings
+      rentals_supports_casting: store.rentals_supports_casting || false,
+      rentals_supports_flameworking_hard: store.rentals_supports_flameworking_hard || false,
+      rentals_supports_flameworking_soft: store.rentals_supports_flameworking_soft || false,
+      rentals_supports_fusing: store.rentals_supports_fusing || false,
+      rentals_supports_glass_blowing: store.rentals_supports_glass_blowing || false,
+      rentals_supports_stained_glass: store.rentals_supports_stained_glass || false,
+      rentals_supports_other: store.rentals_supports_other || false,
     };
   });
 

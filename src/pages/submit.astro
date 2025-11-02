@@ -1,0 +1,474 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+// This page can be static (prerendered)
+export const prerender = true;
+---
+
+<Layout title="Submit to Molten Directory">
+  <section class="py-16 bg-gray-50 min-h-screen">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Header -->
+      <div class="text-center mb-12">
+        <h1 class="text-4xl font-bold mb-4">Submit to Directory</h1>
+        <p class="text-lg text-gray-600">
+          Know a great place for glass artists? Share it with the Molten community!
+        </p>
+        <p class="text-sm text-gray-500 mt-2">
+          All submissions are reviewed before being added to the app.
+        </p>
+      </div>
+
+      <!-- Form -->
+      <div class="bg-white rounded-lg shadow-lg p-8">
+        <form id="storeSubmissionForm" class="space-y-8">
+          <!-- Basic Information -->
+          <div class="space-y-6">
+            <h2 class="text-2xl font-bold border-b pb-2">Basic Information</h2>
+
+            <!-- Name -->
+            <div>
+              <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
+                Business/Institution Name <span class="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                required
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                placeholder="e.g., Frantz Art Glass"
+              />
+            </div>
+
+            <!-- Main Website -->
+            <div>
+              <label for="website_url" class="block text-sm font-medium text-gray-700 mb-2">
+                Main Website <span class="text-red-500">*</span>
+              </label>
+              <input
+                type="url"
+                id="website_url"
+                name="website_url"
+                required
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                placeholder="https://example.com"
+              />
+            </div>
+
+            <!-- Address Line 1 -->
+            <div>
+              <label for="address_line1" class="block text-sm font-medium text-gray-700 mb-2">
+                Address <span class="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                id="address_line1"
+                name="address_line1"
+                required
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                placeholder="123 Main Street"
+              />
+            </div>
+
+            <!-- Address Line 2 (Optional) -->
+            <div>
+              <label for="address_line2" class="block text-sm font-medium text-gray-700 mb-2">
+                Address Line 2 <span class="text-gray-400">(Optional)</span>
+              </label>
+              <input
+                type="text"
+                id="address_line2"
+                name="address_line2"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                placeholder="Suite 100"
+              />
+            </div>
+
+            <!-- City, State, ZIP Row -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div class="md:col-span-2">
+                <label for="city" class="block text-sm font-medium text-gray-700 mb-2">
+                  City <span class="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="city"
+                  name="city"
+                  required
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  placeholder="Seattle"
+                />
+              </div>
+
+              <div>
+                <label for="state" class="block text-sm font-medium text-gray-700 mb-2">
+                  State <span class="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="state"
+                  name="state"
+                  required
+                  maxlength="2"
+                  pattern="[A-Z]{2}"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent uppercase"
+                  placeholder="WA"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label for="zip" class="block text-sm font-medium text-gray-700 mb-2">
+                ZIP Code <span class="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                id="zip"
+                name="zip"
+                required
+                pattern="[0-9]{5}(-[0-9]{4})?"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                placeholder="98119"
+              />
+            </div>
+
+            <!-- Phone -->
+            <div>
+              <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">
+                Phone Number <span class="text-gray-400">(Optional)</span>
+              </label>
+              <input
+                type="tel"
+                id="phone"
+                name="phone"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                placeholder="(206) 284-5600"
+              />
+            </div>
+
+            <!-- Notes -->
+            <div>
+              <label for="notes" class="block text-sm font-medium text-gray-700 mb-2">
+                Notes <span class="text-gray-400">(Optional)</span>
+              </label>
+              <textarea
+                id="notes"
+                name="notes"
+                rows="3"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                placeholder="Any additional information..."
+              ></textarea>
+            </div>
+          </div>
+
+          <!-- Retail Glass Section -->
+          <div class="space-y-4 border-t pt-6">
+            <h2 class="text-2xl font-bold pb-2">Retail Glass</h2>
+            <p class="text-sm text-gray-600">Does this location sell glass supplies?</p>
+
+            <!-- Retail URL -->
+            <div>
+              <label for="retail_url" class="block text-sm font-medium text-gray-700 mb-2">
+                Retail/Shop URL <span class="text-gray-400">(Optional - if different from main website)</span>
+              </label>
+              <input
+                type="url"
+                id="retail_url"
+                name="retail_url"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                placeholder="https://example.com/shop"
+              />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-3">
+                Glass Types Available <span class="text-gray-400">(Select all that apply)</span>
+              </label>
+              <div class="space-y-2">
+                <label class="flex items-center">
+                  <input type="checkbox" name="retail_supports_casting" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
+                  <span class="ml-2 text-gray-700">Casting</span>
+                </label>
+                <label class="flex items-center">
+                  <input type="checkbox" name="retail_supports_flameworking_hard" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
+                  <span class="ml-2 text-gray-700">Flameworking - Hard (Borosilicate)</span>
+                </label>
+                <label class="flex items-center">
+                  <input type="checkbox" name="retail_supports_flameworking_soft" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
+                  <span class="ml-2 text-gray-700">Flameworking - Soft (Soda-Lime)</span>
+                </label>
+                <label class="flex items-center">
+                  <input type="checkbox" name="retail_supports_fusing" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
+                  <span class="ml-2 text-gray-700">Fusing</span>
+                </label>
+                <label class="flex items-center">
+                  <input type="checkbox" name="retail_supports_glass_blowing" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
+                  <span class="ml-2 text-gray-700">Glass Blowing</span>
+                </label>
+                <label class="flex items-center">
+                  <input type="checkbox" name="retail_supports_stained_glass" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
+                  <span class="ml-2 text-gray-700">Stained Glass</span>
+                </label>
+                <label class="flex items-center">
+                  <input type="checkbox" name="retail_supports_other" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
+                  <span class="ml-2 text-gray-700">Other</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Classes Section -->
+          <div class="space-y-4 border-t pt-6">
+            <h2 class="text-2xl font-bold pb-2">Classes</h2>
+            <p class="text-sm text-gray-600">Does this location offer glass art classes?</p>
+
+            <!-- Classes URL -->
+            <div>
+              <label for="classes_url" class="block text-sm font-medium text-gray-700 mb-2">
+                Classes URL <span class="text-gray-400">(Optional - if different from main website)</span>
+              </label>
+              <input
+                type="url"
+                id="classes_url"
+                name="classes_url"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                placeholder="https://example.com/classes"
+              />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-3">
+                Techniques Taught <span class="text-gray-400">(Select all that apply)</span>
+              </label>
+              <div class="space-y-2">
+                <label class="flex items-center">
+                  <input type="checkbox" name="classes_supports_casting" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
+                  <span class="ml-2 text-gray-700">Casting</span>
+                </label>
+                <label class="flex items-center">
+                  <input type="checkbox" name="classes_supports_flameworking_hard" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
+                  <span class="ml-2 text-gray-700">Flameworking - Hard (Borosilicate)</span>
+                </label>
+                <label class="flex items-center">
+                  <input type="checkbox" name="classes_supports_flameworking_soft" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
+                  <span class="ml-2 text-gray-700">Flameworking - Soft (Soda-Lime)</span>
+                </label>
+                <label class="flex items-center">
+                  <input type="checkbox" name="classes_supports_fusing" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
+                  <span class="ml-2 text-gray-700">Fusing</span>
+                </label>
+                <label class="flex items-center">
+                  <input type="checkbox" name="classes_supports_glass_blowing" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
+                  <span class="ml-2 text-gray-700">Glass Blowing</span>
+                </label>
+                <label class="flex items-center">
+                  <input type="checkbox" name="classes_supports_stained_glass" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
+                  <span class="ml-2 text-gray-700">Stained Glass</span>
+                </label>
+                <label class="flex items-center">
+                  <input type="checkbox" name="classes_supports_other" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
+                  <span class="ml-2 text-gray-700">Other</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Rentals Section (hidden for now but structured for future) -->
+          <div class="space-y-4 border-t pt-6 hidden">
+            <h2 class="text-2xl font-bold pb-2">Equipment Rentals</h2>
+            <p class="text-sm text-gray-600">Does this location rent equipment or studio space?</p>
+
+            <!-- Rentals URL -->
+            <div>
+              <label for="rentals_url" class="block text-sm font-medium text-gray-700 mb-2">
+                Rentals URL <span class="text-gray-400">(Optional - if different from main website)</span>
+              </label>
+              <input
+                type="url"
+                id="rentals_url"
+                name="rentals_url"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                placeholder="https://example.com/rentals"
+              />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-3">
+                Equipment Available <span class="text-gray-400">(Select all that apply)</span>
+              </label>
+              <div class="space-y-2">
+                <label class="flex items-center">
+                  <input type="checkbox" name="rentals_supports_casting" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
+                  <span class="ml-2 text-gray-700">Casting</span>
+                </label>
+                <label class="flex items-center">
+                  <input type="checkbox" name="rentals_supports_flameworking_hard" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
+                  <span class="ml-2 text-gray-700">Flameworking - Hard (Borosilicate)</span>
+                </label>
+                <label class="flex items-center">
+                  <input type="checkbox" name="rentals_supports_flameworking_soft" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
+                  <span class="ml-2 text-gray-700">Flameworking - Soft (Soda-Lime)</span>
+                </label>
+                <label class="flex items-center">
+                  <input type="checkbox" name="rentals_supports_fusing" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
+                  <span class="ml-2 text-gray-700">Fusing</span>
+                </label>
+                <label class="flex items-center">
+                  <input type="checkbox" name="rentals_supports_glass_blowing" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
+                  <span class="ml-2 text-gray-700">Glass Blowing</span>
+                </label>
+                <label class="flex items-center">
+                  <input type="checkbox" name="rentals_supports_stained_glass" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
+                  <span class="ml-2 text-gray-700">Stained Glass</span>
+                </label>
+                <label class="flex items-center">
+                  <input type="checkbox" name="rentals_supports_other" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
+                  <span class="ml-2 text-gray-700">Other</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Submitter Info -->
+          <div class="border-t pt-6 mt-6">
+            <h3 class="text-lg font-medium mb-4">Your Information (Optional)</h3>
+            <p class="text-sm text-gray-600 mb-4">
+              We won't share your information. It's just so we can follow up if needed.
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label for="submitter_name" class="block text-sm font-medium text-gray-700 mb-2">
+                  Your Name
+                </label>
+                <input
+                  type="text"
+                  id="submitter_name"
+                  name="submitter_name"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label for="submitter_email" class="block text-sm font-medium text-gray-700 mb-2">
+                  Your Email
+                </label>
+                <input
+                  type="email"
+                  id="submitter_email"
+                  name="submitter_email"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- Submit Button -->
+          <div class="pt-6">
+            <button
+              type="submit"
+              class="w-full bg-orange-500 text-white py-3 px-6 rounded-lg font-bold text-lg hover:bg-orange-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Submit
+            </button>
+          </div>
+
+          <!-- Success/Error Messages -->
+          <div id="formMessage" class="hidden p-4 rounded-lg"></div>
+        </form>
+      </div>
+
+      <!-- Back Link -->
+      <div class="text-center mt-8">
+        <a href="/" class="text-orange-500 hover:text-orange-600 font-medium">
+          ← Back to Home
+        </a>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<script>
+  const form = document.getElementById('storeSubmissionForm') as HTMLFormElement;
+  const messageDiv = document.getElementById('formMessage') as HTMLDivElement;
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    // Get form data
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData.entries());
+
+    // Handle checkboxes explicitly (FormData only includes checked boxes)
+    const techniqueFields = [
+      'retail_supports_casting',
+      'retail_supports_flameworking_hard',
+      'retail_supports_flameworking_soft',
+      'retail_supports_fusing',
+      'retail_supports_glass_blowing',
+      'retail_supports_stained_glass',
+      'retail_supports_other',
+      'classes_supports_casting',
+      'classes_supports_flameworking_hard',
+      'classes_supports_flameworking_soft',
+      'classes_supports_fusing',
+      'classes_supports_glass_blowing',
+      'classes_supports_stained_glass',
+      'classes_supports_other',
+      'rentals_supports_casting',
+      'rentals_supports_flameworking_hard',
+      'rentals_supports_flameworking_soft',
+      'rentals_supports_fusing',
+      'rentals_supports_glass_blowing',
+      'rentals_supports_stained_glass',
+      'rentals_supports_other'
+    ];
+    techniqueFields.forEach(field => {
+      data[field] = formData.has(field);
+    });
+
+    // Disable submit button
+    const submitButton = form.querySelector('button[type="submit"]') as HTMLButtonElement;
+    submitButton.disabled = true;
+    submitButton.textContent = 'Submitting...';
+
+    try {
+      const response = await fetch('/api/submit-store', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        // Success
+        messageDiv.className = 'p-4 rounded-lg bg-green-50 border border-green-200 text-green-800';
+        messageDiv.textContent = result.message || 'Thank you! Your submission has been received and will be reviewed shortly.';
+        messageDiv.classList.remove('hidden');
+
+        // Reset form
+        form.reset();
+      } else {
+        // Error
+        messageDiv.className = 'p-4 rounded-lg bg-red-50 border border-red-200 text-red-800';
+        messageDiv.textContent = result.error || 'Something went wrong. Please try again.';
+        messageDiv.classList.remove('hidden');
+      }
+    } catch (error) {
+      messageDiv.className = 'p-4 rounded-lg bg-red-50 border border-red-200 text-red-800';
+      messageDiv.textContent = 'Network error. Please check your connection and try again.';
+      messageDiv.classList.remove('hidden');
+    } finally {
+      // Re-enable submit button
+      submitButton.disabled = false;
+      submitButton.textContent = 'Submit';
+
+      // Scroll to message
+      messageDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  });
+</script>
