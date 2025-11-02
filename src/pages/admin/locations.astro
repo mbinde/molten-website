@@ -41,13 +41,37 @@ export const prerender = false;
       <div id="adminContent" class="hidden">
         <!-- Header -->
         <div class="mb-8">
-          <h1 class="text-4xl font-bold mb-2">Locations Approval Queue</h1>
-          <p class="text-lg text-gray-600">Review and approve location submissions</p>
+          <div class="flex justify-between items-start mb-4">
+            <div>
+              <h1 class="text-4xl font-bold mb-2">Locations Approval Queue</h1>
+              <p class="text-lg text-gray-600">Review and approve location submissions</p>
+            </div>
+            <div class="flex gap-2">
+              <a
+                href="/locations.json"
+                target="_blank"
+                class="bg-gray-500 text-white px-4 py-2 rounded-lg font-medium hover:bg-gray-600 transition text-sm inline-flex items-center gap-2"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                </svg>
+                View JSON
+              </a>
+              <button
+                onclick="regenerateJSON()"
+                id="regenerateBtn"
+                class="bg-blue-500 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-600 transition text-sm"
+              >
+                🔄 Regenerate JSON
+              </button>
+            </div>
+          </div>
           <div class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
             <p class="text-sm text-blue-800">
               <strong>✨ Auto-Geocoding:</strong> When you approve a location, the system automatically looks up its coordinates using OpenStreetMap (free, no API key needed). The public locations.json file is also regenerated automatically.
             </p>
           </div>
+          <div id="regenerateStatus" class="hidden mt-4"></div>
         </div>
 
         <!-- Stats (clickable to filter) -->
@@ -409,6 +433,55 @@ export const prerender = false;
 
     return response;
   }
+
+  // Regenerate JSON function
+  window.regenerateJSON = async function() {
+    const btn = document.getElementById('regenerateBtn');
+    const status = document.getElementById('regenerateStatus');
+
+    btn.disabled = true;
+    btn.textContent = 'Regenerating...';
+    status.classList.remove('hidden');
+    status.className = 'mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-800';
+    status.textContent = '⏳ Regenerating locations.json...';
+
+    try {
+      const response = await authenticatedFetch('/api/generate-locations', {
+        method: 'POST'
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        status.className = 'mt-4 p-3 bg-green-50 border border-green-200 rounded-lg text-sm';
+        status.innerHTML = `
+          <div class="text-green-800 font-semibold">✅ Success!</div>
+          <div class="text-green-700 mt-1">${data.message}</div>
+          <a href="/locations.json" target="_blank" class="text-green-600 underline mt-2 inline-block">
+            View locations.json →
+          </a>
+        `;
+        btn.textContent = '🔄 Regenerate JSON';
+        btn.disabled = false;
+
+        // Auto-hide after 5 seconds
+        setTimeout(() => {
+          status.classList.add('hidden');
+        }, 5000);
+      } else {
+        status.className = 'mt-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-800';
+        status.textContent = `❌ Error: ${data.error || 'Failed to regenerate JSON'}`;
+        btn.textContent = '🔄 Regenerate JSON';
+        btn.disabled = false;
+      }
+    } catch (error) {
+      console.error('Regeneration error:', error);
+      status.className = 'mt-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-800';
+      status.textContent = `❌ Network error: ${error instanceof Error ? error.message : 'Unknown error'}`;
+      btn.textContent = '🔄 Regenerate JSON';
+      btn.disabled = false;
+    }
+  };
 
   // Check auth on page load
   checkExistingAuth();
