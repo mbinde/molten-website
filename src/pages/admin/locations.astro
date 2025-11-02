@@ -47,6 +47,13 @@ export const prerender = false;
               <p class="text-lg text-gray-600">Review and approve location submissions</p>
             </div>
             <div class="flex gap-2">
+              <button
+                onclick="debugKV()"
+                id="debugBtn"
+                class="bg-purple-500 text-white px-4 py-2 rounded-lg font-medium hover:bg-purple-600 transition text-sm"
+              >
+                🔍 Debug KV
+              </button>
               <a
                 href="/locations.json"
                 target="_blank"
@@ -433,6 +440,44 @@ export const prerender = false;
 
     return response;
   }
+
+  // Debug KV function
+  window.debugKV = async function() {
+    const btn = document.getElementById('debugBtn');
+    const status = document.getElementById('regenerateStatus');
+
+    btn.disabled = true;
+    btn.textContent = 'Loading...';
+    status.classList.remove('hidden');
+    status.className = 'mt-4 p-3 bg-purple-50 border border-purple-200 rounded-lg text-sm';
+    status.innerHTML = '<div class="text-purple-800">🔍 Checking KV storage...</div>';
+
+    try {
+      const response = await authenticatedFetch('/api/debug-kv');
+      const data = await response.json();
+
+      if (response.ok) {
+        status.className = 'mt-4 p-4 bg-gray-50 border border-gray-200 rounded-lg text-xs font-mono';
+        status.innerHTML = `
+          <div class="text-gray-800 font-bold mb-2 font-sans">🔍 KV Storage Debug Info</div>
+          <pre class="whitespace-pre-wrap overflow-x-auto">${JSON.stringify(data, null, 2)}</pre>
+        `;
+        btn.textContent = '🔍 Debug KV';
+        btn.disabled = false;
+      } else {
+        status.className = 'mt-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-800';
+        status.textContent = `❌ Error: ${data.error || 'Failed to fetch debug info'}`;
+        btn.textContent = '🔍 Debug KV';
+        btn.disabled = false;
+      }
+    } catch (error) {
+      console.error('Debug error:', error);
+      status.className = 'mt-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-800';
+      status.textContent = `❌ Network error: ${error instanceof Error ? error.message : 'Unknown error'}`;
+      btn.textContent = '🔍 Debug KV';
+      btn.disabled = false;
+    }
+  };
 
   // Regenerate JSON function
   window.regenerateJSON = async function() {
