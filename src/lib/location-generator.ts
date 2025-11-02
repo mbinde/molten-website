@@ -113,7 +113,18 @@ interface LocationsOutput {
 
 async function loadPendingLocations(kv: KVNamespace): Promise<PendingLocationsData> {
   try {
-    const content = await kv.get('pending-locations', 'json');
+    // Try new key first
+    let content = await kv.get('pending-locations', 'json');
+
+    // Fallback to old key for backward compatibility
+    if (!content) {
+      console.log('⚠️  pending-locations not found, checking old pending-stores key...');
+      content = await kv.get('pending-stores', 'json');
+      if (content) {
+        console.log('✅ Found data in pending-stores, will use it (migration recommended)');
+      }
+    }
+
     if (content) {
       return content as PendingLocationsData;
     }

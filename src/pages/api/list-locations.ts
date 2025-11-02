@@ -40,11 +40,20 @@ export const GET: APIRoute = async ({ request, locals }) => {
       );
     }
 
-    // Load pending stores from KV
-    const content = await kv.get('pending-locations', 'json');
+    // Load pending locations from KV (with fallback to old key for backward compatibility)
+    let content = await kv.get('pending-locations', 'json');
+
+    // Fallback: Check old key if new key doesn't exist
+    if (!content) {
+      console.log('⚠️  pending-locations not found, checking old pending-stores key...');
+      content = await kv.get('pending-stores', 'json');
+      if (content) {
+        console.log('✅ Found data in pending-stores, will use it (migration recommended)');
+      }
+    }
 
     if (!content) {
-      // Return empty list if no stores yet
+      // Return empty list if no data in either key
       return new Response(
         JSON.stringify({
           version: '1.0',

@@ -20,8 +20,19 @@ export const GET: APIRoute = async ({ locals }) => {
       );
     }
 
-    // Get generated locations from KV
-    const locationsJSON = await kv.get('locations-json', 'text');
+    // Get generated locations from KV (with fallback to old key)
+    let locationsJSON = await kv.get('locations-json', 'text');
+
+    // Fallback to old key for backward compatibility
+    if (!locationsJSON) {
+      console.log('⚠️  locations-json not found, checking old stores-json key...');
+      locationsJSON = await kv.get('stores-json', 'text');
+      if (locationsJSON) {
+        console.log('✅ Found data in stores-json, will use it (migration recommended)');
+        // Note: The old JSON has store_count/stores, but we'll return it as-is for now
+        // The client should handle both formats, or you can run migration to update it
+      }
+    }
 
     if (!locationsJSON) {
       // Return empty locations list if not generated yet
