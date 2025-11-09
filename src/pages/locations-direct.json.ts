@@ -4,11 +4,45 @@ export const prerender = false;
 
 export const GET: APIRoute = async ({ locals }) => {
   try {
+    console.log('locals:', locals);
+    console.log('locals.runtime:', (locals as any).runtime);
+
     // Get KV namespace from Cloudflare runtime
-    const kv = (locals.runtime as any)?.env?.STORE_DATA;
-    if (!kv) {
+    const runtime = (locals as any).runtime;
+    if (!runtime) {
+      console.error('Runtime not available');
       return new Response(
-        JSON.stringify({ error: 'Storage not configured' }),
+        JSON.stringify({ error: 'Runtime not available', locals_keys: Object.keys(locals) }),
+        {
+          status: 500,
+          headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*'
+          }
+        }
+      );
+    }
+
+    const env = runtime.env;
+    if (!env) {
+      console.error('Env not available');
+      return new Response(
+        JSON.stringify({ error: 'Env not available', runtime_keys: Object.keys(runtime) }),
+        {
+          status: 500,
+          headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*'
+          }
+        }
+      );
+    }
+
+    const kv = env.STORE_DATA;
+    if (!kv) {
+      console.error('KV not available');
+      return new Response(
+        JSON.stringify({ error: 'STORE_DATA not configured', env_keys: Object.keys(env) }),
         {
           status: 500,
           headers: {

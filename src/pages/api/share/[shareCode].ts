@@ -355,7 +355,12 @@ export const DELETE: APIRoute = async ({ params, request, locals, clientAddress 
     // Verify ownership signature
     const ownershipSignature = request.headers.get('X-Ownership-Signature');
 
+    console.log('🔐 [SERVER DELETE] Share code:', shareCode);
+    console.log('🔐 [SERVER DELETE] Stored public key:', share.publicKey?.substring(0, 20) + '...');
+    console.log('🔐 [SERVER DELETE] Received signature:', ownershipSignature?.substring(0, 20) + '...');
+
     if (!ownershipSignature) {
+      console.log('🔐 [SERVER DELETE] ERROR: Missing ownership signature');
       return new Response(
         JSON.stringify({ error: 'Missing ownership signature' }),
         { status: 403, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
@@ -368,16 +373,21 @@ export const DELETE: APIRoute = async ({ params, request, locals, clientAddress 
       share.publicKey
     );
 
+    console.log('🔐 [SERVER DELETE] Signature valid:', isValidOwnership);
+
     if (!isValidOwnership) {
+      console.log('🔐 [SERVER DELETE] ERROR: Invalid ownership signature');
       return new Response(
         JSON.stringify({ error: 'Invalid ownership signature' }),
         { status: 403, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
       );
     }
 
+    console.log('🔐 [SERVER DELETE] Deleting share');
     // Delete share
     await kv.delete(`share:${shareCode}`);
 
+    console.log('🔐 [SERVER DELETE] SUCCESS');
     return new Response(null, {
       status: 204,
       headers: {
