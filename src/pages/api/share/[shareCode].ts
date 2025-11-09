@@ -378,7 +378,14 @@ export const DELETE: APIRoute = async ({ params, request, locals, clientAddress 
     if (!isValidOwnership) {
       console.log('🔐 [SERVER DELETE] ERROR: Invalid ownership signature');
       return new Response(
-        JSON.stringify({ error: 'Invalid ownership signature' }),
+        JSON.stringify({
+          error: 'Invalid ownership signature',
+          debug: {
+            shareCode,
+            storedPublicKey: share.publicKey?.substring(0, 40) + '...',
+            receivedSignature: ownershipSignature?.substring(0, 40) + '...'
+          }
+        }),
         { status: 403, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
       );
     }
