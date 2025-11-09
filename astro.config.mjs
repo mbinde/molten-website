@@ -12,5 +12,8 @@ export default defineConfig({
   }),
   vite: {
     plugins: [tailwindcss()]
+  },
+  security: {
+    checkOrigin: false // Disable CSRF protection - we use Ed25519 signature auth instead
   }
 });
