@@ -7,9 +7,37 @@ This document explains how to deploy the inventory sharing API endpoints to Clou
 ## 🔧 CloudFlare KV Namespace Setup
 
 The inventory sharing feature requires a CloudFlare KV namespace called `INVENTORY_SHARES` to store:
-- Encrypted inventory snapshots
-- Share metadata (creation time, access counts)
+- Encrypted inventory snapshots (base64-encoded binary data)
+- Share metadata (snapshot timestamp, creation time, access counts)
 - Rate limiting data
+
+### Share Data Structure
+
+Each share stored in KV contains:
+```json
+{
+  "shareCode": "ABC123",
+  "snapshotData": "<base64-encoded snapshot blob>",
+  "publicKey": "<base64-encoded Ed25519 public key>",
+  "snapshotTimestamp": "2025-01-15T10:30:00.000Z",  // Extracted from snapshot JSON
+  "createdAt": "2025-01-15T10:30:05.123Z",           // Server creation timestamp
+  "updatedAt": "2025-02-20T14:15:00.456Z",           // Last owner update (if any)
+  "createdIp": "1.2.3.4",
+  "accessCount": 42,
+  "lastAccessed": "2025-03-10T08:00:00.789Z"
+}
+```
+
+**Key fields:**
+- `snapshotTimestamp` - When the owner created this inventory snapshot (from iOS app)
+- `createdAt` - When the share was first uploaded to server
+- `updatedAt` - When the owner last updated their inventory
+- `lastAccessed` - When friends last downloaded this share
+
+**TTL Calculation:**
+- Shares expire 90 days from `snapshotTimestamp` (owner's last update)
+- Downloads update `lastAccessed` but don't reset TTL
+- Owner updates reset TTL to 90 days from new `snapshotTimestamp`
 
 ### Step 1: Create KV Namespace
 
@@ -344,15 +372,20 @@ console.log('Data:', shareCode);
 
 ### Share codes expiring too soon
 
-**Current:** 90-day expiration
+**Current:** 90-day expiration from owner's last inventory update
 
-**To change:**
-Edit `expirationTtl` in `/src/pages/api/share/index.ts`:
+**How it works:**
+- The server extracts the snapshot timestamp from uploaded inventory data
+- Shares expire 90 days after the owner's last inventory update (not 90 days from download)
+- When friends download a share, the expiration date is preserved (TTL not reset)
+- When owner updates their inventory, the expiration resets to 90 days from new update
+
+**To change expiration period:**
+Edit the TTL calculation in both `/src/pages/api/share/index.ts` and `/src/pages/api/share/[shareCode].ts`:
 
 ```typescript
-await kv.put(`share:${shareCode}`, JSON.stringify(share), {
-  expirationTtl: 180 * 24 * 60 * 60  // Change to 180 days
-});
+// Change 90 to desired number of days
+const expirationDate = new Date(snapshotDate.getTime() + (180 * 24 * 60 * 60 * 1000));
 ```
 
 ---
