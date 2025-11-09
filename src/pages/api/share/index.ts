@@ -113,20 +113,30 @@ export const POST: APIRoute = async ({ request, locals, clientAddress }) => {
       );
     }
 
+    // Extract snapshot timestamp for TTL calculation
+    const snapshotTimestamp = extractSnapshotTimestamp(snapshotData);
+    const now = new Date().toISOString();
+
     // Create share object
     const share = {
       shareCode,
       snapshotData,
       publicKey,
-      createdAt: new Date().toISOString(),
+      snapshotTimestamp: snapshotTimestamp || now,  // Use extracted timestamp or fallback to now
+      createdAt: now,
       createdIp: clientAddress,
       accessCount: 0,
       lastAccessed: null
     };
 
-    // Store in KV (expires after 90 days)
+    // Calculate TTL based on snapshot timestamp (90 days from when owner last updated)
+    const snapshotDate = new Date(snapshotTimestamp || now);
+    const expirationDate = new Date(snapshotDate.getTime() + (90 * 24 * 60 * 60 * 1000));
+    const ttlSeconds = Math.max(60, Math.floor((expirationDate.getTime() - Date.now()) / 1000));
+
+    // Store in KV (expires 90 days from snapshot timestamp)
     await kv.put(`share:${shareCode}`, JSON.stringify(share), {
-      expirationTtl: 90 * 24 * 60 * 60  // 90 days
+      expirationTtl: ttlSeconds
     });
 
     return new Response(null, {
@@ -155,4 +165,47 @@ async function hashBody(data: string): Promise<string> {
   const hashBuffer = await crypto.subtle.digest('SHA-256', dataBuffer);
   const hashArray = Array.from(new Uint8Array(hashBuffer));
   return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+/**
+ * Extract snapshot timestamp from base64-encoded snapshot data
+ * Format: [length:4 bytes][JSON:N bytes][signature:64 bytes]
+ * @param snapshotData Base64-encoded snapshot blob
+ * @returns ISO 8601 timestamp string, or null if parsing fails
+ */
+function extractSnapshotTimestamp(snapshotData: string): string | null {
+  try {
+    // Decode base64
+    const binaryString = atob(snapshotData);
+    const bytes = new Uint8Array(binaryString.length);
+    for (let i = 0; i < binaryString.length; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+
+    // Extract JSON length (first 4 bytes, little-endian Int32)
+    const lengthSize = 4;
+    const signatureSize = 64;
+
+    if (bytes.length < lengthSize + signatureSize) {
+      return null;
+    }
+
+    const jsonLength = bytes[0] | (bytes[1] << 8) | (bytes[2] << 16) | (bytes[3] << 24);
+
+    // Validate length
+    if (jsonLength < 0 || bytes.length !== lengthSize + jsonLength + signatureSize) {
+      return null;
+    }
+
+    // Extract JSON data
+    const jsonBytes = bytes.slice(lengthSize, lengthSize + jsonLength);
+    const jsonString = new TextDecoder().decode(jsonBytes);
+    const payload = JSON.parse(jsonString);
+
+    // Return timestamp from payload
+    return payload.timestamp || null;
+  } catch (error) {
+    console.error('Failed to extract snapshot timestamp:', error);
+    return null;
+  }
 }

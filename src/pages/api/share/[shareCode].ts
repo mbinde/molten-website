@@ -100,11 +100,18 @@ export const GET: APIRoute = async ({ params, request, locals, clientAddress }) 
 
     const share = JSON.parse(shareData);
 
-    // Update access tracking
+    // Update access tracking (but DON'T reset TTL - we want expiration based on owner's last update)
     share.accessCount = (share.accessCount || 0) + 1;
     share.lastAccessed = new Date().toISOString();
+
+    // Calculate remaining TTL based on original snapshot timestamp
+    const snapshotDate = new Date(share.snapshotTimestamp || share.createdAt);
+    const expirationDate = new Date(snapshotDate.getTime() + (90 * 24 * 60 * 60 * 1000));
+    const ttlSeconds = Math.max(60, Math.floor((expirationDate.getTime() - Date.now()) / 1000));
+
+    // Update share metadata but preserve the original TTL
     await kv.put(`share:${shareCode}`, JSON.stringify(share), {
-      expirationTtl: 90 * 24 * 60 * 60  // Keep 90-day expiration
+      expirationTtl: ttlSeconds  // Preserve original expiration based on snapshot timestamp
     });
 
     // Return share data
@@ -238,13 +245,23 @@ export const PUT: APIRoute = async ({ params, request, locals, clientAddress }) 
       );
     }
 
-    // Update share
+    // Extract new snapshot timestamp for updated TTL
+    const snapshotTimestamp = extractSnapshotTimestamp(snapshotData);
+    const now = new Date().toISOString();
+
+    // Update share with new snapshot and timestamp
     share.snapshotData = snapshotData;
     share.publicKey = publicKey;
-    share.updatedAt = new Date().toISOString();
+    share.snapshotTimestamp = snapshotTimestamp || now;  // Update to new snapshot timestamp
+    share.updatedAt = now;
+
+    // Calculate NEW TTL based on updated snapshot timestamp (resets to 90 days from new update)
+    const snapshotDate = new Date(snapshotTimestamp || now);
+    const expirationDate = new Date(snapshotDate.getTime() + (90 * 24 * 60 * 60 * 1000));
+    const ttlSeconds = Math.max(60, Math.floor((expirationDate.getTime() - Date.now()) / 1000));
 
     await kv.put(`share:${shareCode}`, JSON.stringify(share), {
-      expirationTtl: 90 * 24 * 60 * 60  // Keep 90-day expiration
+      expirationTtl: ttlSeconds  // Reset to 90 days from new snapshot timestamp
     });
 
     return new Response(null, {
@@ -387,4 +404,47 @@ async function hashBody(data: string): Promise<string> {
   const hashBuffer = await crypto.subtle.digest('SHA-256', dataBuffer);
   const hashArray = Array.from(new Uint8Array(hashBuffer));
   return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+/**
+ * Extract snapshot timestamp from base64-encoded snapshot data
+ * Format: [length:4 bytes][JSON:N bytes][signature:64 bytes]
+ * @param snapshotData Base64-encoded snapshot blob
+ * @returns ISO 8601 timestamp string, or null if parsing fails
+ */
+function extractSnapshotTimestamp(snapshotData: string): string | null {
+  try {
+    // Decode base64
+    const binaryString = atob(snapshotData);
+    const bytes = new Uint8Array(binaryString.length);
+    for (let i = 0; i < binaryString.length; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+
+    // Extract JSON length (first 4 bytes, little-endian Int32)
+    const lengthSize = 4;
+    const signatureSize = 64;
+
+    if (bytes.length < lengthSize + signatureSize) {
+      return null;
+    }
+
+    const jsonLength = bytes[0] | (bytes[1] << 8) | (bytes[2] << 16) | (bytes[3] << 24);
+
+    // Validate length
+    if (jsonLength < 0 || bytes.length !== lengthSize + jsonLength + signatureSize) {
+      return null;
+    }
+
+    // Extract JSON data
+    const jsonBytes = bytes.slice(lengthSize, lengthSize + jsonLength);
+    const jsonString = new TextDecoder().decode(jsonBytes);
+    const payload = JSON.parse(jsonString);
+
+    // Return timestamp from payload
+    return payload.timestamp || null;
+  } catch (error) {
+    console.error('Failed to extract snapshot timestamp:', error);
+    return null;
+  }
 }
