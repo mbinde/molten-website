@@ -15,5 +15,10 @@ export default defineConfig({
   },
   security: {
     checkOrigin: false // Disable CSRF protection - we use Ed25519 signature auth instead
+  },
+  image: {
+    service: {
+      entrypoint: 'astro/assets/services/noop' // Disable image optimization (we have 1,321 static images)
+    }
   }
 });
