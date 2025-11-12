@@ -9,9 +9,9 @@ echo "📦 Deploying images to Cloudflare Pages..."
 TEMP_DIR=$(mktemp -d)
 echo "📁 Created temp directory: $TEMP_DIR"
 
-# Copy images to temp directory
+# Copy images to temp directory (using rsync for speed)
 mkdir -p "$TEMP_DIR/images"
-cp -r public/images/* "$TEMP_DIR/images/"
+rsync -a public/images/ "$TEMP_DIR/images/"
 cp public/_headers "$TEMP_DIR/"
 
 # Copy index.html to prevent directory listing

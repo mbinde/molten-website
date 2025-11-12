@@ -2,6 +2,7 @@
 import { defineConfig } from 'astro/config';
 import cloudflare from '@astrojs/cloudflare';
 import tailwindcss from '@tailwindcss/vite';
+import { fileURLToPath } from 'node:url';
 
 // https://astro.build/config
 export default defineConfig({
@@ -11,7 +12,13 @@ export default defineConfig({
     // Routing handled by public/_routes.json instead
   }),
   vite: {
-    plugins: [tailwindcss()]
+    plugins: [tailwindcss()],
+    resolve: {
+      extensions: ['.mjs', '.js', '.mts', '.ts', '.jsx', '.tsx', '.json']
+    },
+    ssr: {
+      external: ['crypto', 'stream', 'util', 'buffer']
+    }
   },
   security: {
     checkOrigin: false // Disable CSRF protection - we use Ed25519 signature auth instead

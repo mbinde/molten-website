@@ -6,9 +6,9 @@ echo "📦 Building site for static deployment..."
 # Create dist directory manually (skip Astro build since it hangs)
 mkdir -p dist/images
 
-# Copy all static assets from public/
+# Copy all static assets from public/ (using rsync for speed)
 echo "📁 Copying static assets..."
-cp -r public/* dist/
+rsync -a --delete public/ dist/
 
 echo "✅ Copied $(ls dist/images | wc -l | tr -d ' ') images"
 
