@@ -1,7 +1,7 @@
 /**
- * GET /api/share/:shareCode - Download a friend's share
- * PUT /api/share/:shareCode - Update existing share (requires ownership signature)
- * DELETE /api/share/:shareCode - Delete share (requires ownership signature)
+ * GET /api/v1/share/:shareCode - Download a friend's share
+ * PUT /api/v1/share/:shareCode - Update existing share (requires ownership signature)
+ * DELETE /api/v1/share/:shareCode - Delete share (requires ownership signature)
  *
  * Security:
  * - App Attest assertion in X-Apple-Assertion header (iOS 14+)
@@ -76,7 +76,7 @@ export const GET: APIRoute = async ({ params, request, locals, clientAddress }) 
       assertion,
       {
         method: 'GET',
-        path: `/api/share/${shareCode}`
+        path: `/api/v1/share/${shareCode}`
       },
       env
     );
@@ -197,7 +197,7 @@ export const PUT: APIRoute = async ({ params, request, locals, clientAddress }) 
       assertion,
       {
         method: 'PUT',
-        path: `/api/share/${shareCode}`,
+        path: `/api/v1/share/${shareCode}`,
         bodyHash: await hashBody(snapshotData)
       },
       env
@@ -328,7 +328,7 @@ export const DELETE: APIRoute = async ({ params, request, locals, clientAddress 
       assertion,
       {
         method: 'DELETE',
-        path: `/api/share/${shareCode}`
+        path: `/api/v1/share/${shareCode}`
       },
       env
     );

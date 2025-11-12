@@ -1,5 +1,5 @@
 /**
- * POST /api/share - Create a new inventory share
+ * POST /api/v1/share - Create a new inventory share
  *
  * Request Body:
  * {
@@ -91,7 +91,7 @@ export const POST: APIRoute = async ({ request, locals, clientAddress }) => {
       assertion,
       {
         method: 'POST',
-        path: '/api/share',
+        path: '/api/v1/share',
         bodyHash: await hashBody(snapshotData)
       },
       env

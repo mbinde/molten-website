@@ -1,5 +1,5 @@
 /**
- * GET /api/catalog/data - Download full catalog JSON
+ * GET /api/v1/catalog/data - Download full catalog JSON
  *
  * Purpose:
  * - Download complete catalog as gzipped JSON

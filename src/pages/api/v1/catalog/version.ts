@@ -1,5 +1,5 @@
 /**
- * GET /api/catalog/version - Get latest catalog version metadata
+ * GET /api/v1/catalog/version - Get latest catalog version metadata
  *
  * Purpose:
  * - Allow iOS app to check if catalog update is available
