@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { regenerateLocationsJSON } from '../../lib/location-generator';
+import { regenerateLocationsJSON } from '../../../lib/location-generator';
 
 export const POST: APIRoute = async ({ request }) => {
   try {

@@ -22,7 +22,7 @@
  */
 
 import type { APIRoute } from 'astro';
-import { getLatestCatalogVersion, checkCatalogRateLimit } from '../../../lib/catalog';
+import { getLatestCatalogVersion, checkCatalogRateLimit } from '../../../../lib/catalog';
 
 export const prerender = false;
 

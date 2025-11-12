@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
-import { verifyPassword, generateToken } from '../../lib/auth';
-import { checkRateLimit, recordFailedAttempt, recordSuccessfulLogin, getClientIP } from '../../lib/rate-limit';
+import { verifyPassword, generateToken } from '../../../lib/auth';
+import { checkRateLimit, recordFailedAttempt, recordSuccessfulLogin, getClientIP } from '../../../lib/rate-limit';
 
 // IMPORTANT: Disable prerendering for API routes (required for Cloudflare)
 export const prerender = false;

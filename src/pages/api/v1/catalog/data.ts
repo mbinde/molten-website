@@ -31,8 +31,8 @@ import {
   getCatalogData,
   checkCatalogRateLimit,
   logCatalogDownload
-} from '../../../lib/catalog';
-import { verifyAppAttestAssertion } from '../../../lib/crypto';
+} from '../../../../lib/catalog';
+import { verifyAppAttestAssertion } from '../../../../lib/crypto';
 
 export const prerender = false;
 

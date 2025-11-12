@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
-import { requireAuth } from '../../lib/auth';
-import { regenerateLocationsJSON } from '../../lib/location-generator';
+import { requireAuth } from '../../../lib/auth';
+import { regenerateLocationsJSON } from '../../../lib/location-generator';
 
 // IMPORTANT: Disable prerendering for API routes (required for Cloudflare)
 export const prerender = false;

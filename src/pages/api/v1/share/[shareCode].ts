@@ -10,7 +10,7 @@
  */
 
 import type { APIRoute } from 'astro';
-import { verifyAppAttestAssertion, verifyEd25519Signature, checkRateLimit } from '../../../lib/crypto';
+import { verifyAppAttestAssertion, verifyEd25519Signature, checkRateLimit } from '../../../../lib/crypto';
 
 export const prerender = false;
 
