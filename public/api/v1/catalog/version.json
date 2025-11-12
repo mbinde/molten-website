@@ -1,9 +1,0 @@
-{
-  "version": 1,
-  "item_count": 3282,
-  "release_date": "2025-11-11T22:38:00Z",
-  "file_size": 3314533,
-  "checksum": "3ed85c1450c8caa86e2138a2b51c83af3ba61e01d8f76376c7487fcfa8de5a9a",
-  "min_app_version": "1.0.0",
-  "changelog": "Initial OTA catalog version with 3,282 glass items including manufacturer images and updated metadata"
-}
