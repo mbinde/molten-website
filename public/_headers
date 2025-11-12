@@ -11,13 +11,17 @@
 
 # Product images - long cache since they're immutable
 /images/*.webp
+  Content-Type: image/webp
   Cache-Control: public, max-age=31536000, immutable
 
 /images/*.jpg
+  Content-Type: image/jpeg
   Cache-Control: public, max-age=31536000, immutable
 
 /images/*.jpeg
+  Content-Type: image/jpeg
   Cache-Control: public, max-age=31536000, immutable
 
 /images/*.png
+  Content-Type: image/png
   Cache-Control: public, max-age=31536000, immutable
