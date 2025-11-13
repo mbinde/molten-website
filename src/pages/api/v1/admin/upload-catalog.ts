@@ -7,7 +7,7 @@
  * - Store in KV for OTA updates
  *
  * Security:
- * - ADMIN_PASSWORD required in Authorization header
+ * - CATALOG_API_KEY required in Authorization header (Bearer token)
  * - Rate limiting: 10 requests/hour per IP
  *
  * Request Body:
@@ -87,12 +87,12 @@ export const POST: APIRoute = async ({ request, locals, clientAddress }) => {
       );
     }
 
-    const providedPassword = authHeader.substring(7); // Remove "Bearer "
-    const adminPassword = env.ADMIN_PASSWORD;
+    const providedKey = authHeader.substring(7); // Remove "Bearer "
+    const catalogApiKey = env.CATALOG_API_KEY;
 
-    if (!adminPassword || providedPassword !== adminPassword) {
+    if (!catalogApiKey || providedKey !== catalogApiKey) {
       return new Response(
-        JSON.stringify({ error: 'Invalid admin password' }),
+        JSON.stringify({ error: 'Invalid API key' }),
         {
           status: 403,
           headers: {
