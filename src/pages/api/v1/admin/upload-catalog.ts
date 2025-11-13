@@ -2,29 +2,41 @@
  * POST /api/v1/admin/upload-catalog - Upload new catalog version to KV
  *
  * Purpose:
- * - Upload new catalog JSON to KV storage
- * - Calculate checksums and compress data
- * - Create version metadata
+ * - Allow authenticated admin to upload new catalog versions
+ * - Calculate checksum and compress data
+ * - Store in KV for OTA updates
  *
  * Security:
- * - Requires admin authentication (basic auth or JWT)
- * - Only accessible from deployment scripts
+ * - ADMIN_PASSWORD required in Authorization header
+ * - Rate limiting: 10 requests/hour per IP
  *
  * Request Body:
  * {
- *   "catalog": { "glassitems": [...] },  // Full catalog JSON
- *   "version": 1,  // Version number
- *   "changelog": "Initial release..."
+ *   "catalog": { "glassitems": [...] },
+ *   "version": 2,
+ *   "changelog": "Added 15 new AB Imagery colors...",
+ *   "min_app_version": "1.5.0"
+ * }
+ *
+ * Response:
+ * {
+ *   "success": true,
+ *   "version": 2,
+ *   "item_count": 3198,
+ *   "file_size": 6234567,
+ *   "compressed_size": 1234567,
+ *   "checksum": "sha256:abc123def456..."
  * }
  */
 
 import type { APIRoute } from 'astro';
 import {
+  storeCatalogVersion,
   calculateChecksum,
   compressGzip,
-  storeCatalogVersion,
-  type CatalogVersion
-} from '../../../../../lib/catalog';
+  checkCatalogRateLimit
+} from '../../../../lib/catalog';
+import type { CatalogVersion } from '../../../../lib/catalog';
 
 export const prerender = false;
 
@@ -41,7 +53,7 @@ export const OPTIONS: APIRoute = async () => {
   });
 };
 
-export const POST: APIRoute = async ({ request, locals }) => {
+export const POST: APIRoute = async ({ request, locals, clientAddress }) => {
   const env = (locals.runtime as any)?.env;
   const kv = env?.CATALOG_VERSIONS;
 
@@ -59,31 +71,89 @@ export const POST: APIRoute = async ({ request, locals }) => {
   }
 
   try {
-    // 1. Check authentication
+    // 1. Verify authentication
     const authHeader = request.headers.get('Authorization');
-    const adminPassword = env?.ADMIN_PASSWORD;
-
-    if (!adminPassword || authHeader !== `Bearer ${adminPassword}`) {
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return new Response(
-        JSON.stringify({ error: 'Unauthorized' }),
+        JSON.stringify({ error: 'Missing or invalid Authorization header' }),
         {
           status: 401,
           headers: {
             'Content-Type': 'application/json',
-            'WWW-Authenticate': 'Bearer',
             ...CORS_HEADERS
           }
         }
       );
     }
 
-    // 2. Parse request body
-    const body = await request.json();
+    const providedPassword = authHeader.substring(7); // Remove "Bearer "
+    const adminPassword = env.ADMIN_PASSWORD;
+
+    if (!adminPassword || providedPassword !== adminPassword) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid admin password' }),
+        {
+          status: 403,
+          headers: {
+            'Content-Type': 'application/json',
+            ...CORS_HEADERS
+          }
+        }
+      );
+    }
+
+    // 2. Rate limiting: 10 requests per hour per IP
+    const ipAddress = clientAddress || 'unknown';
+    const rateLimit = await checkCatalogRateLimit(
+      kv,
+      \`admin:\${ipAddress}\`,
+      'upload_catalog',
+      10,
+      60
+    );
+
+    if (!rateLimit.allowed) {
+      return new Response(
+        JSON.stringify({
+          error: 'Rate limit exceeded',
+          resetAt: rateLimit.resetAt.toISOString()
+        }),
+        {
+          status: 429,
+          headers: {
+            'Content-Type': 'application/json',
+            'X-RateLimit-Remaining': '0',
+            'X-RateLimit-Reset': rateLimit.resetAt.toISOString(),
+            'Retry-After': Math.ceil((rateLimit.resetAt.getTime() - Date.now()) / 1000).toString(),
+            ...CORS_HEADERS
+          }
+        }
+      );
+    }
+
+    // 3. Parse request body
+    let body: any;
+    try {
+      body = await request.json();
+    } catch (error) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid JSON in request body' }),
+        {
+          status: 400,
+          headers: {
+            'Content-Type': 'application/json',
+            ...CORS_HEADERS
+          }
+        }
+      );
+    }
+
+    // 4. Validate request body
     const { catalog, version, changelog, min_app_version } = body;
 
-    if (!catalog || !catalog.glassitems || !Array.isArray(catalog.glassitems)) {
+    if (!catalog || typeof catalog !== 'object') {
       return new Response(
-        JSON.stringify({ error: 'Invalid catalog format' }),
+        JSON.stringify({ error: 'Missing or invalid "catalog" field' }),
         {
           status: 400,
           headers: {
@@ -94,9 +164,9 @@ export const POST: APIRoute = async ({ request, locals }) => {
       );
     }
 
-    if (typeof version !== 'number' || version < 1) {
+    if (!version || typeof version !== 'number' || version <= 0) {
       return new Response(
-        JSON.stringify({ error: 'Invalid version number' }),
+        JSON.stringify({ error: 'Missing or invalid "version" field (must be positive integer)' }),
         {
           status: 400,
           headers: {
@@ -107,34 +177,81 @@ export const POST: APIRoute = async ({ request, locals }) => {
       );
     }
 
-    // 3. Calculate metadata
+    if (!changelog || typeof changelog !== 'string') {
+      return new Response(
+        JSON.stringify({ error: 'Missing or invalid "changelog" field' }),
+        {
+          status: 400,
+          headers: {
+            'Content-Type': 'application/json',
+            ...CORS_HEADERS
+          }
+        }
+      );
+    }
+
+    if (!min_app_version || typeof min_app_version !== 'string') {
+      return new Response(
+        JSON.stringify({ error: 'Missing or invalid "min_app_version" field' }),
+        {
+          status: 400,
+          headers: {
+            'Content-Type': 'application/json',
+            ...CORS_HEADERS
+          }
+        }
+      );
+    }
+
+    // 5. Calculate metadata
     const catalogJson = JSON.stringify(catalog);
-    const itemCount = catalog.glassitems.length;
     const fileSize = new TextEncoder().encode(catalogJson).length;
-    const checksum = await calculateChecksum(catalogJson);
+    const itemCount = catalog.glassitems?.length || 0;
 
-    // 4. Compress catalog
+    if (itemCount === 0) {
+      return new Response(
+        JSON.stringify({ error: 'Catalog contains no glass items' }),
+        {
+          status: 400,
+          headers: {
+            'Content-Type': 'application/json',
+            ...CORS_HEADERS
+          }
+        }
+      );
+    }
+
+    console.log(\`📦 Processing catalog upload: version \${version}, \${itemCount} items, \${fileSize} bytes\`);
+
+    // 6. Compress catalog data
     const compressedData = await compressGzip(catalogJson);
+    const compressionRatio = Math.round(compressedData.length / fileSize * 100);
+    console.log(\`🗜️  Compressed: \${fileSize} → \${compressedData.length} bytes (\${compressionRatio}%)\`);
 
-    console.log(`📦 Catalog v${version}: ${itemCount} items, ${fileSize} bytes uncompressed, ${compressedData.length} bytes compressed`);
+    // 7. Calculate checksum of ORIGINAL (uncompressed) data
+    const checksum = await calculateChecksum(catalogJson);
+    console.log(\`🔐 Checksum: \${checksum}\`);
 
-    // 5. Create metadata
+    // 8. Create metadata
+    const now = new Date().toISOString();
     const metadata: CatalogVersion = {
       version,
       item_count: itemCount,
       file_size: fileSize,
       checksum,
-      release_date: new Date().toISOString(),
-      min_app_version: min_app_version || '1.0.0',
-      changelog: changelog || 'No changelog provided',
-      created_at: new Date().toISOString(),
-      created_by: 'admin-upload'
+      release_date: now,
+      min_app_version,
+      changelog,
+      created_at: now,
+      created_by: \`admin@\${ipAddress}\`
     };
 
-    // 6. Store in KV
+    // 9. Store in KV
     await storeCatalogVersion(kv, metadata, compressedData);
 
-    // 7. Return success
+    console.log(\`✅ Successfully uploaded catalog version \${version}\`);
+
+    // 10. Return success response
     return new Response(
       JSON.stringify({
         success: true,
@@ -149,6 +266,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
         status: 200,
         headers: {
           'Content-Type': 'application/json',
+          'X-RateLimit-Remaining': rateLimit.remaining.toString(),
+          'X-RateLimit-Reset': rateLimit.resetAt.toISOString(),
           ...CORS_HEADERS
         }
       }
