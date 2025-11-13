@@ -205,31 +205,33 @@ export async function getCatalogData(kv: KVNamespace, version: number): Promise<
 /**
  * Store catalog version in KV
  * @param kv Cloudflare KV namespace
+ * @param type Catalog type ('glass', 'tools', or 'coatings')
  * @param metadata Version metadata
  * @param compressedData Gzipped catalog JSON
  */
 export async function storeCatalogVersion(
   kv: KVNamespace,
+  type: string,
   metadata: CatalogVersion,
   compressedData: Uint8Array
 ): Promise<void> {
   // Store metadata
   await kv.put(
-    `catalog:version:${metadata.version}:metadata`,
+    `catalog:${type}:version:${metadata.version}:metadata`,
     JSON.stringify(metadata)
   );
 
   // Store compressed data (as base64 since KV stores strings)
   const dataBase64 = bytesToBase64(compressedData);
   await kv.put(
-    `catalog:version:${metadata.version}:data`,
+    `catalog:${type}:version:${metadata.version}:data`,
     dataBase64
   );
 
-  // Update latest version pointer
-  await kv.put('catalog:latest_version', metadata.version.toString());
+  // Update latest version pointer for this catalog type
+  await kv.put(`catalog:${type}:latest_version`, metadata.version.toString());
 
-  console.log(`✅ Stored catalog version ${metadata.version} (${metadata.item_count} items, ${compressedData.length} bytes compressed)`);
+  console.log(`✅ Stored ${type} catalog version ${metadata.version} (${metadata.item_count} items, ${compressedData.length} bytes compressed)`);
 }
 
 /**

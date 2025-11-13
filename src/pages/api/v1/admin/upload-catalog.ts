@@ -12,7 +12,8 @@
  *
  * Request Body:
  * {
- *   "catalog": { "glassitems": [...] },
+ *   "type": "glass",  // "glass", "tools", or "coatings"
+ *   "catalog": { "glassitems": [...] },  // or "tools": [...], "coatings": [...]
  *   "version": 2,
  *   "changelog": "Added 15 new AB Imagery colors...",
  *   "min_app_version": "1.5.0"
@@ -149,7 +150,25 @@ export const POST: APIRoute = async ({ request, locals, clientAddress }) => {
     }
 
     // 4. Validate request body
-    const { catalog, version, changelog, min_app_version } = body;
+    const { type, catalog, version, changelog, min_app_version } = body;
+
+    // Validate catalog type
+    const validTypes = ['glass', 'tools', 'coatings'];
+    if (!type || !validTypes.includes(type)) {
+      return new Response(
+        JSON.stringify({
+          error: 'Missing or invalid "type" field',
+          message: 'Must be one of: glass, tools, coatings'
+        }),
+        {
+          status: 400,
+          headers: {
+            'Content-Type': 'application/json',
+            ...CORS_HEADERS
+          }
+        }
+      );
+    }
 
     if (!catalog || typeof catalog !== 'object') {
       return new Response(
@@ -206,11 +225,27 @@ export const POST: APIRoute = async ({ request, locals, clientAddress }) => {
     // 5. Calculate metadata
     const catalogJson = JSON.stringify(catalog);
     const fileSize = new TextEncoder().encode(catalogJson).length;
-    const itemCount = catalog.glassitems?.length || 0;
+
+    // Get item count based on catalog type
+    let itemCount = 0;
+    let itemsKey = '';
+    if (type === 'glass') {
+      itemsKey = 'glassitems';
+      itemCount = catalog.glassitems?.length || 0;
+    } else if (type === 'tools') {
+      itemsKey = 'tools';
+      itemCount = catalog.tools?.length || 0;
+    } else if (type === 'coatings') {
+      itemsKey = 'coatings';
+      itemCount = catalog.coatings?.length || 0;
+    }
 
     if (itemCount === 0) {
       return new Response(
-        JSON.stringify({ error: 'Catalog contains no glass items' }),
+        JSON.stringify({
+          error: \`Catalog contains no \${type} items\`,
+          message: \`Expected array at catalog.\${itemsKey}\`
+        }),
         {
           status: 400,
           headers: {
@@ -221,7 +256,7 @@ export const POST: APIRoute = async ({ request, locals, clientAddress }) => {
       );
     }
 
-    console.log(\`📦 Processing catalog upload: version \${version}, \${itemCount} items, \${fileSize} bytes\`);
+    console.log(\`📦 Processing \${type} catalog upload: version \${version}, \${itemCount} items, \${fileSize} bytes\`);
 
     // 6. Compress catalog data
     const compressedData = await compressGzip(catalogJson);
@@ -247,9 +282,9 @@ export const POST: APIRoute = async ({ request, locals, clientAddress }) => {
     };
 
     // 9. Store in KV
-    await storeCatalogVersion(kv, metadata, compressedData);
+    await storeCatalogVersion(kv, type, metadata, compressedData);
 
-    console.log(\`✅ Successfully uploaded catalog version \${version}\`);
+    console.log(\`✅ Successfully uploaded \${type} catalog version \${version}\`);
 
     // 10. Return success response
     return new Response(
