@@ -137,26 +137,27 @@ export async function decompressGzip(compressed: Uint8Array): Promise<string> {
 /**
  * Get latest catalog version metadata from KV
  * @param kv Cloudflare KV namespace
+ * @param type Catalog type ('glass', 'tools', or 'coatings')
  * @returns Latest catalog version metadata, or null if none exists
  */
-export async function getLatestCatalogVersion(kv: KVNamespace): Promise<CatalogVersion | null> {
+export async function getLatestCatalogVersion(kv: KVNamespace, type: string): Promise<CatalogVersion | null> {
   try {
-    // Get latest version number
-    const latestVersionStr = await kv.get('catalog:latest_version');
+    // Get latest version number for this catalog type
+    const latestVersionStr = await kv.get(`catalog:${type}:latest_version`);
     if (!latestVersionStr) {
       return null;
     }
 
     const latestVersion = parseInt(latestVersionStr, 10);
     if (isNaN(latestVersion)) {
-      console.error('Invalid latest version:', latestVersionStr);
+      console.error(`Invalid latest version for ${type}:`, latestVersionStr);
       return null;
     }
 
     // Get version metadata
-    return await getCatalogVersion(kv, latestVersion);
+    return await getCatalogVersion(kv, type, latestVersion);
   } catch (error) {
-    console.error('Error getting latest catalog version:', error);
+    console.error(`Error getting latest ${type} catalog version:`, error);
     return null;
   }
 }
@@ -164,19 +165,20 @@ export async function getLatestCatalogVersion(kv: KVNamespace): Promise<CatalogV
 /**
  * Get specific catalog version metadata from KV
  * @param kv Cloudflare KV namespace
+ * @param type Catalog type ('glass', 'tools', or 'coatings')
  * @param version Version number
  * @returns Catalog version metadata, or null if not found
  */
-export async function getCatalogVersion(kv: KVNamespace, version: number): Promise<CatalogVersion | null> {
+export async function getCatalogVersion(kv: KVNamespace, type: string, version: number): Promise<CatalogVersion | null> {
   try {
-    const metadataJson = await kv.get(`catalog:version:${version}:metadata`);
+    const metadataJson = await kv.get(`catalog:${type}:version:${version}:metadata`);
     if (!metadataJson) {
       return null;
     }
 
     return JSON.parse(metadataJson) as CatalogVersion;
   } catch (error) {
-    console.error(`Error getting catalog version ${version}:`, error);
+    console.error(`Error getting ${type} catalog version ${version}:`, error);
     return null;
   }
 }
@@ -184,12 +186,13 @@ export async function getCatalogVersion(kv: KVNamespace, version: number): Promi
 /**
  * Get catalog data (gzipped JSON) from KV
  * @param kv Cloudflare KV namespace
+ * @param type Catalog type ('glass', 'tools', or 'coatings')
  * @param version Version number
  * @returns Compressed catalog data as Uint8Array, or null if not found
  */
-export async function getCatalogData(kv: KVNamespace, version: number): Promise<Uint8Array | null> {
+export async function getCatalogData(kv: KVNamespace, type: string, version: number): Promise<Uint8Array | null> {
   try {
-    const dataBase64 = await kv.get(`catalog:version:${version}:data`);
+    const dataBase64 = await kv.get(`catalog:${type}:version:${version}:data`);
     if (!dataBase64) {
       return null;
     }
@@ -197,7 +200,7 @@ export async function getCatalogData(kv: KVNamespace, version: number): Promise<
     // Decode base64 to Uint8Array
     return base64ToBytes(dataBase64);
   } catch (error) {
-    console.error(`Error getting catalog data for version ${version}:`, error);
+    console.error(`Error getting ${type} catalog data for version ${version}:`, error);
     return null;
   }
 }
