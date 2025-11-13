@@ -107,7 +107,7 @@ export const POST: APIRoute = async ({ request, locals, clientAddress }) => {
     const ipAddress = clientAddress || 'unknown';
     const rateLimit = await checkCatalogRateLimit(
       kv,
-      \`admin:\${ipAddress}\`,
+      `admin:${ipAddress}`,
       'upload_catalog',
       10,
       60
@@ -243,8 +243,8 @@ export const POST: APIRoute = async ({ request, locals, clientAddress }) => {
     if (itemCount === 0) {
       return new Response(
         JSON.stringify({
-          error: \`Catalog contains no \${type} items\`,
-          message: \`Expected array at catalog.\${itemsKey}\`
+          error: `Catalog contains no \${type} items`,
+          message: `Expected array at catalog.\${itemsKey}`
         }),
         {
           status: 400,
@@ -256,16 +256,16 @@ export const POST: APIRoute = async ({ request, locals, clientAddress }) => {
       );
     }
 
-    console.log(\`📦 Processing \${type} catalog upload: version \${version}, \${itemCount} items, \${fileSize} bytes\`);
+    console.log(`📦 Processing \${type} catalog upload: version \${version}, \${itemCount} items, \${fileSize} bytes`);
 
     // 6. Compress catalog data
     const compressedData = await compressGzip(catalogJson);
     const compressionRatio = Math.round(compressedData.length / fileSize * 100);
-    console.log(\`🗜️  Compressed: \${fileSize} → \${compressedData.length} bytes (\${compressionRatio}%)\`);
+    console.log(`🗜️  Compressed: \${fileSize} → \${compressedData.length} bytes (\${compressionRatio}%)`);
 
     // 7. Calculate checksum of ORIGINAL (uncompressed) data
     const checksum = await calculateChecksum(catalogJson);
-    console.log(\`🔐 Checksum: \${checksum}\`);
+    console.log(`🔐 Checksum: \${checksum}`);
 
     // 8. Create metadata
     const now = new Date().toISOString();
@@ -278,13 +278,13 @@ export const POST: APIRoute = async ({ request, locals, clientAddress }) => {
       min_app_version,
       changelog,
       created_at: now,
-      created_by: \`admin@\${ipAddress}\`
+      created_by: `admin@\${ipAddress}`
     };
 
     // 9. Store in KV
     await storeCatalogVersion(kv, type, metadata, compressedData);
 
-    console.log(\`✅ Successfully uploaded \${type} catalog version \${version}\`);
+    console.log(`✅ Successfully uploaded \${type} catalog version \${version}`);
 
     // 10. Return success response
     return new Response(
