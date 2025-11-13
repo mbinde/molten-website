@@ -2,3 +2,16 @@ name = "molten-website"
 pages_build_output_dir = "./dist"
 compatibility_date = "2024-11-11"
 compatibility_flags = ["nodejs_compat_v2"]
+
+# KV Namespace Bindings
+[[kv_namespaces]]
+binding = "CATALOG_VERSIONS"
+id = "70e1329616dd4bcc9090abbf89bc381c"
+
+[[kv_namespaces]]
+binding = "INVENTORY_SHARES"
+id = "263efa6720e247afb54e9e36ae8fbf32"
+
+[[kv_namespaces]]
+binding = "STORE_DATA"
+id = "0dd92b62a7534d35886501d95ea66811"
