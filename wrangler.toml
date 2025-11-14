@@ -25,3 +25,8 @@ id = "a9393c916da848b09c2d0e741eee8832"
 binding = "RATINGS_DB"
 database_name = "molten-ratings"
 database_id = "d6430b05-ab4d-4553-87ab-eafa69c5794d"
+
+# R2 Bucket for product images
+[[r2_buckets]]
+binding = "PRODUCT_IMAGES"
+bucket_name = "molten-product-images"
