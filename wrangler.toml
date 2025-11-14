@@ -15,3 +15,13 @@ id = "263efa6720e247afb54e9e36ae8fbf32"
 [[kv_namespaces]]
 binding = "STORE_DATA"
 id = "0dd92b62a7534d35886501d95ea66811"
+
+[[kv_namespaces]]
+binding = "RATINGS_CACHE"
+id = "PLACEHOLDER_REPLACE_AFTER_CREATING_KV"
+
+# D1 Database for Ratings
+[[d1_databases]]
+binding = "RATINGS_DB"
+database_name = "molten-ratings"
+database_id = "PLACEHOLDER_REPLACE_AFTER_CREATING_D1"
