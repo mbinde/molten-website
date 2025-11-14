@@ -18,10 +18,10 @@ id = "0dd92b62a7534d35886501d95ea66811"
 
 [[kv_namespaces]]
 binding = "RATINGS_CACHE"
-id = "PLACEHOLDER_REPLACE_AFTER_CREATING_KV"
+id = "a9393c916da848b09c2d0e741eee8832"
 
 # D1 Database for Ratings
 [[d1_databases]]
 binding = "RATINGS_DB"
 database_name = "molten-ratings"
-database_id = "PLACEHOLDER_REPLACE_AFTER_CREATING_D1"
+database_id = "d6430b05-ab4d-4553-87ab-eafa69c5794d"
