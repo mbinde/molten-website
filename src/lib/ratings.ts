@@ -42,10 +42,59 @@ interface RateLimitRecord {
 // Constants
 // ============================================================================
 
+// Comprehensive profanity list (client-side filtering tier 1)
+// Based on community-maintained lists + glass art context
 const PROFANITY_LIST = new Set([
-  'damn', 'hell', 'shit', 'fuck', 'ass', 'bitch',
-  'bastard', 'crap', 'piss', 'dick', 'cock', 'pussy',
-  'fag', 'slut', 'whore', 'nigger', 'cunt', 'asshole'
+  // Strong profanity
+  'fuck', 'fucked', 'fucker', 'fucking', 'fucks', 'motherfucker',
+  'shit', 'shitty', 'shits', 'bullshit', 'horseshit',
+  'cunt', 'cunts',
+  'cock', 'cocks', 'cocksucker',
+  'pussy', 'pussies',
+  'asshole', 'assholes',
+
+  // Moderate profanity
+  'damn', 'goddamn', 'dammit',
+  'hell',
+  'ass', 'asses',
+  'bitch', 'bitches', 'bitchy',
+  'bastard', 'bastards',
+  'crap', 'crappy',
+  'piss', 'pissed', 'pissing',
+  'dick', 'dicks',
+
+  // Racial/ethnic slurs (zero tolerance)
+  'nigger', 'nigga', 'nig',
+  'chink', 'gook', 'jap',
+  'kike', 'spic', 'wetback',
+  'towelhead', 'raghead',
+  'beaner', 'cracker',
+
+  // Sexual orientation/gender slurs (zero tolerance)
+  'fag', 'faggot', 'fags',
+  'dyke', 'dykes',
+  'tranny', 'trannies',
+  'shemale',
+
+  // Disability slurs (zero tolerance)
+  'retard', 'retarded', 'retards',
+  'tard', 'libtard',
+  'spaz', 'spastic',
+
+  // Sexual/explicit
+  'porn', 'porno',
+  'whore', 'whores',
+  'slut', 'sluts', 'slutty',
+  'rape', 'raping', 'rapist',
+
+  // Spam/commercial
+  'viagra', 'cialis',
+  'casino', 'poker',
+  'lottery', 'jackpot',
+  'bitcoin', 'crypto',
+
+  // Common obfuscations
+  'fuk', 'fck', 'sht', 'btch'
 ]);
 
 const RATE_LIMIT_WINDOW = 3600; // 1 hour in seconds
@@ -278,7 +327,7 @@ export async function aggregateRatingsForItem(
   itemStableId: string
 ): Promise<AggregatedRating | null> {
   try {
-    // Get average rating and count
+    // Get average rating and count (ONLY approved submissions)
     const ratingStats = await db
       .prepare(`
         SELECT
@@ -286,6 +335,7 @@ export async function aggregateRatingsForItem(
           COUNT(*) as total_ratings
         FROM rating_submissions
         WHERE item_stable_id = ?
+          AND moderation_status = 'approved'
       `)
       .bind(itemStableId)
       .first<{ average_rating: number; total_ratings: number }>();
@@ -294,16 +344,20 @@ export async function aggregateRatingsForItem(
       return null;
     }
 
-    // Get word frequencies
+    // Get word frequencies (ONLY from approved submissions)
     const wordResults = await db
       .prepare(`
         SELECT
-          word,
+          w.word,
           COUNT(*) as frequency
-        FROM word_submissions
-        WHERE item_stable_id = ?
-        GROUP BY word
-        ORDER BY frequency DESC, word ASC
+        FROM word_submissions w
+        INNER JOIN rating_submissions r
+          ON w.item_stable_id = r.item_stable_id
+          AND w.cloudkit_user_id_hash = r.cloudkit_user_id_hash
+        WHERE w.item_stable_id = ?
+          AND r.moderation_status = 'approved'
+        GROUP BY w.word
+        ORDER BY frequency DESC, w.word ASC
         LIMIT 50
       `)
       .bind(itemStableId)
