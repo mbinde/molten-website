@@ -18,17 +18,19 @@ export const GET: APIRoute = async ({ locals }) => {
   try {
     const cacheKey = 'ratings:bulk:all';
 
-    // Try to get from KV cache first (24 hour TTL)
-    const cached = await kv.get(cacheKey, 'json');
-    if (cached) {
-      console.log('✅ [bulk] Returning cached bulk ratings');
-      return new Response(JSON.stringify(cached), {
-        status: 200,
-        headers: {
-          'Content-Type': 'application/json',
-          'Cache-Control': 'public, max-age=3600', // Client can cache for 1 hour
-        },
-      });
+    // Try to get from KV cache first (24 hour TTL) if KV is available
+    if (kv) {
+      const cached = await kv.get(cacheKey, 'json');
+      if (cached) {
+        console.log('✅ [bulk] Returning cached bulk ratings');
+        return new Response(JSON.stringify(cached), {
+          status: 200,
+          headers: {
+            'Content-Type': 'application/json',
+            'Cache-Control': 'public, max-age=3600', // Client can cache for 1 hour
+          },
+        });
+      }
     }
 
     // Query D1 directly for all items with ratings
@@ -85,10 +87,12 @@ export const GET: APIRoute = async ({ locals }) => {
       count: ratings.length,
     };
 
-    // Cache in KV for 24 hours (86400 seconds)
-    await kv.put(cacheKey, JSON.stringify(response), {
-      expirationTtl: 86400,
-    });
+    // Cache in KV for 24 hours (86400 seconds) if KV is available
+    if (kv) {
+      await kv.put(cacheKey, JSON.stringify(response), {
+        expirationTtl: 86400,
+      });
+    }
 
     console.log(`✅ [bulk] Generated bulk ratings file (${ratings.length} ratings)`);
 
