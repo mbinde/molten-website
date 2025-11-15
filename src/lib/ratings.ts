@@ -132,15 +132,15 @@ export function validateRatingSubmission(submission: RatingSubmission): { valid:
     errors.push('Star rating must be between 1 and 5');
   }
 
-  // Validate words array (optional, but if provided must be exactly 5)
+  // Validate words array (optional, 0-5 words allowed)
   if (!Array.isArray(submission.words)) {
     errors.push('Words must be an array');
   } else {
     const nonEmptyWords = submission.words.filter(w => w.trim().length > 0);
 
-    // Allow either 0 words or exactly 5 words
-    if (nonEmptyWords.length !== 0 && nonEmptyWords.length !== 5) {
-      errors.push('Please provide either 0 or 5 words (not ' + nonEmptyWords.length + ')');
+    // Allow any number from 0-5 words
+    if (nonEmptyWords.length > 5) {
+      errors.push('Maximum 5 words allowed');
     }
 
     // Validate each non-empty word
