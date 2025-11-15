@@ -129,6 +129,10 @@ export const DELETE: APIRoute = async ({ request, locals }) => {
       );
     }
 
+    // CRITICAL: Invalidate the bulk cache so clients get fresh data
+    await kv.delete('ratings:bulk:all');
+    console.log('✅ [delete] Invalidated bulk cache after deleting ratings');
+
     // Return success
     return new Response(JSON.stringify({
       success: true,
