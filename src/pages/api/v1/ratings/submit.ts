@@ -143,6 +143,10 @@ export const POST: APIRoute = async ({ request, locals }) => {
     const aggregated = await aggregateRatingsForItem(db, body.itemStableId);
     if (aggregated) {
       await setCachedRating(kv, aggregated);
+
+      // CRITICAL: Invalidate bulk cache so clients get fresh data
+      await kv.delete('ratings:bulk:all');
+      console.log('✅ [submit] Invalidated bulk cache after new rating');
     }
 
     // Return success
