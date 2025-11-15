@@ -237,11 +237,13 @@ export const GET: APIRoute = async ({ request, locals, clientAddress }) => {
     });
 
     // 7. Return gzipped SQLite database
+    // NOTE: Do NOT set Content-Encoding: gzip header!
+    // URLSession auto-decompresses responses with this header, but we want the app
+    // to manually decompress so it can track progress and handle errors properly.
     return new Response(catalogData, {
       status: 200,
       headers: {
         'Content-Type': 'application/x-sqlite3',
-        'Content-Encoding': 'gzip',
         'Content-Length': catalogData.length.toString(),
         'ETag': etag,
         'Cache-Control': 'public, max-age=86400',  // Cache for 24 hours
