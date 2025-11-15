@@ -31,16 +31,52 @@ export const GET: APIRoute = async ({ locals }) => {
       });
     }
 
-    // Fetch all aggregated ratings from KV
-    // KV keys are prefixed with "ratings:aggregated:"
-    const listResult = await kv.list({ prefix: 'ratings:aggregated:' });
+    // Query D1 directly for all items with ratings
+    const result = await db
+      .prepare(
+        `SELECT
+          item_stable_id,
+          AVG(stars) as average_rating,
+          COUNT(*) as total_ratings
+        FROM ratings
+        GROUP BY item_stable_id
+        HAVING COUNT(*) > 0`
+      )
+      .all();
 
     const ratings = [];
-    for (const key of listResult.keys) {
-      const rating = await kv.get(key.name, 'json');
-      if (rating) {
-        ratings.push(rating);
-      }
+
+    // For each item with ratings, get top words from aggregated_words table
+    for (const row of result.results) {
+      const itemStableId = row.item_stable_id;
+      const averageRating = row.average_rating;
+      const totalRatings = row.total_ratings;
+
+      // Get top 5 words for this item
+      const wordsResult = await db
+        .prepare(
+          `SELECT word, frequency
+           FROM aggregated_words
+           WHERE item_stable_id = ?
+           ORDER BY frequency DESC, word ASC
+           LIMIT 5`
+        )
+        .bind(itemStableId)
+        .all();
+
+      const topWords = wordsResult.results.map((w, index) => ({
+        word: w.word,
+        frequency: w.frequency,
+        rank: index + 1,
+      }));
+
+      ratings.push({
+        item_stable_id: itemStableId,
+        average_rating: averageRating,
+        total_ratings: totalRatings,
+        top_words: topWords,
+        last_aggregated: Math.floor(Date.now() / 1000), // Unix timestamp
+      });
     }
 
     const response = {
