@@ -86,15 +86,24 @@ const PROFANITY_LIST = new Set([
   'whore', 'whores',
   'slut', 'sluts', 'slutty',
   'rape', 'raping', 'rapist',
+  'penis', 'vagina', 'testicle',
+  'orgasm', 'masturbate',
 
   // Spam/commercial
   'viagra', 'cialis',
   'casino', 'poker',
   'lottery', 'jackpot',
   'bitcoin', 'crypto',
+  'forex', 'trading',
+  'enlargement',
 
   // Common obfuscations
-  'fuk', 'fck', 'sht', 'btch'
+  'f**k', 'f***', 'fuk', 'fck',
+  'sh*t', 'sht',
+  'b*tch', 'btch',
+  'a**', 'a**hole',
+  'd*mn', 'dmn',
+  'p*ss'
 ]);
 
 const RATE_LIMIT_WINDOW = 3600; // 1 hour in seconds
