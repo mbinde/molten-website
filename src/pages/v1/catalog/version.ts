@@ -101,7 +101,7 @@ export const GET: APIRoute = async ({ request, locals, clientAddress }) => {
         status: 200,
         headers: {
           'Content-Type': 'application/json',
-          'Cache-Control': 'public, max-age=3600',  // Cache for 1 hour
+          'Cache-Control': 'no-cache, must-revalidate',  // No cache during development
           'ETag': `"${version.version}"`,
           'X-RateLimit-Remaining': rateLimit.remaining.toString(),
           'X-RateLimit-Reset': rateLimit.resetAt.toISOString(),
