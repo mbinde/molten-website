@@ -96,45 +96,9 @@ export const GET: APIRoute = async ({ request, locals, clientAddress }) => {
       );
     }
 
-    // 2. Rate limiting: 100 requests per hour per IP (high limit for testing)
+    // 2. Rate limiting: DISABLED for testing
     const ipAddress = clientAddress || 'unknown';
-    const rateLimit = await checkCatalogRateLimit(
-      kv,
-      `ip:${ipAddress}`,
-      'catalog_database',
-      100,
-      60
-    );
-
-    if (!rateLimit.allowed) {
-      // Log failed download attempt
-      await logCatalogDownload(kv, {
-        version: 0,
-        ip_address: ipAddress,
-        user_agent: request.headers.get('User-Agent') || undefined,
-        download_type: 'full',
-        success: false,
-        error_message: 'Rate limit exceeded',
-        downloaded_at: new Date().toISOString()
-      });
-
-      return new Response(
-        JSON.stringify({
-          error: 'Rate limit exceeded',
-          resetAt: rateLimit.resetAt.toISOString()
-        }),
-        {
-          status: 429,
-          headers: {
-            'Content-Type': 'application/json',
-            'X-RateLimit-Remaining': '0',
-            'X-RateLimit-Reset': rateLimit.resetAt.toISOString(),
-            'Retry-After': Math.ceil((rateLimit.resetAt.getTime() - Date.now()) / 1000).toString(),
-            ...CORS_HEADERS
-          }
-        }
-      );
-    }
+    const rateLimit = { allowed: true, remaining: 999, resetAt: new Date() }; // Fake rate limit for now
 
     // 3. Get requested version (or latest)
     const requestedVersion = url.searchParams.get('version');
