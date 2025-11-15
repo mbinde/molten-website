@@ -96,13 +96,13 @@ export const GET: APIRoute = async ({ request, locals, clientAddress }) => {
       );
     }
 
-    // 2. Rate limiting: 10 requests per hour per IP
+    // 2. Rate limiting: 100 requests per hour per IP (high limit for testing)
     const ipAddress = clientAddress || 'unknown';
     const rateLimit = await checkCatalogRateLimit(
       kv,
       `ip:${ipAddress}`,
       'catalog_database',
-      10,
+      100,
       60
     );
 
