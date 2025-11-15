@@ -45,6 +45,8 @@ export const GET: APIRoute = async ({ locals }) => {
 
     // List all ratings from KV cache (keys are "ratings:aggregated:<item_stable_id>")
     const listResult = await kv.list({ prefix: 'ratings:aggregated:' });
+    console.log(`🔍 [bulk] Found ${listResult.keys.length} rating keys in KV`);
+    console.log(`🔍 [bulk] Keys: ${listResult.keys.map(k => k.name).join(', ')}`);
 
     const ratings = [];
 
@@ -53,6 +55,9 @@ export const GET: APIRoute = async ({ locals }) => {
       const rating = await kv.get(key.name, 'json');
       if (rating) {
         ratings.push(rating);
+        console.log(`  ✓ Loaded rating for ${rating.itemStableId}: ${rating.averageRating} stars`);
+      } else {
+        console.log(`  ✗ Failed to load rating for key: ${key.name}`);
       }
     }
 

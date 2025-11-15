@@ -140,13 +140,18 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
     // Immediately aggregate and update cache (for instant feedback during development)
     // TODO: Switch to cron-based aggregation with moderation when ready for production
+    console.log(`🔄 [submit] Aggregating ratings for item: ${body.itemStableId}`);
     const aggregated = await aggregateRatingsForItem(db, body.itemStableId);
     if (aggregated) {
+      console.log(`✅ [submit] Aggregated ${aggregated.totalRatings} ratings: ${aggregated.averageRating} stars`);
       await setCachedRating(kv, aggregated);
+      console.log(`✅ [submit] Cached aggregated rating for ${body.itemStableId}`);
 
       // CRITICAL: Invalidate bulk cache so clients get fresh data
       await kv.delete('ratings:bulk:all');
       console.log('✅ [submit] Invalidated bulk cache after new rating');
+    } else {
+      console.log(`⚠️ [submit] aggregateRatingsForItem returned null for ${body.itemStableId}`);
     }
 
     // Return success
