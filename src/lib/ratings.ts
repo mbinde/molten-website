@@ -132,28 +132,31 @@ export function validateRatingSubmission(submission: RatingSubmission): { valid:
     errors.push('Star rating must be between 1 and 5');
   }
 
-  // Validate words array
+  // Validate words array (optional, but if provided must be exactly 5)
   if (!Array.isArray(submission.words)) {
     errors.push('Words must be an array');
-  } else if (submission.words.length !== 5) {
-    errors.push('Exactly 5 words are required');
   } else {
-    // Validate each word
-    submission.words.forEach((word, index) => {
+    const nonEmptyWords = submission.words.filter(w => w.trim().length > 0);
+
+    // Allow either 0 words or exactly 5 words
+    if (nonEmptyWords.length !== 0 && nonEmptyWords.length !== 5) {
+      errors.push('Please provide either 0 or 5 words (not ' + nonEmptyWords.length + ')');
+    }
+
+    // Validate each non-empty word
+    nonEmptyWords.forEach((word, index) => {
       const cleanWord = word.trim().toLowerCase();
 
-      if (cleanWord.length === 0) {
-        errors.push(`Word ${index + 1} cannot be empty`);
-      } else if (cleanWord.length > 30) {
-        errors.push(`Word ${index + 1} must be 30 characters or less`);
+      if (cleanWord.length > 30) {
+        errors.push(`Word must be 30 characters or less`);
       } else if (PROFANITY_LIST.has(cleanWord)) {
-        errors.push(`Word ${index + 1} contains profanity`);
+        errors.push(`Word contains profanity`);
       }
     });
 
-    // Check for duplicate words
-    const uniqueWords = new Set(submission.words.map(w => w.trim().toLowerCase()));
-    if (uniqueWords.size !== submission.words.length) {
+    // Check for duplicate words (only among non-empty words)
+    const uniqueWords = new Set(nonEmptyWords.map(w => w.trim().toLowerCase()));
+    if (uniqueWords.size !== nonEmptyWords.length) {
       errors.push('Words must be unique');
     }
   }
@@ -245,15 +248,16 @@ export async function submitRating(
     // Start transaction (D1 doesn't support explicit transactions, but batch does atomic operations)
     const batch = [];
 
-    // 1. Insert/update star rating
+    // 1. Insert/update star rating (auto-approve for immediate visibility)
     batch.push(
       db.prepare(`
-        INSERT INTO rating_submissions (item_stable_id, cloudkit_user_id_hash, star_rating, submitted_at, app_attest_token)
-        VALUES (?, ?, ?, ?, ?)
+        INSERT INTO rating_submissions (item_stable_id, cloudkit_user_id_hash, star_rating, submitted_at, app_attest_token, moderation_status)
+        VALUES (?, ?, ?, ?, ?, 'approved')
         ON CONFLICT(item_stable_id, cloudkit_user_id_hash) DO UPDATE SET
           star_rating = excluded.star_rating,
           submitted_at = excluded.submitted_at,
-          app_attest_token = excluded.app_attest_token
+          app_attest_token = excluded.app_attest_token,
+          moderation_status = 'approved'
       `).bind(
         submission.itemStableId,
         submission.cloudkitUserIdHash,
@@ -269,20 +273,23 @@ export async function submitRating(
         .bind(submission.itemStableId, submission.cloudkitUserIdHash)
     );
 
-    // 3. Insert new words
+    // 3. Insert new words (only non-empty ones)
     submission.words.forEach((word, index) => {
-      batch.push(
-        db.prepare(`
-          INSERT INTO word_submissions (item_stable_id, cloudkit_user_id_hash, word, position, submitted_at)
-          VALUES (?, ?, ?, ?, ?)
-        `).bind(
-          submission.itemStableId,
-          submission.cloudkitUserIdHash,
-          word.trim().toLowerCase(),
-          index + 1,
-          now
-        )
-      );
+      const cleanWord = word.trim().toLowerCase();
+      if (cleanWord.length > 0) {
+        batch.push(
+          db.prepare(`
+            INSERT INTO word_submissions (item_stable_id, cloudkit_user_id_hash, word, position, submitted_at)
+            VALUES (?, ?, ?, ?, ?)
+          `).bind(
+            submission.itemStableId,
+            submission.cloudkitUserIdHash,
+            cleanWord,
+            index + 1,
+            now
+          )
+        );
+      }
     });
 
     // Execute batch

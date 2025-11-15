@@ -34,7 +34,8 @@ import {
   checkRateLimit,
   incrementRateLimit,
   submitRating,
-  deleteCachedRating
+  aggregateRatingsForItem,
+  setCachedRating
 } from '../../../../lib/ratings';
 
 export const prerender = false;
@@ -137,8 +138,12 @@ export const POST: APIRoute = async ({ request, locals }) => {
     // Increment rate limit counter
     await incrementRateLimit(db, body.cloudkitUserIdHash);
 
-    // Invalidate cache for this item (will be re-aggregated by cron)
-    await deleteCachedRating(kv, body.itemStableId);
+    // Immediately aggregate and update cache (for instant feedback during development)
+    // TODO: Switch to cron-based aggregation with moderation when ready for production
+    const aggregated = await aggregateRatingsForItem(db, body.itemStableId);
+    if (aggregated) {
+      await setCachedRating(kv, aggregated);
+    }
 
     // Return success
     return new Response(JSON.stringify({
