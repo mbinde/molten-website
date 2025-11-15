@@ -2,6 +2,7 @@
   "version": 1,
   "include": [
     "/api/*",
+    "/v1/*",
     "/admin/*",
     "/locations.json",
     "/locations-direct.json",
