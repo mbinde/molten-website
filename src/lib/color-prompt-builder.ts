@@ -139,15 +139,15 @@ export function buildColorPrompt(colors: ColorInput[], styleKeywords: string[] =
 
   // Add colors with percentages
   if (colorData.length === 1) {
-    prompt += `design in ${colorData[0].name} (100%)`;
+    prompt += `image in ${colorData[0].name} (100%)`;
   } else if (colorData.length === 2) {
-    prompt += `design with ${colorData[0].percentage}% ${colorData[0].name} and ${colorData[1].percentage}% ${colorData[1].name}`;
+    prompt += `image with ${colorData[0].percentage}% ${colorData[0].name} and ${colorData[1].percentage}% ${colorData[1].name}`;
   } else {
     // List all colors with percentages
     const colorList = colorData.map(c => `${c.percentage}% ${c.name}`);
     const lastColor = colorList[colorList.length - 1];
     const otherColors = colorList.slice(0, -1).join(', ');
-    prompt += `design with ${otherColors}, and ${lastColor}`;
+    prompt += `image with ${otherColors}, and ${lastColor}`;
   }
 
   return prompt;
