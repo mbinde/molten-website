@@ -137,6 +137,9 @@ export function buildColorPrompt(colors: ColorInput[], styleKeywords: string[] =
     prompt = styleKeywords.join(' ') + ' ';
   }
 
+  // Add connecting phrase
+  prompt += ' with the image made up of ';
+
   // Categorize colors by distribution
   const percentages = colorData.map(c => c.percentage);
   const max = Math.max(...percentages);
@@ -148,12 +151,12 @@ export function buildColorPrompt(colors: ColorInput[], styleKeywords: string[] =
     if (colorData.length === 1) {
       prompt += `${colorData[0].name}`;
     } else if (colorData.length === 2) {
-      prompt += `with ${colorData[0].name} and ${colorData[1].name}`;
+      prompt += `${colorData[0].name} and ${colorData[1].name}`;
     } else {
       const colorNames = colorData.map(c => c.name);
       const lastColor = colorNames[colorNames.length - 1];
       const otherColors = colorNames.slice(0, -1).join(', ');
-      prompt += `with ${otherColors}, and ${lastColor}`;
+      prompt += `${otherColors}, and ${lastColor}`;
     }
   } else {
     // Categorize by percentage bands
