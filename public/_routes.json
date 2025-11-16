@@ -6,7 +6,8 @@
     "/admin/*",
     "/locations.json",
     "/locations-direct.json",
-    "/test.json"
+    "/test.json",
+    "/test-color-generator"
   ],
   "exclude": []
 }
