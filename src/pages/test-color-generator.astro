@@ -280,6 +280,10 @@
                 <small style="color: #666; display: block; margin-top: 0.25rem;">
                     Examples: modern, spooky, festive, warm, cool, vibrant, dark
                 </small>
+                <label style="display: flex; align-items: center; font-weight: normal; cursor: pointer; margin-top: 0.75rem;">
+                    <input type="checkbox" id="includeStandardSuffix" checked style="margin-right: 0.5rem;">
+                    <span>Include standard suffix: "flowing, artistic, smooth gradients"</span>
+                </label>
             </div>
 
             <div class="form-group">
@@ -826,6 +830,9 @@
             // Get selected model
             const selectedModel = document.querySelector('input[name="model"]:checked').value;
 
+            // Get standard suffix checkbox
+            const includeStandardSuffix = document.getElementById('includeStandardSuffix').checked;
+
             // Show loading
             btn.disabled = true;
             regenerateBtn.disabled = true;
@@ -845,6 +852,7 @@
                         colors,
                         style,
                         model: selectedModel,
+                        includeStandardSuffix: includeStandardSuffix,
                         width: 384,
                         height: 256
                     })
@@ -910,6 +918,7 @@
                             colors,
                             style,
                             model: selectedModel,
+                            includeStandardSuffix: includeStandardSuffix,
                             width: 384,
                             height: 256
                         })

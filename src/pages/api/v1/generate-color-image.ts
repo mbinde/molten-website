@@ -74,9 +74,10 @@ export const POST: APIRoute = async ({ request, locals }) => {
     const width = body.width || 512;
     const height = body.height || 512;
     const model = body.model || 'flux-schnell'; // Default to Flux
+    const includeStandardSuffix = body.includeStandardSuffix !== undefined ? body.includeStandardSuffix : true;
 
     // Build the prompt
-    const prompt = buildColorPrompt(colors, styleKeywords);
+    const prompt = buildColorPrompt(colors, styleKeywords, includeStandardSuffix);
 
     console.log('Generated prompt:', prompt);
     console.log('Using model:', model);

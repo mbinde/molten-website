@@ -104,7 +104,7 @@ export function hexToColorName(hex: string): string {
 /**
  * Build a weighted prompt from color palette
  */
-export function buildColorPrompt(colors: ColorInput[], styleKeywords: string[] = []): string {
+export function buildColorPrompt(colors: ColorInput[], styleKeywords: string[] = [], includeStandardSuffix: boolean = true): string {
   if (!colors || colors.length === 0) {
     return 'abstract colorful design';
   }
@@ -219,7 +219,9 @@ export function buildColorPrompt(colors: ColorInput[], styleKeywords: string[] =
   }
 
   // Add style qualifiers
-  prompt += ', flowing, artistic, smooth gradients';
+  if (includeStandardSuffix) {
+    prompt += ', flowing, artistic, smooth gradients';
+  }
 
   return prompt;
 }
