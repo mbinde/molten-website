@@ -132,17 +132,82 @@ function buildColorPrompt(colors, styleKeywords = []) {
     prompt = styleKeywords.join(' ') + ' ';
   }
 
-  // Add colors with percentages
-  if (colorData.length === 1) {
-    prompt += `${colorData[0].name} (100%)`;
-  } else if (colorData.length === 2) {
-    prompt += `${colorData[0].percentage}% ${colorData[0].name} and ${colorData[1].percentage}% ${colorData[1].name}`;
+  // Categorize colors by distribution
+  const percentages = colorData.map(c => c.percentage);
+  const max = Math.max(...percentages);
+  const min = Math.min(...percentages);
+  const range = max - min;
+
+  // If distribution is relatively even (range <= 15%), just list them
+  if (range <= 15) {
+    if (colorData.length === 1) {
+      prompt += `${colorData[0].name}`;
+    } else if (colorData.length === 2) {
+      prompt += `with ${colorData[0].name} and ${colorData[1].name}`;
+    } else {
+      const colorNames = colorData.map(c => c.name);
+      const lastColor = colorNames[colorNames.length - 1];
+      const otherColors = colorNames.slice(0, -1).join(', ');
+      prompt += `with ${otherColors}, and ${lastColor}`;
+    }
   } else {
-    // List all colors with percentages
-    const colorList = colorData.map(c => `${c.percentage}% ${c.name}`);
-    const lastColor = colorList[colorList.length - 1];
-    const otherColors = colorList.slice(0, -1).join(', ');
-    prompt += `${otherColors}, and ${lastColor}`;
+    // Categorize by percentage bands
+    const categories = {
+      primarily: [],   // 40%+
+      mostly: [],      // 20-39%
+      some: [],        // 10-19%
+      touches: []      // <10%
+    };
+
+    colorData.forEach(c => {
+      if (c.percentage >= 40) categories.primarily.push(c.name);
+      else if (c.percentage >= 20) categories.mostly.push(c.name);
+      else if (c.percentage >= 10) categories.some.push(c.name);
+      else categories.touches.push(c.name);
+    });
+
+    // Build categorized description
+    const parts = [];
+
+    if (categories.primarily.length > 0) {
+      if (categories.primarily.length === 1) {
+        parts.push(`primarily ${categories.primarily[0]}`);
+      } else {
+        parts.push(`primarily ${categories.primarily.join(' and ')}`);
+      }
+    }
+
+    if (categories.mostly.length > 0) {
+      if (categories.mostly.length === 1) {
+        parts.push(`mostly ${categories.mostly[0]}`);
+      } else {
+        const last = categories.mostly[categories.mostly.length - 1];
+        const others = categories.mostly.slice(0, -1).join(', ');
+        parts.push(`mostly ${others} and ${last}`);
+      }
+    }
+
+    if (categories.some.length > 0) {
+      if (categories.some.length === 1) {
+        parts.push(`some ${categories.some[0]}`);
+      } else {
+        const last = categories.some[categories.some.length - 1];
+        const others = categories.some.slice(0, -1).join(', ');
+        parts.push(`some ${others} and ${last}`);
+      }
+    }
+
+    if (categories.touches.length > 0) {
+      if (categories.touches.length === 1) {
+        parts.push(`touches of ${categories.touches[0]}`);
+      } else {
+        const last = categories.touches[categories.touches.length - 1];
+        const others = categories.touches.slice(0, -1).join(', ');
+        parts.push(`touches of ${others} and ${last}`);
+      }
+    }
+
+    prompt += parts.join(', ');
   }
 
   return prompt;

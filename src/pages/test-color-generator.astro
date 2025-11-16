@@ -272,6 +272,9 @@
                 <button class="btn btn-secondary btn-small" id="addColorBtn">
                     + Add Color
                 </button>
+                <button class="btn btn-secondary btn-small" id="randomizeBtn" style="margin-left: 0.5rem;">
+                    🎲 Randomize Weights
+                </button>
             </div>
 
             <div class="form-group">
@@ -821,11 +824,35 @@
             }
         }
 
+        function randomizeWeights() {
+            const weightInputs = document.querySelectorAll('.weight-input');
+
+            if (weightInputs.length === 0) {
+                return;
+            }
+
+            // Generate random weights
+            const randomWeights = [];
+            for (let i = 0; i < weightInputs.length; i++) {
+                randomWeights.push(Math.random());
+            }
+
+            // Normalize to sum to 1
+            const sum = randomWeights.reduce((a, b) => a + b, 0);
+            const normalizedWeights = randomWeights.map(w => w / sum);
+
+            // Apply to inputs (rounded to 2 decimal places)
+            weightInputs.forEach((input, index) => {
+                input.value = normalizedWeights[index].toFixed(2);
+            });
+        }
+
         // Initialize with modern preset
         loadPreset('modern');
 
         // Attach event listeners after DOM is ready
         document.getElementById('addColorBtn').addEventListener('click', () => addColorRow());
+        document.getElementById('randomizeBtn').addEventListener('click', () => randomizeWeights());
         document.getElementById('generateBtn').addEventListener('click', () => generateImage());
 
         // Preset buttons
