@@ -269,13 +269,13 @@
                 <div id="colorInputs" class="color-inputs">
                     <!-- Color rows will be added here -->
                 </div>
-                <button class="btn btn-secondary btn-small" onclick="addColorRow()">
+                <button class="btn btn-secondary btn-small" id="addColorBtn">
                     + Add Color
                 </button>
             </div>
 
             <div class="form-group">
-                <button class="btn btn-primary" onclick="generateImage()" id="generateBtn">
+                <button class="btn btn-primary" id="generateBtn">
                     Generate Image
                 </button>
             </div>
@@ -283,7 +283,7 @@
             <div class="form-group">
                 <label>Quick Presets</label>
                 <div class="presets">
-                    <button class="preset-btn" onclick="loadPreset('modern')">
+                    <button class="preset-btn" data-preset="modern">
                         <strong>Modern Glass</strong>
                         <div class="preset-colors">
                             <div class="preset-color" style="background: #4A90E2"></div>
@@ -291,7 +291,7 @@
                             <div class="preset-color" style="background: #7ED321"></div>
                         </div>
                     </button>
-                    <button class="preset-btn" onclick="loadPreset('halloween')">
+                    <button class="preset-btn" data-preset="halloween">
                         <strong>Halloween</strong>
                         <div class="preset-colors">
                             <div class="preset-color" style="background: #FF8C00"></div>
@@ -299,7 +299,7 @@
                             <div class="preset-color" style="background: #000000"></div>
                         </div>
                     </button>
-                    <button class="preset-btn" onclick="loadPreset('christmas')">
+                    <button class="preset-btn" data-preset="christmas">
                         <strong>Christmas</strong>
                         <div class="preset-colors">
                             <div class="preset-color" style="background: #DC143C"></div>
@@ -307,7 +307,7 @@
                             <div class="preset-color" style="background: #FFD700"></div>
                         </div>
                     </button>
-                    <button class="preset-btn" onclick="loadPreset('sunset')">
+                    <button class="preset-btn" data-preset="sunset">
                         <strong>Warm Sunset</strong>
                         <div class="preset-colors">
                             <div class="preset-color" style="background: #FF6347"></div>
@@ -315,7 +315,7 @@
                             <div class="preset-color" style="background: #FFD700"></div>
                         </div>
                     </button>
-                    <button class="preset-btn" onclick="loadPreset('ocean')">
+                    <button class="preset-btn" data-preset="ocean">
                         <strong>Ocean Blues</strong>
                         <div class="preset-colors">
                             <div class="preset-color" style="background: #1E90FF"></div>
@@ -323,7 +323,7 @@
                             <div class="preset-color" style="background: #20B2AA"></div>
                         </div>
                     </button>
-                    <button class="preset-btn" onclick="loadPreset('forest')">
+                    <button class="preset-btn" data-preset="forest">
                         <strong>Forest Greens</strong>
                         <div class="preset-colors">
                             <div class="preset-color" style="background: #006400"></div>
@@ -407,29 +407,32 @@
             row.className = 'color-row';
 
             row.innerHTML = `
-                <input type="color" class="color-preview" value="${hex}" onchange="updateHexFromColor(this)">
-                <input type="text" class="hex-input" placeholder="#RRGGBB" value="${hex}" pattern="^#[0-9A-Fa-f]{6}$" onchange="updateColorFromHex(this)">
+                <input type="color" class="color-preview" value="${hex}">
+                <input type="text" class="hex-input" placeholder="#RRGGBB" value="${hex}" pattern="^#[0-9A-Fa-f]{6}$">
                 <input type="number" class="weight-input" placeholder="Weight" value="${weight}" min="0" max="1" step="0.1">
-                <button class="btn btn-remove" onclick="removeColorRow(this)">×</button>
+                <button class="btn btn-remove">×</button>
             `;
 
+            // Add event listeners
+            const colorPreview = row.querySelector('.color-preview');
+            const hexInput = row.querySelector('.hex-input');
+            const removeBtn = row.querySelector('.btn-remove');
+
+            colorPreview.addEventListener('change', () => {
+                hexInput.value = colorPreview.value.toUpperCase();
+            });
+
+            hexInput.addEventListener('change', () => {
+                if (/^#[0-9A-Fa-f]{6}$/.test(hexInput.value)) {
+                    colorPreview.value = hexInput.value;
+                }
+            });
+
+            removeBtn.addEventListener('click', () => {
+                row.remove();
+            });
+
             container.appendChild(row);
-        }
-
-        function removeColorRow(btn) {
-            btn.parentElement.remove();
-        }
-
-        function updateHexFromColor(colorInput) {
-            const hexInput = colorInput.nextElementSibling;
-            hexInput.value = colorInput.value.toUpperCase();
-        }
-
-        function updateColorFromHex(hexInput) {
-            const colorInput = hexInput.previousElementSibling;
-            if (/^#[0-9A-Fa-f]{6}$/.test(hexInput.value)) {
-                colorInput.value = hexInput.value;
-            }
         }
 
         function loadPreset(presetName) {
@@ -550,6 +553,18 @@
 
         // Initialize with modern preset
         loadPreset('modern');
+
+        // Attach event listeners after DOM is ready
+        document.getElementById('addColorBtn').addEventListener('click', () => addColorRow());
+        document.getElementById('generateBtn').addEventListener('click', () => generateImage());
+
+        // Preset buttons
+        document.querySelectorAll('.preset-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const preset = btn.getAttribute('data-preset');
+                loadPreset(preset);
+            });
+        });
     </script>
 </body>
 </html>
