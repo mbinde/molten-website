@@ -150,8 +150,5 @@ export function buildColorPrompt(colors: ColorInput[], styleKeywords: string[] =
     prompt += `design with ${otherColors}, and ${lastColor}`;
   }
 
-  // Add style qualifiers
-  prompt += ', flowing, artistic, smooth gradients';
-
   return prompt;
 }
