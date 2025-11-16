@@ -288,14 +288,13 @@ export default {
         });
       }
 
+      const modelName = '@cf/leonardoai/leonardo-phoenix';
       const imageResponse = await ai.run(
-        '@cf/bytedance/stable-diffusion-xl-lightning',
+        modelName,
         {
           prompt: prompt,
-          num_steps: 4, // Lightning model works well with fewer steps
           width: width,
           height: height,
-          guidance: 7.5,
         }
       );
 
@@ -306,6 +305,7 @@ export default {
           'Access-Control-Allow-Origin': '*',
           'Cache-Control': 'public, max-age=86400', // Cache for 24 hours
           'X-Generated-Prompt': prompt, // Debug header
+          'X-Model-Name': modelName,
         },
       });
 

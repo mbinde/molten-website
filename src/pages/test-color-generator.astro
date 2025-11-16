@@ -424,6 +424,8 @@
                 <p style="color: #999;">Your generated image will appear here</p>
             </div>
             <div id="generatedInfo" class="generated-info" style="display: none;">
+                <strong>Model:</strong>
+                <p id="modelText"></p>
                 <strong>Generated Prompt:</strong>
                 <p id="promptText"></p>
             </div>
@@ -845,8 +847,10 @@
                     throw new Error(errorMessage);
                 }
 
-                // Get the generated prompt from headers
+                // Get the generated prompt and model from headers
                 const generatedPrompt = response.headers.get('X-Generated-Prompt');
+                const modelName = response.headers.get('X-Model-Name');
+                console.log('Model:', modelName);
                 console.log('Generated prompt:', generatedPrompt);
 
                 // Convert response to blob and create image URL
@@ -893,6 +897,10 @@
                         result.innerHTML = `<img src="${imageUrl}" alt="Generated image">`;
 
                         const retryPrompt = retryResponse.headers.get('X-Generated-Prompt');
+                        const retryModel = retryResponse.headers.get('X-Model-Name');
+                        if (retryModel) {
+                            document.getElementById('modelText').textContent = retryModel;
+                        }
                         if (retryPrompt) {
                             document.getElementById('promptText').textContent = retryPrompt + ' (retried)';
                             generatedInfo.style.display = 'block';
@@ -905,7 +913,10 @@
                     const imageUrl = URL.createObjectURL(blob);
                     result.innerHTML = `<img src="${imageUrl}" alt="Generated image">`;
 
-                    // Show generated prompt
+                    // Show generated prompt and model
+                    if (modelName) {
+                        document.getElementById('modelText').textContent = modelName;
+                    }
                     if (generatedPrompt) {
                         document.getElementById('promptText').textContent = generatedPrompt;
                         generatedInfo.style.display = 'block';

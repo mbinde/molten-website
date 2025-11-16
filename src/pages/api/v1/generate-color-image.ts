@@ -81,14 +81,13 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
     // Call Cloudflare Workers AI
     const ai = runtime.env.AI;
+    const modelName = '@cf/leonardoai/leonardo-phoenix';
     const imageResponse = await ai.run(
-      '@cf/bytedance/stable-diffusion-xl-lightning',
+      modelName,
       {
         prompt: prompt,
-        num_steps: 4, // Lightning model works well with fewer steps
         width: width,
         height: height,
-        guidance: 7.5,
       }
     );
 
@@ -98,6 +97,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
         'Content-Type': 'image/png',
         'Cache-Control': 'public, max-age=86400',
         'X-Generated-Prompt': prompt,
+        'X-Model-Name': modelName,
       },
     });
 
