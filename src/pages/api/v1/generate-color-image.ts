@@ -73,23 +73,36 @@ export const POST: APIRoute = async ({ request, locals }) => {
     const styleKeywords = body.style || [];
     const width = body.width || 512;
     const height = body.height || 512;
+    const model = body.model || 'flux-schnell'; // Default to Flux
 
     // Build the prompt
     const prompt = buildColorPrompt(colors, styleKeywords);
 
     console.log('Generated prompt:', prompt);
+    console.log('Using model:', model);
+
+    // Map model selection to Cloudflare model IDs
+    const modelMap: Record<string, { id: string; params: any }> = {
+      'flux-schnell': {
+        id: '@cf/black-forest-labs/flux-1-schnell',
+        params: { prompt, num_steps: 4 }
+      },
+      'sdxl-lightning': {
+        id: '@cf/bytedance/stable-diffusion-xl-lightning',
+        params: { prompt, num_steps: 4, width, height, guidance: 7.5 }
+      },
+      'sdxl-base': {
+        id: '@cf/stabilityai/stable-diffusion-xl-base-1.0',
+        params: { prompt, num_steps: 20, width, height, guidance: 7.5 }
+      }
+    };
+
+    const selectedModel = modelMap[model] || modelMap['flux-schnell'];
+    const modelName = selectedModel.id;
 
     // Call Cloudflare Workers AI
     const ai = runtime.env.AI;
-    const modelName = '@cf/leonardoai/leonardo-phoenix';
-    const imageResponse = await ai.run(
-      modelName,
-      {
-        prompt: prompt,
-        width: width,
-        height: height,
-      }
-    );
+    const imageResponse = await ai.run(modelName, selectedModel.params);
 
     // Return the generated image
     return new Response(imageResponse, {

@@ -252,6 +252,24 @@
             </div>
 
             <div class="form-group">
+                <label>AI Model</label>
+                <div style="display: flex; flex-direction: column; gap: 0.5rem; padding: 0.5rem; background: #f9f9f9; border-radius: 4px;">
+                    <label style="display: flex; align-items: center; font-weight: normal; cursor: pointer;">
+                        <input type="radio" name="model" value="flux-schnell" checked style="margin-right: 0.5rem;">
+                        <span><strong>Flux-1-Schnell</strong> (recommended) - High quality, $0.00004/image</span>
+                    </label>
+                    <label style="display: flex; align-items: center; font-weight: normal; cursor: pointer;">
+                        <input type="radio" name="model" value="sdxl-lightning" style="margin-right: 0.5rem;">
+                        <span><strong>SD-XL Lightning</strong> (free) - Fast, 4 steps</span>
+                    </label>
+                    <label style="display: flex; align-items: center; font-weight: normal; cursor: pointer;">
+                        <input type="radio" name="model" value="sdxl-base" style="margin-right: 0.5rem;">
+                        <span><strong>SD-XL Base</strong> (free) - Slower, 20 steps, higher quality</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
                 <label for="styleKeywords">Style Keywords (comma-separated)</label>
                 <input
                     type="text"
@@ -799,6 +817,9 @@
             const styleText = document.getElementById('styleKeywords').value;
             const style = styleText.split(',').map(s => s.trim()).filter(s => s);
 
+            // Get selected model
+            const selectedModel = document.querySelector('input[name="model"]:checked').value;
+
             // Show loading
             btn.disabled = true;
             btn.textContent = 'Generating...';
@@ -816,6 +837,7 @@
                     body: JSON.stringify({
                         colors,
                         style,
+                        model: selectedModel,
                         width: 384,
                         height: 256
                     })
@@ -880,6 +902,7 @@
                         body: JSON.stringify({
                             colors,
                             style,
+                            model: selectedModel,
                             width: 384,
                             height: 256
                         })
