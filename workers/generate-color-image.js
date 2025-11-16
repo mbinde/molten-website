@@ -286,13 +286,13 @@ export default {
       }
 
       const imageResponse = await ai.run(
-        '@cf/stabilityai/stable-diffusion-xl-base-1.0',
+        '@cf/bytedance/stable-diffusion-xl-lightning',
         {
           prompt: prompt,
-          num_steps: 20, // Max allowed on free tier
+          num_steps: 4, // Lightning model works well with fewer steps
           width: width,
           height: height,
-          guidance: 7.5, // How closely to follow the prompt
+          guidance: 7.5,
         }
       );
 

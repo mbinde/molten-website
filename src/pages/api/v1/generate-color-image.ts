@@ -82,10 +82,10 @@ export const POST: APIRoute = async ({ request, locals }) => {
     // Call Cloudflare Workers AI
     const ai = runtime.env.AI;
     const imageResponse = await ai.run(
-      '@cf/stabilityai/stable-diffusion-xl-base-1.0',
+      '@cf/bytedance/stable-diffusion-xl-lightning',
       {
         prompt: prompt,
-        num_steps: 20,
+        num_steps: 4, // Lightning model works well with fewer steps
         width: width,
         height: height,
         guidance: 7.5,
