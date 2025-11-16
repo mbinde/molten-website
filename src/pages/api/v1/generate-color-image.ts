@@ -85,7 +85,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     const modelMap: Record<string, { id: string; params: any }> = {
       'flux-schnell': {
         id: '@cf/black-forest-labs/flux-1-schnell',
-        params: { prompt, num_steps: 4 }
+        params: { prompt, num_steps: 4, width, height }
       },
       'sdxl-lightning': {
         id: '@cf/bytedance/stable-diffusion-xl-lightning',

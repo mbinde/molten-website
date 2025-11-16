@@ -437,7 +437,12 @@
         </div>
 
         <div class="panel">
-            <h2>Generated Image</h2>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <h2 style="margin: 0;">Generated Image</h2>
+                <button class="btn btn-primary btn-small" id="regenerateBtn" style="display: none;">
+                    🔄 Regenerate
+                </button>
+            </div>
             <div id="result">
                 <p style="color: #999;">Your generated image will appear here</p>
             </div>
@@ -792,6 +797,7 @@
 
         async function generateImage() {
             const btn = document.getElementById('generateBtn');
+            const regenerateBtn = document.getElementById('regenerateBtn');
             const result = document.getElementById('result');
             const generatedInfo = document.getElementById('generatedInfo');
 
@@ -822,6 +828,7 @@
 
             // Show loading
             btn.disabled = true;
+            regenerateBtn.disabled = true;
             btn.textContent = 'Generating...';
             result.innerHTML = '<div class="loading"><div class="spinner"></div><p>Generating your image...<br>This may take 5-10 seconds</p></div>';
             generatedInfo.style.display = 'none';
@@ -928,6 +935,9 @@
                             document.getElementById('promptText').textContent = retryPrompt + ' (retried)';
                             generatedInfo.style.display = 'block';
                         }
+
+                        // Show regenerate button after successful retry
+                        regenerateBtn.style.display = 'block';
                     } else {
                         throw new Error('Retry request failed');
                     }
@@ -944,6 +954,9 @@
                         document.getElementById('promptText').textContent = generatedPrompt;
                         generatedInfo.style.display = 'block';
                     }
+
+                    // Show regenerate button after successful generation
+                    regenerateBtn.style.display = 'block';
                 }
 
             } catch (error) {
@@ -951,6 +964,7 @@
                 result.innerHTML = `<p class="error">Error: ${error.message}<br><br>Check the browser console for more details.</p>`;
             } finally {
                 btn.disabled = false;
+                regenerateBtn.disabled = false;
                 btn.textContent = 'Generate Image';
             }
         }
@@ -985,6 +999,7 @@
         document.getElementById('addColorBtn').addEventListener('click', () => addColorRow());
         document.getElementById('randomizeBtn').addEventListener('click', () => randomizeWeights());
         document.getElementById('generateBtn').addEventListener('click', () => generateImage());
+        document.getElementById('regenerateBtn').addEventListener('click', () => generateImage());
 
         // Preset buttons
         document.querySelectorAll('.preset-btn').forEach(btn => {
