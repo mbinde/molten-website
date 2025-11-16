@@ -109,17 +109,25 @@ export function buildColorPrompt(colors: ColorInput[], styleKeywords: string[] =
     return 'abstract colorful design';
   }
 
-  // Sort by weight (highest first)
-  const sortedColors = [...colors].sort((a, b) => (b.weight || 1) - (a.weight || 1));
-
   // Calculate total weight
-  const totalWeight = sortedColors.reduce((sum, c) => sum + (c.weight || 1), 0);
+  const totalWeight = colors.reduce((sum, c) => sum + (c.weight || 1), 0);
 
-  // Convert to color names with percentages
-  const colorData = sortedColors.map(c => ({
-    name: hexToColorName(c.hex),
-    percentage: Math.round(((c.weight || 1) / totalWeight) * 100)
-  }));
+  // Convert to color names and combine duplicates
+  const colorMap = new Map<string, number>();
+
+  for (const color of colors) {
+    const name = hexToColorName(color.hex);
+    const weight = color.weight || 1;
+    colorMap.set(name, (colorMap.get(name) || 0) + weight);
+  }
+
+  // Convert to array with percentages and sort by weight (highest first)
+  const colorData = Array.from(colorMap.entries())
+    .map(([name, weight]) => ({
+      name,
+      percentage: Math.round((weight / totalWeight) * 100)
+    }))
+    .sort((a, b) => b.percentage - a.percentage);
 
   // Build descriptive prompt
   let prompt = '';
