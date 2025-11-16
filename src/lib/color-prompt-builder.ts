@@ -125,22 +125,22 @@ export function buildColorPrompt(colors: ColorInput[], styleKeywords: string[] =
 
   // Add dominant colors
   if (colorNames.length === 1) {
-    prompt += `abstract design in ${colorNames[0]}`;
+    prompt += `design in ${colorNames[0]}`;
   } else if (colorNames.length === 2) {
-    prompt += `abstract design with ${colorNames[0]} and ${colorNames[1]}`;
+    prompt += `design with ${colorNames[0]} and ${colorNames[1]}`;
   } else if (colorNames.length >= 3) {
     const primary = colorNames[0];
     const secondary = colorNames[1];
     const accents = colorNames.slice(2, 4).join(' and ');
 
-    prompt += `abstract design, predominantly ${primary} and ${secondary}`;
+    prompt += `design, predominantly ${primary} and ${secondary}`;
     if (accents) {
       prompt += `, with accents of ${accents}`;
     }
   }
 
   // Add style qualifiers
-  prompt += ', flowing, artistic, smooth gradients, modern aesthetic';
+  prompt += ', flowing, artistic, smooth gradients';
 
   return prompt;
 }
