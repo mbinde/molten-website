@@ -137,6 +137,11 @@ export function buildColorPrompt(colors: ColorInput[], styleKeywords: string[] =
     prompt = styleKeywords.join(' ') + ' ';
   }
 
+  // Simple percentage-based prompt (straight percentages)
+  const colorParts = colorData.map(c => `${c.percentage}% ${c.name}`);
+  prompt += colorParts.join(', ');
+
+  /* COMMENTED OUT: Natural language approach (can resurrect if percentages don't work)
   // Add connecting phrase
   prompt += ' with the image made up of ';
 
@@ -217,6 +222,7 @@ export function buildColorPrompt(colors: ColorInput[], styleKeywords: string[] =
 
     prompt += parts.join(', ');
   }
+  END COMMENTED OUT SECTION */
 
   // Add style qualifiers
   if (includeStandardSuffix) {
