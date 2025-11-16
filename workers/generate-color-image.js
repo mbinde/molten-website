@@ -199,11 +199,11 @@ function buildColorPrompt(colors, styleKeywords = []) {
 
     if (categories.touches.length > 0) {
       if (categories.touches.length === 1) {
-        parts.push(`touches of ${categories.touches[0]}`);
+        parts.push(`hints of ${categories.touches[0]}`);
       } else {
         const last = categories.touches[categories.touches.length - 1];
         const others = categories.touches.slice(0, -1).join(', ');
-        parts.push(`touches of ${others} and ${last}`);
+        parts.push(`hints of ${others} and ${last}`);
       }
     }
 

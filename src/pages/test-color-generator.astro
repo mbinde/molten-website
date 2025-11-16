@@ -722,6 +722,45 @@
             // Don't change style keywords - let user keep their own
         }
 
+        async function checkIfBlackImage(blob) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0);
+
+                    // Sample a few pixels to check if image is all black
+                    const imageData = ctx.getImageData(0, 0, img.width, img.height);
+                    const data = imageData.data;
+
+                    let totalBrightness = 0;
+                    const sampleCount = Math.min(1000, data.length / 4); // Sample up to 1000 pixels
+
+                    for (let i = 0; i < sampleCount; i++) {
+                        const idx = i * 4 * Math.floor(data.length / (sampleCount * 4));
+                        const r = data[idx];
+                        const g = data[idx + 1];
+                        const b = data[idx + 2];
+                        totalBrightness += (r + g + b) / 3;
+                    }
+
+                    const avgBrightness = totalBrightness / sampleCount;
+
+                    // If average brightness is very low (<5), image is essentially black
+                    const isBlack = avgBrightness < 5;
+                    console.log('Image brightness check:', avgBrightness, 'isBlack:', isBlack);
+
+                    URL.revokeObjectURL(img.src);
+                    resolve(isBlack);
+                };
+                img.onerror = () => resolve(false);
+                img.src = URL.createObjectURL(blob);
+            });
+        }
+
         async function generateImage() {
             const btn = document.getElementById('generateBtn');
             const result = document.getElementById('result');
@@ -766,8 +805,8 @@
                     body: JSON.stringify({
                         colors,
                         style,
-                        width: 512,
-                        height: 512
+                        width: 256,
+                        height: 256
                     })
                 });
 
@@ -803,15 +842,57 @@
 
                 // Convert response to blob and create image URL
                 const blob = await response.blob();
-                const imageUrl = URL.createObjectURL(blob);
 
-                // Display image
-                result.innerHTML = `<img src="${imageUrl}" alt="Generated image">`;
+                // Check if image is all black (generation failed)
+                const isBlackImage = await checkIfBlackImage(blob);
 
-                // Show generated prompt
-                if (generatedPrompt) {
-                    document.getElementById('promptText').textContent = generatedPrompt;
-                    generatedInfo.style.display = 'block';
+                if (isBlackImage) {
+                    console.warn('Got black image, retrying once...');
+                    result.innerHTML = '<div class="loading"><div class="spinner"></div><p>Generation failed (black image), retrying...</p></div>';
+
+                    // Retry once
+                    const retryResponse = await fetch('/api/v1/generate-color-image', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            colors,
+                            style,
+                            width: 256,
+                            height: 256
+                        })
+                    });
+
+                    if (retryResponse.ok) {
+                        const retryBlob = await retryResponse.blob();
+                        const retryIsBlack = await checkIfBlackImage(retryBlob);
+
+                        if (retryIsBlack) {
+                            throw new Error('Generation failed twice (black images). This usually means the AI model encountered an error. Try different colors or style keywords.');
+                        }
+
+                        const imageUrl = URL.createObjectURL(retryBlob);
+                        result.innerHTML = `<img src="${imageUrl}" alt="Generated image">`;
+
+                        const retryPrompt = retryResponse.headers.get('X-Generated-Prompt');
+                        if (retryPrompt) {
+                            document.getElementById('promptText').textContent = retryPrompt + ' (retried)';
+                            generatedInfo.style.display = 'block';
+                        }
+                    } else {
+                        throw new Error('Retry request failed');
+                    }
+                } else {
+                    // Success on first try
+                    const imageUrl = URL.createObjectURL(blob);
+                    result.innerHTML = `<img src="${imageUrl}" alt="Generated image">`;
+
+                    // Show generated prompt
+                    if (generatedPrompt) {
+                        document.getElementById('promptText').textContent = generatedPrompt;
+                        generatedInfo.style.display = 'block';
+                    }
                 }
 
             } catch (error) {
