@@ -101,12 +101,33 @@ export const POST: APIRoute = async ({ request, locals }) => {
     const selectedModel = modelMap[model] || modelMap['flux-schnell'];
     const modelName = selectedModel.id;
 
+    console.log('Selected model:', modelName);
+    console.log('Model params:', JSON.stringify(selectedModel.params));
+
     // Call Cloudflare Workers AI
     const ai = runtime.env.AI;
-    const imageResponse = await ai.run(modelName, selectedModel.params);
+    const aiResponse = await ai.run(modelName, selectedModel.params);
+
+    console.log('AI response type:', typeof aiResponse);
+
+    // Handle different response formats
+    let imageData;
+    if (model === 'flux-schnell') {
+      // Flux returns base64-encoded image in response.image
+      const base64Image = (aiResponse as any).image;
+      if (!base64Image) {
+        throw new Error('No image data in Flux response');
+      }
+      // Convert base64 to binary
+      const binaryString = atob(base64Image);
+      imageData = Uint8Array.from(binaryString, (m) => m.codePointAt(0)!);
+    } else {
+      // SD-XL models return raw binary data
+      imageData = aiResponse;
+    }
 
     // Return the generated image
-    return new Response(imageResponse, {
+    return new Response(imageData, {
       headers: {
         'Content-Type': 'image/png',
         'Cache-Control': 'public, max-age=86400',
