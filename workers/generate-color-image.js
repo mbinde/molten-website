@@ -214,7 +214,7 @@ function buildColorPrompt(colors, styleKeywords = []) {
   }
 
   // Add style qualifiers
-  prompt += ', flowing, artistic, smooth gradients, modern aesthetic';
+  prompt += ', flowing, artistic, smooth gradients';
 
   return prompt;
 }
