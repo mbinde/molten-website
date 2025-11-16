@@ -218,5 +218,8 @@ export function buildColorPrompt(colors: ColorInput[], styleKeywords: string[] =
     prompt += parts.join(', ');
   }
 
+  // Add style qualifiers
+  prompt += ', flowing, artistic, smooth gradients, modern aesthetic';
+
   return prompt;
 }
