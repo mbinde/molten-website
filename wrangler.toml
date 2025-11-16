@@ -30,3 +30,7 @@ database_id = "d6430b05-ab4d-4553-87ab-eafa69c5794d"
 [[r2_buckets]]
 binding = "PRODUCT_IMAGES"
 bucket_name = "molten-product-images"
+
+# Workers AI binding for image generation
+[ai]
+binding = "AI"
