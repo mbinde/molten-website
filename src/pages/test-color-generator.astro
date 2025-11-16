@@ -1,0 +1,530 @@
+---
+// Test page for color palette image generation
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Palette Image Generator - Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #f5f5f5;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 2rem;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .panel {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        .color-inputs {
+            background: #f9f9f9;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+        }
+
+        .color-row {
+            display: grid;
+            grid-template-columns: 100px 1fr 100px 40px;
+            gap: 0.5rem;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .color-preview {
+            width: 100%;
+            height: 40px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #4A90E2;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #357ABD;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn-small {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+        }
+
+        .btn-remove {
+            background: #dc3545;
+            color: white;
+            width: 40px;
+            height: 40px;
+            padding: 0;
+        }
+
+        .presets {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .preset-btn {
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s;
+        }
+
+        .preset-btn:hover {
+            border-color: #4A90E2;
+            background: #f0f7ff;
+        }
+
+        .preset-colors {
+            display: flex;
+            gap: 4px;
+            margin-top: 4px;
+        }
+
+        .preset-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 2px;
+        }
+
+        #result {
+            min-height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f9f9f9;
+            border-radius: 4px;
+            position: relative;
+        }
+
+        #result img {
+            max-width: 100%;
+            border-radius: 4px;
+        }
+
+        .loading {
+            text-align: center;
+            color: #666;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #4A90E2;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            color: #dc3545;
+            background: #f8d7da;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-top: 1rem;
+        }
+
+        .info {
+            background: #e7f3ff;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+            color: #004085;
+            font-size: 0.875rem;
+        }
+
+        .generated-info {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #f9f9f9;
+            border-radius: 4px;
+            font-size: 0.875rem;
+        }
+
+        .generated-info strong {
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+
+            .color-row {
+                grid-template-columns: 60px 1fr 80px 40px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>🎨 Color Palette Image Generator</h1>
+    <p class="subtitle">Test the Cloudflare Workers AI color image generation API</p>
+
+    <div class="container">
+        <div class="panel">
+            <h2>Configuration</h2>
+
+            <div class="info">
+                💡 Add your glass color hex codes and optional style keywords. The AI will generate an abstract background image based on your palette.
+            </div>
+
+            <div class="form-group">
+                <label for="styleKeywords">Style Keywords (comma-separated)</label>
+                <input
+                    type="text"
+                    id="styleKeywords"
+                    placeholder="modern, minimalist, clean"
+                    value="modern, minimalist"
+                >
+                <small style="color: #666; display: block; margin-top: 0.25rem;">
+                    Examples: modern, spooky, festive, warm, cool, vibrant, dark
+                </small>
+            </div>
+
+            <div class="form-group">
+                <label>Color Palette</label>
+                <div id="colorInputs" class="color-inputs">
+                    <!-- Color rows will be added here -->
+                </div>
+                <button class="btn btn-secondary btn-small" onclick="addColorRow()">
+                    + Add Color
+                </button>
+            </div>
+
+            <div class="form-group">
+                <button class="btn btn-primary" onclick="generateImage()" id="generateBtn">
+                    Generate Image
+                </button>
+            </div>
+
+            <div class="form-group">
+                <label>Quick Presets</label>
+                <div class="presets">
+                    <button class="preset-btn" onclick="loadPreset('modern')">
+                        <strong>Modern Glass</strong>
+                        <div class="preset-colors">
+                            <div class="preset-color" style="background: #4A90E2"></div>
+                            <div class="preset-color" style="background: #F5A623"></div>
+                            <div class="preset-color" style="background: #7ED321"></div>
+                        </div>
+                    </button>
+                    <button class="preset-btn" onclick="loadPreset('halloween')">
+                        <strong>Halloween</strong>
+                        <div class="preset-colors">
+                            <div class="preset-color" style="background: #FF8C00"></div>
+                            <div class="preset-color" style="background: #800080"></div>
+                            <div class="preset-color" style="background: #000000"></div>
+                        </div>
+                    </button>
+                    <button class="preset-btn" onclick="loadPreset('christmas')">
+                        <strong>Christmas</strong>
+                        <div class="preset-colors">
+                            <div class="preset-color" style="background: #DC143C"></div>
+                            <div class="preset-color" style="background: #006400"></div>
+                            <div class="preset-color" style="background: #FFD700"></div>
+                        </div>
+                    </button>
+                    <button class="preset-btn" onclick="loadPreset('sunset')">
+                        <strong>Warm Sunset</strong>
+                        <div class="preset-colors">
+                            <div class="preset-color" style="background: #FF6347"></div>
+                            <div class="preset-color" style="background: #FFA500"></div>
+                            <div class="preset-color" style="background: #FFD700"></div>
+                        </div>
+                    </button>
+                    <button class="preset-btn" onclick="loadPreset('ocean')">
+                        <strong>Ocean Blues</strong>
+                        <div class="preset-colors">
+                            <div class="preset-color" style="background: #1E90FF"></div>
+                            <div class="preset-color" style="background: #00CED1"></div>
+                            <div class="preset-color" style="background: #20B2AA"></div>
+                        </div>
+                    </button>
+                    <button class="preset-btn" onclick="loadPreset('forest')">
+                        <strong>Forest Greens</strong>
+                        <div class="preset-colors">
+                            <div class="preset-color" style="background: #006400"></div>
+                            <div class="preset-color" style="background: #228B22"></div>
+                            <div class="preset-color" style="background: #90EE90"></div>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <h2>Generated Image</h2>
+            <div id="result">
+                <p style="color: #999;">Your generated image will appear here</p>
+            </div>
+            <div id="generatedInfo" class="generated-info" style="display: none;">
+                <strong>Generated Prompt:</strong>
+                <p id="promptText"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const presets = {
+            modern: {
+                colors: [
+                    { hex: '#4A90E2', weight: 0.4 },
+                    { hex: '#F5A623', weight: 0.3 },
+                    { hex: '#7ED321', weight: 0.2 },
+                    { hex: '#50E3C2', weight: 0.1 }
+                ],
+                style: 'modern, minimalist, clean'
+            },
+            halloween: {
+                colors: [
+                    { hex: '#FF8C00', weight: 0.4 },
+                    { hex: '#800080', weight: 0.3 },
+                    { hex: '#000000', weight: 0.3 }
+                ],
+                style: 'spooky, dark, halloween'
+            },
+            christmas: {
+                colors: [
+                    { hex: '#DC143C', weight: 0.4 },
+                    { hex: '#006400', weight: 0.4 },
+                    { hex: '#FFD700', weight: 0.2 }
+                ],
+                style: 'festive, christmas, elegant'
+            },
+            sunset: {
+                colors: [
+                    { hex: '#FF6347', weight: 0.4 },
+                    { hex: '#FFA500', weight: 0.3 },
+                    { hex: '#FFD700', weight: 0.2 },
+                    { hex: '#8B4513', weight: 0.1 }
+                ],
+                style: 'warm, sunset, gradient'
+            },
+            ocean: {
+                colors: [
+                    { hex: '#1E90FF', weight: 0.4 },
+                    { hex: '#00CED1', weight: 0.3 },
+                    { hex: '#20B2AA', weight: 0.3 }
+                ],
+                style: 'cool, ocean, flowing'
+            },
+            forest: {
+                colors: [
+                    { hex: '#006400', weight: 0.4 },
+                    { hex: '#228B22', weight: 0.3 },
+                    { hex: '#90EE90', weight: 0.3 }
+                ],
+                style: 'natural, forest, organic'
+            }
+        };
+
+        function addColorRow(hex = '#4A90E2', weight = '') {
+            const container = document.getElementById('colorInputs');
+            const row = document.createElement('div');
+            row.className = 'color-row';
+
+            row.innerHTML = `
+                <input type="color" class="color-preview" value="${hex}" onchange="updateHexFromColor(this)">
+                <input type="text" class="hex-input" placeholder="#RRGGBB" value="${hex}" pattern="^#[0-9A-Fa-f]{6}$" onchange="updateColorFromHex(this)">
+                <input type="number" class="weight-input" placeholder="Weight" value="${weight}" min="0" max="1" step="0.1">
+                <button class="btn btn-remove" onclick="removeColorRow(this)">×</button>
+            `;
+
+            container.appendChild(row);
+        }
+
+        function removeColorRow(btn) {
+            btn.parentElement.remove();
+        }
+
+        function updateHexFromColor(colorInput) {
+            const hexInput = colorInput.nextElementSibling;
+            hexInput.value = colorInput.value.toUpperCase();
+        }
+
+        function updateColorFromHex(hexInput) {
+            const colorInput = hexInput.previousElementSibling;
+            if (/^#[0-9A-Fa-f]{6}$/.test(hexInput.value)) {
+                colorInput.value = hexInput.value;
+            }
+        }
+
+        function loadPreset(presetName) {
+            const preset = presets[presetName];
+
+            // Clear existing colors
+            document.getElementById('colorInputs').innerHTML = '';
+
+            // Add preset colors
+            preset.colors.forEach(color => {
+                addColorRow(color.hex, color.weight);
+            });
+
+            // Set style keywords
+            document.getElementById('styleKeywords').value = preset.style;
+        }
+
+        async function generateImage() {
+            const btn = document.getElementById('generateBtn');
+            const result = document.getElementById('result');
+            const generatedInfo = document.getElementById('generatedInfo');
+
+            // Collect colors
+            const hexInputs = document.querySelectorAll('.hex-input');
+            const weightInputs = document.querySelectorAll('.weight-input');
+
+            const colors = [];
+            hexInputs.forEach((input, index) => {
+                const hex = input.value.trim();
+                if (hex && /^#[0-9A-Fa-f]{6}$/.test(hex)) {
+                    const weight = parseFloat(weightInputs[index].value) || undefined;
+                    colors.push({ hex, weight });
+                }
+            });
+
+            if (colors.length === 0) {
+                result.innerHTML = '<p class="error">Please add at least one valid hex color</p>';
+                return;
+            }
+
+            // Collect style keywords
+            const styleText = document.getElementById('styleKeywords').value;
+            const style = styleText.split(',').map(s => s.trim()).filter(s => s);
+
+            // Show loading
+            btn.disabled = true;
+            btn.textContent = 'Generating...';
+            result.innerHTML = '<div class="loading"><div class="spinner"></div><p>Generating your image...<br>This may take 5-10 seconds</p></div>';
+            generatedInfo.style.display = 'none';
+
+            try {
+                const response = await fetch('/api/v1/generate-color-image', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        colors,
+                        style,
+                        width: 512,
+                        height: 512
+                    })
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to generate image');
+                }
+
+                // Get the generated prompt from headers
+                const generatedPrompt = response.headers.get('X-Generated-Prompt');
+
+                // Convert response to blob and create image URL
+                const blob = await response.blob();
+                const imageUrl = URL.createObjectURL(blob);
+
+                // Display image
+                result.innerHTML = `<img src="${imageUrl}" alt="Generated image">`;
+
+                // Show generated prompt
+                if (generatedPrompt) {
+                    document.getElementById('promptText').textContent = generatedPrompt;
+                    generatedInfo.style.display = 'block';
+                }
+
+            } catch (error) {
+                result.innerHTML = `<p class="error">Error: ${error.message}</p>`;
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Generate Image';
+            }
+        }
+
+        // Initialize with modern preset
+        loadPreset('modern');
+    </script>
+</body>
+</html>
