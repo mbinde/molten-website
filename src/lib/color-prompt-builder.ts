@@ -131,11 +131,22 @@ export function buildColorPrompt(colors: ColorInput[], styleKeywords: string[] =
   } else if (colorNames.length >= 3) {
     const primary = colorNames[0];
     const secondary = colorNames[1];
-    const accents = colorNames.slice(2, 4).join(' and ');
+    const remaining = colorNames.slice(2);
 
-    prompt += `design, predominantly ${primary} and ${secondary}`;
-    if (accents) {
-      prompt += `, with accents of ${accents}`;
+    prompt += `design with ${primary} and ${secondary}`;
+
+    // Add all remaining colors as accents
+    if (remaining.length > 0) {
+      if (remaining.length === 1) {
+        prompt += `, with ${remaining[0]} accents`;
+      } else if (remaining.length === 2) {
+        prompt += `, with ${remaining[0]} and ${remaining[1]} accents`;
+      } else {
+        // For 3+ accent colors, list them all
+        const lastColor = remaining[remaining.length - 1];
+        const otherColors = remaining.slice(0, -1).join(', ');
+        prompt += `, with accents of ${otherColors}, and ${lastColor}`;
+      }
     }
   }
 
