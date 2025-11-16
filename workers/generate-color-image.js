@@ -107,8 +107,14 @@ function buildColorPrompt(colors, styleKeywords = []) {
   // Sort by weight (highest first)
   const sortedColors = [...colors].sort((a, b) => (b.weight || 1) - (a.weight || 1));
 
-  // Convert to color names
-  const colorNames = sortedColors.map(c => hexToColorName(c.hex));
+  // Calculate total weight
+  const totalWeight = sortedColors.reduce((sum, c) => sum + (c.weight || 1), 0);
+
+  // Convert to color names with percentages
+  const colorData = sortedColors.map(c => ({
+    name: hexToColorName(c.hex),
+    percentage: Math.round(((c.weight || 1) / totalWeight) * 100)
+  }));
 
   // Build descriptive prompt
   let prompt = '';
@@ -118,31 +124,17 @@ function buildColorPrompt(colors, styleKeywords = []) {
     prompt = styleKeywords.join(' ') + ' ';
   }
 
-  // Add dominant colors
-  if (colorNames.length === 1) {
-    prompt += `design in ${colorNames[0]}`;
-  } else if (colorNames.length === 2) {
-    prompt += `design with ${colorNames[0]} and ${colorNames[1]}`;
-  } else if (colorNames.length >= 3) {
-    const primary = colorNames[0];
-    const secondary = colorNames[1];
-    const remaining = colorNames.slice(2);
-
-    prompt += `design with ${primary} and ${secondary}`;
-
-    // Add all remaining colors as accents
-    if (remaining.length > 0) {
-      if (remaining.length === 1) {
-        prompt += `, with ${remaining[0]} accents`;
-      } else if (remaining.length === 2) {
-        prompt += `, with ${remaining[0]} and ${remaining[1]} accents`;
-      } else {
-        // For 3+ accent colors, list them all
-        const lastColor = remaining[remaining.length - 1];
-        const otherColors = remaining.slice(0, -1).join(', ');
-        prompt += `, with accents of ${otherColors}, and ${lastColor}`;
-      }
-    }
+  // Add colors with percentages
+  if (colorData.length === 1) {
+    prompt += `design in ${colorData[0].name} (100%)`;
+  } else if (colorData.length === 2) {
+    prompt += `design with ${colorData[0].percentage}% ${colorData[0].name} and ${colorData[1].percentage}% ${colorData[1].name}`;
+  } else {
+    // List all colors with percentages
+    const colorList = colorData.map(c => `${c.percentage}% ${c.name}`);
+    const lastColor = colorList[colorList.length - 1];
+    const otherColors = colorList.slice(0, -1).join(', ');
+    prompt += `design with ${otherColors}, and ${lastColor}`;
   }
 
   // Add style qualifiers
