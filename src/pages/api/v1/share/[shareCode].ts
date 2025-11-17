@@ -162,9 +162,13 @@ export const GET: APIRoute = async ({ params, request, locals, clientAddress }) 
     // Return share data (with expiring share metadata if applicable)
     const responseData: any = {
       snapshotData: share.snapshotData,
-      publicKey: share.publicKey
+      publicKey: share.publicKey,
+      // Include main share metadata by default
+      displayName: share.displayName,
+      shareNotes: share.shareNotes
     };
 
+    // Override with expiring share metadata if applicable
     if (isExpiringShare && expiringShareMetadata) {
       responseData.displayName = expiringShareMetadata.displayName;
       responseData.shareNotes = expiringShareMetadata.shareNotes;
