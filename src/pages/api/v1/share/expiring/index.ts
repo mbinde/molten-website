@@ -121,8 +121,11 @@ export const POST: APIRoute = async ({ request, locals, clientAddress }) => {
     }
 
     // Verify main share exists
+    console.log(`🔍 [SERVER] Looking for main share: share:${mainShareCode}`);
     const mainShare = await kv.get(`share:${mainShareCode}`);
+    console.log(`🔍 [SERVER] Main share found:`, mainShare ? 'YES' : 'NO');
     if (!mainShare) {
+      console.log(`🔍 [SERVER] Main share not found for code: ${mainShareCode}`);
       return new Response(
         JSON.stringify({ error: 'Main share not found' }),
         { status: 404, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
