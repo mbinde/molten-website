@@ -165,7 +165,9 @@ export const GET: APIRoute = async ({ params, request, locals, clientAddress }) 
       publicKey: share.publicKey,
       // Include main share metadata by default
       displayName: share.displayName,
-      shareNotes: share.shareNotes
+      shareNotes: share.shareNotes,
+      // Always include expiresAt (90 days from last update for regular shares)
+      expiresAt: share.expiresAt
     };
 
     // Override with expiring share metadata if applicable
@@ -306,16 +308,17 @@ export const PUT: APIRoute = async ({ params, request, locals, clientAddress }) 
     const snapshotTimestamp = extractSnapshotTimestamp(snapshotData);
     const now = new Date().toISOString();
 
-    // Update share with new snapshot and timestamp
-    share.snapshotData = snapshotData;
-    share.publicKey = publicKey;
-    share.snapshotTimestamp = snapshotTimestamp || now;  // Update to new snapshot timestamp
-    share.updatedAt = now;
-
-    // Calculate NEW TTL based on updated snapshot timestamp (resets to 90 days from new update)
+    // Calculate NEW expiration date (90 days from updated snapshot timestamp)
     const snapshotDate = new Date(snapshotTimestamp || now);
     const expirationDate = new Date(snapshotDate.getTime() + (90 * 24 * 60 * 60 * 1000));
     const ttlSeconds = Math.max(60, Math.floor((expirationDate.getTime() - Date.now()) / 1000));
+
+    // Update share with new snapshot, timestamp, and expiration
+    share.snapshotData = snapshotData;
+    share.publicKey = publicKey;
+    share.snapshotTimestamp = snapshotTimestamp || now;  // Update to new snapshot timestamp
+    share.expiresAt = expirationDate.toISOString();  // Update expiration date
+    share.updatedAt = now;
 
     await kv.put(`share:${shareCode}`, JSON.stringify(share), {
       expirationTtl: ttlSeconds  // Reset to 90 days from new snapshot timestamp

@@ -117,22 +117,23 @@ export const POST: APIRoute = async ({ request, locals, clientAddress }) => {
     const snapshotTimestamp = extractSnapshotTimestamp(snapshotData);
     const now = new Date().toISOString();
 
+    // Calculate expiration date (90 days from snapshot timestamp)
+    const snapshotDate = new Date(snapshotTimestamp || now);
+    const expirationDate = new Date(snapshotDate.getTime() + (90 * 24 * 60 * 60 * 1000));
+    const ttlSeconds = Math.max(60, Math.floor((expirationDate.getTime() - Date.now()) / 1000));
+
     // Create share object
     const share = {
       shareCode,
       snapshotData,
       publicKey,
       snapshotTimestamp: snapshotTimestamp || now,  // Use extracted timestamp or fallback to now
+      expiresAt: expirationDate.toISOString(),  // Include expiration date in share object
       createdAt: now,
       createdIp: clientAddress,
       accessCount: 0,
       lastAccessed: null
     };
-
-    // Calculate TTL based on snapshot timestamp (90 days from when owner last updated)
-    const snapshotDate = new Date(snapshotTimestamp || now);
-    const expirationDate = new Date(snapshotDate.getTime() + (90 * 24 * 60 * 60 * 1000));
-    const ttlSeconds = Math.max(60, Math.floor((expirationDate.getTime() - Date.now()) / 1000));
 
     // Store in KV (expires 90 days from snapshot timestamp)
     await kv.put(`share:${shareCode}`, JSON.stringify(share), {
