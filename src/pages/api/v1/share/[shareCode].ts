@@ -88,38 +88,91 @@ export const GET: APIRoute = async ({ params, request, locals, clientAddress }) 
       );
     }
 
-    // Fetch share from KV
-    const shareData = await kv.get(`share:${shareCode}`);
+    // Try to fetch as regular share first
+    let shareData = await kv.get(`share:${shareCode}`);
+    let isExpiringShare = false;
+    let expiringShareMetadata = null;
 
+    // If not found, try as expiring share
     if (!shareData) {
-      return new Response(
-        JSON.stringify({ error: 'Share not found' }),
-        { status: 404, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
-      );
+      const expiringData = await kv.get(`expiring:${shareCode}`);
+
+      if (!expiringData) {
+        return new Response(
+          JSON.stringify({ error: 'Share not found' }),
+          { status: 404, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+        );
+      }
+
+      const expiringShare = JSON.parse(expiringData);
+
+      // Check if expired
+      if (new Date(expiringShare.expiresAt) <= new Date()) {
+        return new Response(
+          JSON.stringify({ error: 'Share has expired' }),
+          { status: 410, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+        );
+      }
+
+      // Fetch main share data
+      shareData = await kv.get(`share:${expiringShare.mainShareCode}`);
+
+      if (!shareData) {
+        return new Response(
+          JSON.stringify({ error: 'Main share not found' }),
+          { status: 404, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+        );
+      }
+
+      isExpiringShare = true;
+      expiringShareMetadata = {
+        displayName: expiringShare.displayName,
+        shareNotes: expiringShare.shareNotes,
+        expiresAt: expiringShare.expiresAt
+      };
+
+      // Update expiring share access tracking
+      expiringShare.accessCount = (expiringShare.accessCount || 0) + 1;
+      expiringShare.lastAccessed = new Date().toISOString();
+
+      const expiringTtl = Math.max(60, Math.floor((new Date(expiringShare.expiresAt).getTime() - Date.now()) / 1000));
+      await kv.put(`expiring:${shareCode}`, JSON.stringify(expiringShare), {
+        expirationTtl: expiringTtl
+      });
     }
 
     const share = JSON.parse(shareData);
 
-    // Update access tracking (but DON'T reset TTL - we want expiration based on owner's last update)
-    share.accessCount = (share.accessCount || 0) + 1;
-    share.lastAccessed = new Date().toISOString();
+    // Update access tracking for main share (but DON'T reset TTL - we want expiration based on owner's last update)
+    if (!isExpiringShare) {
+      share.accessCount = (share.accessCount || 0) + 1;
+      share.lastAccessed = new Date().toISOString();
 
-    // Calculate remaining TTL based on original snapshot timestamp
-    const snapshotDate = new Date(share.snapshotTimestamp || share.createdAt);
-    const expirationDate = new Date(snapshotDate.getTime() + (90 * 24 * 60 * 60 * 1000));
-    const ttlSeconds = Math.max(60, Math.floor((expirationDate.getTime() - Date.now()) / 1000));
+      // Calculate remaining TTL based on original snapshot timestamp
+      const snapshotDate = new Date(share.snapshotTimestamp || share.createdAt);
+      const expirationDate = new Date(snapshotDate.getTime() + (90 * 24 * 60 * 60 * 1000));
+      const ttlSeconds = Math.max(60, Math.floor((expirationDate.getTime() - Date.now()) / 1000));
 
-    // Update share metadata but preserve the original TTL
-    await kv.put(`share:${shareCode}`, JSON.stringify(share), {
-      expirationTtl: ttlSeconds  // Preserve original expiration based on snapshot timestamp
-    });
+      // Update share metadata but preserve the original TTL
+      await kv.put(`share:${shareCode}`, JSON.stringify(share), {
+        expirationTtl: ttlSeconds  // Preserve original expiration based on snapshot timestamp
+      });
+    }
 
-    // Return share data
+    // Return share data (with expiring share metadata if applicable)
+    const responseData: any = {
+      snapshotData: share.snapshotData,
+      publicKey: share.publicKey
+    };
+
+    if (isExpiringShare && expiringShareMetadata) {
+      responseData.displayName = expiringShareMetadata.displayName;
+      responseData.shareNotes = expiringShareMetadata.shareNotes;
+      responseData.expiresAt = expiringShareMetadata.expiresAt;
+    }
+
     return new Response(
-      JSON.stringify({
-        snapshotData: share.snapshotData,
-        publicKey: share.publicKey
-      }),
+      JSON.stringify(responseData),
       {
         status: 200,
         headers: {
