@@ -107,9 +107,9 @@ export const POST: APIRoute = async ({ request, locals, clientAddress }) => {
       );
     }
 
-    // Check if backup key already exists in registry
-    const existingEntry = await kv.get(`backup-registry:${backupKey}`);
-    if (existingEntry) {
+    // Check if backup key has ever been used (permanent reservation)
+    const keyReserved = await kv.get(`reserved-key:${backupKey}`);
+    if (keyReserved) {
       return new Response(
         JSON.stringify({ error: 'Backup key already registered' }),
         { status: 409, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
@@ -123,6 +123,10 @@ export const POST: APIRoute = async ({ request, locals, clientAddress }) => {
       createdIp: clientAddress
     };
 
+    // Reserve this key permanently (never expires, never deleted)
+    await kv.put(`reserved-key:${backupKey}`, new Date().toISOString());
+
+    // Store the active registry entry
     await kv.put(`backup-registry:${backupKey}`, JSON.stringify(registryEntry));
 
     return new Response(null, {
