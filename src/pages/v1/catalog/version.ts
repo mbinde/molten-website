@@ -10,19 +10,6 @@ import { getLatestCatalogVersion, checkCatalogRateLimit } from '../../../lib/cat
 
 export const prerender = false;
 
-const CORS_HEADERS = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, X-Apple-Assertion',
-};
-
-export const OPTIONS: APIRoute = async () => {
-  return new Response(null, {
-    status: 204,
-    headers: CORS_HEADERS
-  });
-};
-
 export const GET: APIRoute = async ({ request, locals, clientAddress }) => {
   const env = (locals.runtime as any)?.env;
   const kv = env?.CATALOG_VERSIONS;
@@ -34,7 +21,7 @@ export const GET: APIRoute = async ({ request, locals, clientAddress }) => {
         status: 500,
         headers: {
           'Content-Type': 'application/json',
-          ...CORS_HEADERS
+          
         }
       }
     );
@@ -64,7 +51,7 @@ export const GET: APIRoute = async ({ request, locals, clientAddress }) => {
             'X-RateLimit-Remaining': '0',
             'X-RateLimit-Reset': rateLimit.resetAt.toISOString(),
             'Retry-After': Math.ceil((rateLimit.resetAt.getTime() - Date.now()) / 1000).toString(),
-            ...CORS_HEADERS
+            
           }
         }
       );
@@ -80,7 +67,7 @@ export const GET: APIRoute = async ({ request, locals, clientAddress }) => {
           status: 404,
           headers: {
             'Content-Type': 'application/json',
-            ...CORS_HEADERS
+            
           }
         }
       );
@@ -105,7 +92,7 @@ export const GET: APIRoute = async ({ request, locals, clientAddress }) => {
           'ETag': `"${version.version}"`,
           'X-RateLimit-Remaining': rateLimit.remaining.toString(),
           'X-RateLimit-Reset': rateLimit.resetAt.toISOString(),
-          ...CORS_HEADERS
+          
         }
       }
     );
@@ -118,7 +105,7 @@ export const GET: APIRoute = async ({ request, locals, clientAddress }) => {
         status: 500,
         headers: {
           'Content-Type': 'application/json',
-          ...CORS_HEADERS
+          
         }
       }
     );

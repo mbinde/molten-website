@@ -36,22 +36,7 @@ import type { APIRoute } from 'astro';
 import { getCachedRating, getCachedRatingsBatch } from '../../../../lib/ratings';
 
 export const prerender = false;
-
-const CORS_HEADERS = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type',
-};
-
 const MAX_ITEMS_PER_REQUEST = 100;
-
-export const OPTIONS: APIRoute = async () => {
-  return new Response(null, {
-    status: 204,
-    headers: CORS_HEADERS
-  });
-};
-
 export const GET: APIRoute = async ({ request, locals }) => {
   try {
     // Get runtime bindings
@@ -63,7 +48,7 @@ export const GET: APIRoute = async ({ request, locals }) => {
         error: 'Cache not configured'
       }), {
         status: 500,
-        headers: { 'Content-Type': 'application/json', ...CORS_HEADERS }
+        headers: { 'Content-Type': 'application/json' }
       });
     }
 
@@ -77,7 +62,7 @@ export const GET: APIRoute = async ({ request, locals }) => {
         error: 'Missing "items" query parameter'
       }), {
         status: 400,
-        headers: { 'Content-Type': 'application/json', ...CORS_HEADERS }
+        headers: { 'Content-Type': 'application/json' }
       });
     }
 
@@ -93,7 +78,7 @@ export const GET: APIRoute = async ({ request, locals }) => {
         error: 'No valid item IDs provided'
       }), {
         status: 400,
-        headers: { 'Content-Type': 'application/json', ...CORS_HEADERS }
+        headers: { 'Content-Type': 'application/json' }
       });
     }
 
@@ -103,7 +88,7 @@ export const GET: APIRoute = async ({ request, locals }) => {
         error: `Too many items requested. Maximum ${MAX_ITEMS_PER_REQUEST} per request.`
       }), {
         status: 400,
-        headers: { 'Content-Type': 'application/json', ...CORS_HEADERS }
+        headers: { 'Content-Type': 'application/json' }
       });
     }
 
@@ -127,7 +112,7 @@ export const GET: APIRoute = async ({ request, locals }) => {
       headers: {
         'Content-Type': 'application/json',
         'Cache-Control': 'no-cache', // Don't cache - we aggregate immediately
-        ...CORS_HEADERS
+        
       }
     });
 
@@ -138,7 +123,7 @@ export const GET: APIRoute = async ({ request, locals }) => {
       error: 'Internal server error'
     }), {
       status: 500,
-      headers: { 'Content-Type': 'application/json', ...CORS_HEADERS }
+      headers: { 'Content-Type': 'application/json' }
     });
   }
 };

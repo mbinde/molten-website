@@ -5,21 +5,6 @@ import { regenerateLocationsJSON } from '../../../lib/location-generator';
 // IMPORTANT: Disable prerendering for API routes (required for Cloudflare)
 export const prerender = false;
 
-// CORS headers for API routes
-const CORS_HEADERS = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-};
-
-// Handle OPTIONS preflight request
-export const OPTIONS: APIRoute = async () => {
-  return new Response(null, {
-    status: 204,
-    headers: CORS_HEADERS
-  });
-};
-
 /**
  * One-time migration script to copy data from old KV keys to new ones
  * - pending-stores → pending-locations
@@ -36,7 +21,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
   if (!auth.authorized) {
     return new Response(
       JSON.stringify({ error: auth.error || 'Unauthorized' }),
-      { status: 401, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+      { status: 401, headers: { 'Content-Type': 'application/json' } }
     );
   }
 
@@ -47,7 +32,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
       console.error('🚨 KV namespace STORE_DATA not found');
       return new Response(
         JSON.stringify({ error: 'Storage not configured' }),
-        { status: 500, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+        { status: 500, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
@@ -80,7 +65,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
         log: migrationLog,
         total_locations: locationCount
       }),
-      { status: 200, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+      { status: 200, headers: { 'Content-Type': 'application/json' } }
     );
 
   } catch (error) {
@@ -91,7 +76,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
         error: 'Internal server error',
         details: error instanceof Error ? error.message : String(error)
       }),
-      { status: 500, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+      { status: 500, headers: { 'Content-Type': 'application/json' } }
     );
   }
 };

@@ -40,19 +40,6 @@ import {
 
 export const prerender = false;
 
-const CORS_HEADERS = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, X-Apple-Assertion',
-};
-
-export const OPTIONS: APIRoute = async () => {
-  return new Response(null, {
-    status: 204,
-    headers: CORS_HEADERS
-  });
-};
-
 export const POST: APIRoute = async ({ request, locals }) => {
   try {
     // Get runtime bindings
@@ -65,7 +52,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
         error: 'Database not configured'
       }), {
         status: 500,
-        headers: { 'Content-Type': 'application/json', ...CORS_HEADERS }
+        headers: { 'Content-Type': 'application/json' }
       });
     }
 
@@ -79,7 +66,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
         error: 'Invalid JSON in request body'
       }), {
         status: 400,
-        headers: { 'Content-Type': 'application/json', ...CORS_HEADERS }
+        headers: { 'Content-Type': 'application/json' }
       });
     }
 
@@ -92,7 +79,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
         errors: validation.errors
       }), {
         status: 400,
-        headers: { 'Content-Type': 'application/json', ...CORS_HEADERS }
+        headers: { 'Content-Type': 'application/json' }
       });
     }
 
@@ -108,7 +95,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
           'Content-Type': 'application/json',
           'X-RateLimit-Remaining': '0',
           'X-RateLimit-Reset': String(Math.floor(Date.now() / 1000) + 3600),
-          ...CORS_HEADERS
+          
         }
       });
     }
@@ -120,7 +107,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     //   return new Response(JSON.stringify({
     //     success: false,
     //     error: 'Invalid App Attest assertion'
-    //   }), { status: 401, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } });
+    //   }), { status: 401, headers: { 'Content-Type': 'application/json' } });
     // }
 
     // Submit rating
@@ -131,7 +118,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
         error: result.error || 'Failed to submit rating'
       }), {
         status: 500,
-        headers: { 'Content-Type': 'application/json', ...CORS_HEADERS }
+        headers: { 'Content-Type': 'application/json' }
       });
     }
 
@@ -163,7 +150,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
       headers: {
         'Content-Type': 'application/json',
         'X-RateLimit-Remaining': String(rateLimitCheck.remaining),
-        ...CORS_HEADERS
+        
       }
     });
 
@@ -174,7 +161,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
       error: 'Internal server error'
     }), {
       status: 500,
-      headers: { 'Content-Type': 'application/json', ...CORS_HEADERS }
+      headers: { 'Content-Type': 'application/json' }
     });
   }
 };

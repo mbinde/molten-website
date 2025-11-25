@@ -41,19 +41,6 @@ import type { CatalogVersion } from '../../../../lib/catalog';
 
 export const prerender = false;
 
-const CORS_HEADERS = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-};
-
-export const OPTIONS: APIRoute = async () => {
-  return new Response(null, {
-    status: 204,
-    headers: CORS_HEADERS
-  });
-};
-
 export const POST: APIRoute = async ({ request, locals, clientAddress }) => {
   const env = (locals.runtime as any)?.env;
   const kv = env?.CATALOG_VERSIONS;
@@ -65,7 +52,7 @@ export const POST: APIRoute = async ({ request, locals, clientAddress }) => {
         status: 500,
         headers: {
           'Content-Type': 'application/json',
-          ...CORS_HEADERS
+          
         }
       }
     );
@@ -81,7 +68,7 @@ export const POST: APIRoute = async ({ request, locals, clientAddress }) => {
           status: 401,
           headers: {
             'Content-Type': 'application/json',
-            ...CORS_HEADERS
+            
           }
         }
       );
@@ -97,7 +84,7 @@ export const POST: APIRoute = async ({ request, locals, clientAddress }) => {
           status: 403,
           headers: {
             'Content-Type': 'application/json',
-            ...CORS_HEADERS
+            
           }
         }
       );
@@ -126,7 +113,7 @@ export const POST: APIRoute = async ({ request, locals, clientAddress }) => {
             'X-RateLimit-Remaining': '0',
             'X-RateLimit-Reset': rateLimit.resetAt.toISOString(),
             'Retry-After': Math.ceil((rateLimit.resetAt.getTime() - Date.now()) / 1000).toString(),
-            ...CORS_HEADERS
+            
           }
         }
       );
@@ -143,7 +130,7 @@ export const POST: APIRoute = async ({ request, locals, clientAddress }) => {
           status: 400,
           headers: {
             'Content-Type': 'application/json',
-            ...CORS_HEADERS
+            
           }
         }
       );
@@ -164,7 +151,7 @@ export const POST: APIRoute = async ({ request, locals, clientAddress }) => {
           status: 400,
           headers: {
             'Content-Type': 'application/json',
-            ...CORS_HEADERS
+            
           }
         }
       );
@@ -177,7 +164,7 @@ export const POST: APIRoute = async ({ request, locals, clientAddress }) => {
           status: 400,
           headers: {
             'Content-Type': 'application/json',
-            ...CORS_HEADERS
+            
           }
         }
       );
@@ -190,7 +177,7 @@ export const POST: APIRoute = async ({ request, locals, clientAddress }) => {
           status: 400,
           headers: {
             'Content-Type': 'application/json',
-            ...CORS_HEADERS
+            
           }
         }
       );
@@ -203,7 +190,7 @@ export const POST: APIRoute = async ({ request, locals, clientAddress }) => {
           status: 400,
           headers: {
             'Content-Type': 'application/json',
-            ...CORS_HEADERS
+            
           }
         }
       );
@@ -216,7 +203,7 @@ export const POST: APIRoute = async ({ request, locals, clientAddress }) => {
           status: 400,
           headers: {
             'Content-Type': 'application/json',
-            ...CORS_HEADERS
+            
           }
         }
       );
@@ -250,7 +237,7 @@ export const POST: APIRoute = async ({ request, locals, clientAddress }) => {
           status: 400,
           headers: {
             'Content-Type': 'application/json',
-            ...CORS_HEADERS
+            
           }
         }
       );
@@ -303,7 +290,7 @@ export const POST: APIRoute = async ({ request, locals, clientAddress }) => {
           'Content-Type': 'application/json',
           'X-RateLimit-Remaining': rateLimit.remaining.toString(),
           'X-RateLimit-Reset': rateLimit.resetAt.toISOString(),
-          ...CORS_HEADERS
+          
         }
       }
     );
@@ -319,7 +306,7 @@ export const POST: APIRoute = async ({ request, locals, clientAddress }) => {
         status: 500,
         headers: {
           'Content-Type': 'application/json',
-          ...CORS_HEADERS
+          
         }
       }
     );

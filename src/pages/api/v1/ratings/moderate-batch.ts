@@ -7,8 +7,8 @@
  * - Updates moderation_status based on toxicity scores
  *
  * Security:
- * - Internal endpoint (should be triggered by Cloudflare Cron only)
- * - No authentication required (cron runs in worker context)
+ * - Requires CRON_SECRET token in Authorization header
+ * - Should only be triggered by Cloudflare Cron or admin
  *
  * Response:
  * 200: {
@@ -56,13 +56,29 @@ interface PendingSubmission {
   cloudkit_user_id_hash: string;
 }
 
-export const POST: APIRoute = async ({ locals }) => {
+export const POST: APIRoute = async ({ request, locals }) => {
   const startTime = Date.now();
 
   try {
     // Get runtime bindings
-    const db = (locals.runtime.env as any).RATINGS_DB;
-    const apiKey = (locals.runtime.env as any).PERSPECTIVE_API_KEY;
+    const env = (locals.runtime as any)?.env;
+    const db = env?.RATINGS_DB;
+    const apiKey = env?.PERSPECTIVE_API_KEY;
+    const cronSecret = env?.CRON_SECRET;
+
+    // Verify cron secret for authentication
+    const authHeader = request.headers.get('Authorization');
+    const providedSecret = authHeader?.replace('Bearer ', '');
+
+    if (!cronSecret || !providedSecret || providedSecret !== cronSecret) {
+      return new Response(JSON.stringify({
+        success: false,
+        error: 'Unauthorized'
+      }), {
+        status: 401,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
 
     if (!db) {
       return new Response(JSON.stringify({

@@ -25,19 +25,6 @@ import { verifyAppAttestAssertion, checkRateLimit } from '../../../../../lib/cry
 
 export const prerender = false;
 
-const CORS_HEADERS = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, X-Apple-Assertion',
-};
-
-export const OPTIONS: APIRoute = async () => {
-  return new Response(null, {
-    status: 204,
-    headers: CORS_HEADERS
-  });
-};
-
 export const POST: APIRoute = async ({ request, locals, clientAddress }) => {
   const env = (locals.runtime as any)?.env;
   const kv = env?.INVENTORY_SHARES;
@@ -45,7 +32,7 @@ export const POST: APIRoute = async ({ request, locals, clientAddress }) => {
   if (!kv) {
     return new Response(
       JSON.stringify({ error: 'Storage not configured' }),
-      { status: 500, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+      { status: 500, headers: { 'Content-Type': 'application/json' } }
     );
   }
 
@@ -66,7 +53,7 @@ export const POST: APIRoute = async ({ request, locals, clientAddress }) => {
             'Content-Type': 'application/json',
             'X-RateLimit-Remaining': '0',
             'X-RateLimit-Reset': rateLimit.resetAt.toISOString(),
-            ...CORS_HEADERS
+            
           }
         }
       );
@@ -80,7 +67,7 @@ export const POST: APIRoute = async ({ request, locals, clientAddress }) => {
     if (!mainShareCode || !displayName || !expirationDuration) {
       return new Response(
         JSON.stringify({ error: 'Missing required fields: mainShareCode, displayName, expirationDuration' }),
-        { status: 400, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
@@ -88,7 +75,7 @@ export const POST: APIRoute = async ({ request, locals, clientAddress }) => {
     if (!/^[A-Z0-9]{6}$/.test(mainShareCode)) {
       return new Response(
         JSON.stringify({ error: 'Invalid main share code format (must be 6 uppercase alphanumeric characters)' }),
-        { status: 400, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
@@ -97,7 +84,7 @@ export const POST: APIRoute = async ({ request, locals, clientAddress }) => {
     if (expirationDuration < 3600 || expirationDuration > maxDuration) {
       return new Response(
         JSON.stringify({ error: 'Invalid expiration duration (must be between 1 hour and 30 days + 23 hours)' }),
-        { status: 400, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
@@ -116,7 +103,7 @@ export const POST: APIRoute = async ({ request, locals, clientAddress }) => {
     if (!attestResult.valid) {
       return new Response(
         JSON.stringify({ error: attestResult.error || 'Invalid app attestation' }),
-        { status: 401, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+        { status: 401, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
@@ -128,7 +115,7 @@ export const POST: APIRoute = async ({ request, locals, clientAddress }) => {
       console.log(`🔍 [SERVER] Main share not found for code: ${mainShareCode}`);
       return new Response(
         JSON.stringify({ error: 'Main share not found' }),
-        { status: 404, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+        { status: 404, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
@@ -179,7 +166,7 @@ export const POST: APIRoute = async ({ request, locals, clientAddress }) => {
         headers: {
           'Content-Type': 'application/json',
           'X-RateLimit-Remaining': rateLimit.remaining.toString(),
-          ...CORS_HEADERS
+          
         }
       }
     );
@@ -188,7 +175,7 @@ export const POST: APIRoute = async ({ request, locals, clientAddress }) => {
     console.error('Error creating expiring share:', error);
     return new Response(
       JSON.stringify({ error: 'Internal server error' }),
-      { status: 500, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+      { status: 500, headers: { 'Content-Type': 'application/json' } }
     );
   }
 };

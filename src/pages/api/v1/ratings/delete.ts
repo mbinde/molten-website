@@ -27,19 +27,6 @@ import { deleteUserRatings } from '../../../../lib/ratings';
 
 export const prerender = false;
 
-const CORS_HEADERS = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'DELETE, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, X-Apple-Assertion',
-};
-
-export const OPTIONS: APIRoute = async () => {
-  return new Response(null, {
-    status: 204,
-    headers: CORS_HEADERS
-  });
-};
-
 export const DELETE: APIRoute = async ({ request, locals }) => {
   try {
     // Get runtime bindings
@@ -52,7 +39,7 @@ export const DELETE: APIRoute = async ({ request, locals }) => {
         error: 'Database not configured'
       }), {
         status: 500,
-        headers: { 'Content-Type': 'application/json', ...CORS_HEADERS }
+        headers: { 'Content-Type': 'application/json' }
       });
     }
 
@@ -66,7 +53,7 @@ export const DELETE: APIRoute = async ({ request, locals }) => {
         error: 'Invalid JSON in request body'
       }), {
         status: 400,
-        headers: { 'Content-Type': 'application/json', ...CORS_HEADERS }
+        headers: { 'Content-Type': 'application/json' }
       });
     }
 
@@ -77,7 +64,7 @@ export const DELETE: APIRoute = async ({ request, locals }) => {
         error: 'Invalid CloudKit user ID hash'
       }), {
         status: 400,
-        headers: { 'Content-Type': 'application/json', ...CORS_HEADERS }
+        headers: { 'Content-Type': 'application/json' }
       });
     }
 
@@ -87,7 +74,7 @@ export const DELETE: APIRoute = async ({ request, locals }) => {
         error: 'App attest token is required'
       }), {
         status: 400,
-        headers: { 'Content-Type': 'application/json', ...CORS_HEADERS }
+        headers: { 'Content-Type': 'application/json' }
       });
     }
 
@@ -98,7 +85,7 @@ export const DELETE: APIRoute = async ({ request, locals }) => {
     //   return new Response(JSON.stringify({
     //     success: false,
     //     error: 'Invalid App Attest assertion'
-    //   }), { status: 401, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } });
+    //   }), { status: 401, headers: { 'Content-Type': 'application/json' } });
     // }
 
     // Get list of items this user rated (for cache invalidation)
@@ -115,7 +102,7 @@ export const DELETE: APIRoute = async ({ request, locals }) => {
         error: result.error || 'Failed to delete ratings'
       }), {
         status: 500,
-        headers: { 'Content-Type': 'application/json', ...CORS_HEADERS }
+        headers: { 'Content-Type': 'application/json' }
       });
     }
 
@@ -141,7 +128,7 @@ export const DELETE: APIRoute = async ({ request, locals }) => {
       status: 200,
       headers: {
         'Content-Type': 'application/json',
-        ...CORS_HEADERS
+        
       }
     });
 
@@ -152,7 +139,7 @@ export const DELETE: APIRoute = async ({ request, locals }) => {
       error: 'Internal server error'
     }), {
       status: 500,
-      headers: { 'Content-Type': 'application/json', ...CORS_HEADERS }
+      headers: { 'Content-Type': 'application/json' }
     });
   }
 };

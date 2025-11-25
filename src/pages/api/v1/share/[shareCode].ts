@@ -14,19 +14,6 @@ import { verifyAppAttestAssertion, verifyEd25519Signature, checkRateLimit } from
 
 export const prerender = false;
 
-const CORS_HEADERS = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, PUT, DELETE, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, X-Apple-Assertion, X-Ownership-Signature',
-};
-
-export const OPTIONS: APIRoute = async () => {
-  return new Response(null, {
-    status: 204,
-    headers: CORS_HEADERS
-  });
-};
-
 export const GET: APIRoute = async ({ params, request, locals, clientAddress }) => {
   const env = (locals.runtime as any)?.env;
   const kv = env?.INVENTORY_SHARES;
@@ -34,7 +21,7 @@ export const GET: APIRoute = async ({ params, request, locals, clientAddress }) 
   if (!kv) {
     return new Response(
       JSON.stringify({ error: 'Storage not configured' }),
-      { status: 500, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+      { status: 500, headers: { 'Content-Type': 'application/json' } }
     );
   }
 
@@ -44,7 +31,7 @@ export const GET: APIRoute = async ({ params, request, locals, clientAddress }) 
     if (!shareCode) {
       return new Response(
         JSON.stringify({ error: 'Share code required' }),
-        { status: 400, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
@@ -64,7 +51,7 @@ export const GET: APIRoute = async ({ params, request, locals, clientAddress }) 
             'Content-Type': 'application/json',
             'X-RateLimit-Remaining': '0',
             'X-RateLimit-Reset': rateLimit.resetAt.toISOString(),
-            ...CORS_HEADERS
+            
           }
         }
       );
@@ -84,7 +71,7 @@ export const GET: APIRoute = async ({ params, request, locals, clientAddress }) 
     if (!attestResult.valid) {
       return new Response(
         JSON.stringify({ error: attestResult.error || 'Invalid app attestation' }),
-        { status: 401, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+        { status: 401, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
@@ -100,7 +87,7 @@ export const GET: APIRoute = async ({ params, request, locals, clientAddress }) 
       if (!expiringData) {
         return new Response(
           JSON.stringify({ error: 'Share not found' }),
-          { status: 404, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+          { status: 404, headers: { 'Content-Type': 'application/json' } }
         );
       }
 
@@ -110,7 +97,7 @@ export const GET: APIRoute = async ({ params, request, locals, clientAddress }) 
       if (new Date(expiringShare.expiresAt) <= new Date()) {
         return new Response(
           JSON.stringify({ error: 'Share has expired' }),
-          { status: 410, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+          { status: 410, headers: { 'Content-Type': 'application/json' } }
         );
       }
 
@@ -120,7 +107,7 @@ export const GET: APIRoute = async ({ params, request, locals, clientAddress }) 
       if (!shareData) {
         return new Response(
           JSON.stringify({ error: 'Main share not found' }),
-          { status: 404, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+          { status: 404, headers: { 'Content-Type': 'application/json' } }
         );
       }
 
@@ -184,7 +171,7 @@ export const GET: APIRoute = async ({ params, request, locals, clientAddress }) 
         headers: {
           'Content-Type': 'application/json',
           'X-RateLimit-Remaining': rateLimit.remaining.toString(),
-          ...CORS_HEADERS
+          
         }
       }
     );
@@ -193,7 +180,7 @@ export const GET: APIRoute = async ({ params, request, locals, clientAddress }) 
     console.error('Error downloading share:', error);
     return new Response(
       JSON.stringify({ error: 'Internal server error' }),
-      { status: 500, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+      { status: 500, headers: { 'Content-Type': 'application/json' } }
     );
   }
 };
@@ -205,7 +192,7 @@ export const PUT: APIRoute = async ({ params, request, locals, clientAddress }) 
   if (!kv) {
     return new Response(
       JSON.stringify({ error: 'Storage not configured' }),
-      { status: 500, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+      { status: 500, headers: { 'Content-Type': 'application/json' } }
     );
   }
 
@@ -215,7 +202,7 @@ export const PUT: APIRoute = async ({ params, request, locals, clientAddress }) 
     if (!shareCode) {
       return new Response(
         JSON.stringify({ error: 'Share code required' }),
-        { status: 400, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
@@ -233,7 +220,7 @@ export const PUT: APIRoute = async ({ params, request, locals, clientAddress }) 
           status: 429,
           headers: {
             'Content-Type': 'application/json',
-            ...CORS_HEADERS
+            
           }
         }
       );
@@ -246,7 +233,7 @@ export const PUT: APIRoute = async ({ params, request, locals, clientAddress }) 
     if (!snapshotData || !publicKey) {
       return new Response(
         JSON.stringify({ error: 'Missing required fields: snapshotData, publicKey' }),
-        { status: 400, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
@@ -265,7 +252,7 @@ export const PUT: APIRoute = async ({ params, request, locals, clientAddress }) 
     if (!attestResult.valid) {
       return new Response(
         JSON.stringify({ error: attestResult.error || 'Invalid app attestation' }),
-        { status: 401, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+        { status: 401, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
@@ -275,7 +262,7 @@ export const PUT: APIRoute = async ({ params, request, locals, clientAddress }) 
     if (!shareData) {
       return new Response(
         JSON.stringify({ error: 'Share not found' }),
-        { status: 404, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+        { status: 404, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
@@ -287,7 +274,7 @@ export const PUT: APIRoute = async ({ params, request, locals, clientAddress }) 
     if (!ownershipSignature) {
       return new Response(
         JSON.stringify({ error: 'Missing ownership signature' }),
-        { status: 403, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+        { status: 403, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
@@ -300,7 +287,7 @@ export const PUT: APIRoute = async ({ params, request, locals, clientAddress }) 
     if (!isValidOwnership) {
       return new Response(
         JSON.stringify({ error: 'Invalid ownership signature' }),
-        { status: 403, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+        { status: 403, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
@@ -328,7 +315,7 @@ export const PUT: APIRoute = async ({ params, request, locals, clientAddress }) 
       status: 200,
       headers: {
         'X-RateLimit-Remaining': rateLimit.remaining.toString(),
-        ...CORS_HEADERS
+        
       }
     });
 
@@ -336,7 +323,7 @@ export const PUT: APIRoute = async ({ params, request, locals, clientAddress }) 
     console.error('Error updating share:', error);
     return new Response(
       JSON.stringify({ error: 'Internal server error' }),
-      { status: 500, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+      { status: 500, headers: { 'Content-Type': 'application/json' } }
     );
   }
 };
@@ -348,7 +335,7 @@ export const DELETE: APIRoute = async ({ params, request, locals, clientAddress 
   if (!kv) {
     return new Response(
       JSON.stringify({ error: 'Storage not configured' }),
-      { status: 500, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+      { status: 500, headers: { 'Content-Type': 'application/json' } }
     );
   }
 
@@ -358,7 +345,7 @@ export const DELETE: APIRoute = async ({ params, request, locals, clientAddress 
     if (!shareCode) {
       return new Response(
         JSON.stringify({ error: 'Share code required' }),
-        { status: 400, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
@@ -376,7 +363,7 @@ export const DELETE: APIRoute = async ({ params, request, locals, clientAddress 
           status: 429,
           headers: {
             'Content-Type': 'application/json',
-            ...CORS_HEADERS
+            
           }
         }
       );
@@ -396,7 +383,7 @@ export const DELETE: APIRoute = async ({ params, request, locals, clientAddress 
     if (!attestResult.valid) {
       return new Response(
         JSON.stringify({ error: attestResult.error || 'Invalid app attestation' }),
-        { status: 401, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+        { status: 401, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
@@ -406,7 +393,7 @@ export const DELETE: APIRoute = async ({ params, request, locals, clientAddress 
     if (!shareData) {
       return new Response(
         JSON.stringify({ error: 'Share not found' }),
-        { status: 404, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+        { status: 404, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
@@ -415,15 +402,10 @@ export const DELETE: APIRoute = async ({ params, request, locals, clientAddress 
     // Verify ownership signature
     const ownershipSignature = request.headers.get('X-Ownership-Signature');
 
-    console.log('🔐 [SERVER DELETE] Share code:', shareCode);
-    console.log('🔐 [SERVER DELETE] Stored public key:', share.publicKey?.substring(0, 20) + '...');
-    console.log('🔐 [SERVER DELETE] Received signature:', ownershipSignature?.substring(0, 20) + '...');
-
     if (!ownershipSignature) {
-      console.log('🔐 [SERVER DELETE] ERROR: Missing ownership signature');
       return new Response(
         JSON.stringify({ error: 'Missing ownership signature' }),
-        { status: 403, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+        { status: 403, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
@@ -433,33 +415,20 @@ export const DELETE: APIRoute = async ({ params, request, locals, clientAddress 
       share.publicKey
     );
 
-    console.log('🔐 [SERVER DELETE] Signature valid:', isValidOwnership);
-
     if (!isValidOwnership) {
-      console.log('🔐 [SERVER DELETE] ERROR: Invalid ownership signature');
       return new Response(
-        JSON.stringify({
-          error: 'Invalid ownership signature',
-          debug: {
-            shareCode,
-            storedPublicKey: share.publicKey?.substring(0, 40) + '...',
-            receivedSignature: ownershipSignature?.substring(0, 40) + '...'
-          }
-        }),
-        { status: 403, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+        JSON.stringify({ error: 'Invalid ownership signature' }),
+        { status: 403, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
-    console.log('🔐 [SERVER DELETE] Deleting share');
     // Delete share
     await kv.delete(`share:${shareCode}`);
-
-    console.log('🔐 [SERVER DELETE] SUCCESS');
     return new Response(null, {
       status: 204,
       headers: {
         'X-RateLimit-Remaining': rateLimit.remaining.toString(),
-        ...CORS_HEADERS
+        
       }
     });
 
@@ -467,7 +436,7 @@ export const DELETE: APIRoute = async ({ params, request, locals, clientAddress 
     console.error('Error deleting share:', error);
     return new Response(
       JSON.stringify({ error: 'Internal server error' }),
-      { status: 500, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+      { status: 500, headers: { 'Content-Type': 'application/json' } }
     );
   }
 };

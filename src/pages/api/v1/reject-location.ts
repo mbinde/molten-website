@@ -5,21 +5,6 @@ import { regenerateLocationsJSON } from '../../../lib/location-generator';
 // IMPORTANT: Disable prerendering for API routes (required for Cloudflare)
 export const prerender = false;
 
-// CORS headers for API routes
-const CORS_HEADERS = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-};
-
-// Handle OPTIONS preflight request
-export const OPTIONS: APIRoute = async () => {
-  return new Response(null, {
-    status: 204,
-    headers: CORS_HEADERS
-  });
-};
-
 interface PendingLocation {
   stable_id: string;
   name: string;
@@ -74,7 +59,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
   if (!auth.authorized) {
     return new Response(
       JSON.stringify({ error: auth.error || 'Unauthorized' }),
-      { status: 401, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+      { status: 401, headers: { 'Content-Type': 'application/json' } }
     );
   }
 
@@ -85,7 +70,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
       console.error('🚨 KV namespace STORE_DATA not found');
       return new Response(
         JSON.stringify({ error: 'Storage not configured' }),
-        { status: 500, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+        { status: 500, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
@@ -95,7 +80,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     if (!stable_id) {
       return new Response(
         JSON.stringify({ error: 'stable_id is required' }),
-        { status: 400, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
@@ -108,7 +93,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     if (locationIndex === -1) {
       return new Response(
         JSON.stringify({ error: 'Location not found' }),
-        { status: 404, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+        { status: 404, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
@@ -128,14 +113,14 @@ export const POST: APIRoute = async ({ request, locals }) => {
         locations_json_updated: true,
         total_approved_locations: storeCount
       }),
-      { status: 200, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+      { status: 200, headers: { 'Content-Type': 'application/json' } }
     );
 
   } catch (error) {
     console.error('Error rejecting location:', error);
     return new Response(
       JSON.stringify({ error: 'Internal server error' }),
-      { status: 500, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+      { status: 500, headers: { 'Content-Type': 'application/json' } }
     );
   }
 };

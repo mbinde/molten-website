@@ -20,25 +20,10 @@ import type { APIRoute } from 'astro';
 import { verifyAppAttestAssertion, verifyEd25519Signature, checkRateLimit } from '../../../../lib/crypto';
 
 export const prerender = false;
-
-const CORS_HEADERS = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, X-Apple-Assertion, X-Ownership-Signature',
-};
-
 const BACKUP_KEY_REGEX = /^[A-Z2-9]{3}-[A-Z2-9]{3}-[A-Z2-9]{3}$/;
 const VALID_BACKUP_TYPES = ['inventory', 'tags'];
 const MAX_BACKUPS_PER_TYPE = 50;
 const BACKUP_TTL_DAYS = 365; // Keep backups for 1 year
-
-export const OPTIONS: APIRoute = async () => {
-  return new Response(null, {
-    status: 204,
-    headers: CORS_HEADERS
-  });
-};
-
 export const GET: APIRoute = async ({ params, request, locals, clientAddress }) => {
   const env = (locals.runtime as any)?.env;
   const kv = env?.BACKUPS;
@@ -46,7 +31,7 @@ export const GET: APIRoute = async ({ params, request, locals, clientAddress }) 
   if (!kv) {
     return new Response(
       JSON.stringify({ error: 'Storage not configured' }),
-      { status: 500, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+      { status: 500, headers: { 'Content-Type': 'application/json' } }
     );
   }
 
@@ -58,14 +43,14 @@ export const GET: APIRoute = async ({ params, request, locals, clientAddress }) 
     if (!backupKey || !BACKUP_KEY_REGEX.test(backupKey)) {
       return new Response(
         JSON.stringify({ error: 'Invalid backup key format' }),
-        { status: 400, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
     if (!type || !VALID_BACKUP_TYPES.includes(type)) {
       return new Response(
         JSON.stringify({ error: 'Invalid or missing type parameter (must be: inventory, tags)' }),
-        { status: 400, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
@@ -83,7 +68,7 @@ export const GET: APIRoute = async ({ params, request, locals, clientAddress }) 
           status: 429,
           headers: {
             'Content-Type': 'application/json',
-            ...CORS_HEADERS
+            
           }
         }
       );
@@ -103,7 +88,7 @@ export const GET: APIRoute = async ({ params, request, locals, clientAddress }) 
     if (!attestResult.valid) {
       return new Response(
         JSON.stringify({ error: attestResult.error || 'Invalid app attestation' }),
-        { status: 401, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+        { status: 401, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
@@ -112,7 +97,7 @@ export const GET: APIRoute = async ({ params, request, locals, clientAddress }) 
     if (!registryEntry) {
       return new Response(
         JSON.stringify({ error: 'Backup key not found' }),
-        { status: 404, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+        { status: 404, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
@@ -123,7 +108,7 @@ export const GET: APIRoute = async ({ params, request, locals, clientAddress }) 
     if (!indexData) {
       return new Response(
         JSON.stringify({ error: 'No backups found for this type' }),
-        { status: 404, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+        { status: 404, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
@@ -131,7 +116,7 @@ export const GET: APIRoute = async ({ params, request, locals, clientAddress }) 
     if (index.length === 0) {
       return new Response(
         JSON.stringify({ error: 'No backups found for this type' }),
-        { status: 404, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+        { status: 404, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
@@ -142,7 +127,7 @@ export const GET: APIRoute = async ({ params, request, locals, clientAddress }) 
     if (!backupData) {
       return new Response(
         JSON.stringify({ error: 'Backup data not found' }),
-        { status: 404, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+        { status: 404, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
@@ -160,7 +145,7 @@ export const GET: APIRoute = async ({ params, request, locals, clientAddress }) 
         headers: {
           'Content-Type': 'application/json',
           'X-RateLimit-Remaining': rateLimit.remaining.toString(),
-          ...CORS_HEADERS
+          
         }
       }
     );
@@ -169,7 +154,7 @@ export const GET: APIRoute = async ({ params, request, locals, clientAddress }) 
     console.error('Error downloading backup:', error);
     return new Response(
       JSON.stringify({ error: 'Internal server error' }),
-      { status: 500, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+      { status: 500, headers: { 'Content-Type': 'application/json' } }
     );
   }
 };
@@ -181,7 +166,7 @@ export const POST: APIRoute = async ({ params, request, locals, clientAddress })
   if (!kv) {
     return new Response(
       JSON.stringify({ error: 'Storage not configured' }),
-      { status: 500, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+      { status: 500, headers: { 'Content-Type': 'application/json' } }
     );
   }
 
@@ -191,7 +176,7 @@ export const POST: APIRoute = async ({ params, request, locals, clientAddress })
     if (!backupKey || !BACKUP_KEY_REGEX.test(backupKey)) {
       return new Response(
         JSON.stringify({ error: 'Invalid backup key format' }),
-        { status: 400, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
@@ -209,7 +194,7 @@ export const POST: APIRoute = async ({ params, request, locals, clientAddress })
           status: 429,
           headers: {
             'Content-Type': 'application/json',
-            ...CORS_HEADERS
+            
           }
         }
       );
@@ -222,14 +207,14 @@ export const POST: APIRoute = async ({ params, request, locals, clientAddress })
     if (!type || !data || !checksum) {
       return new Response(
         JSON.stringify({ error: 'Missing required fields: type, data, checksum' }),
-        { status: 400, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
     if (!VALID_BACKUP_TYPES.includes(type)) {
       return new Response(
         JSON.stringify({ error: 'Invalid type (must be: inventory, tags)' }),
-        { status: 400, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
@@ -248,7 +233,7 @@ export const POST: APIRoute = async ({ params, request, locals, clientAddress })
     if (!attestResult.valid) {
       return new Response(
         JSON.stringify({ error: attestResult.error || 'Invalid app attestation' }),
-        { status: 401, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+        { status: 401, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
@@ -257,7 +242,7 @@ export const POST: APIRoute = async ({ params, request, locals, clientAddress })
     if (!registryData) {
       return new Response(
         JSON.stringify({ error: 'Backup key not registered' }),
-        { status: 404, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+        { status: 404, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
@@ -268,7 +253,7 @@ export const POST: APIRoute = async ({ params, request, locals, clientAddress })
     if (!ownershipSignature) {
       return new Response(
         JSON.stringify({ error: 'Missing ownership signature' }),
-        { status: 403, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+        { status: 403, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
@@ -281,7 +266,7 @@ export const POST: APIRoute = async ({ params, request, locals, clientAddress })
     if (!isValidOwnership) {
       return new Response(
         JSON.stringify({ error: 'Invalid ownership signature' }),
-        { status: 403, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+        { status: 403, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
@@ -306,7 +291,7 @@ export const POST: APIRoute = async ({ params, request, locals, clientAddress })
             headers: {
               'Content-Type': 'application/json',
               'X-RateLimit-Remaining': rateLimit.remaining.toString(),
-              ...CORS_HEADERS
+              
             }
           }
         );
@@ -357,7 +342,7 @@ export const POST: APIRoute = async ({ params, request, locals, clientAddress })
         headers: {
           'Content-Type': 'application/json',
           'X-RateLimit-Remaining': rateLimit.remaining.toString(),
-          ...CORS_HEADERS
+          
         }
       }
     );
@@ -366,7 +351,7 @@ export const POST: APIRoute = async ({ params, request, locals, clientAddress })
     console.error('Error uploading backup:', error);
     return new Response(
       JSON.stringify({ error: 'Internal server error' }),
-      { status: 500, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+      { status: 500, headers: { 'Content-Type': 'application/json' } }
     );
   }
 };

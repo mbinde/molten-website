@@ -11,19 +11,6 @@ import { verifyAppAttestAssertion } from '../../../../../lib/crypto';
 
 export const prerender = false;
 
-const CORS_HEADERS = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'DELETE, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, X-Apple-Assertion',
-};
-
-export const OPTIONS: APIRoute = async () => {
-  return new Response(null, {
-    status: 204,
-    headers: CORS_HEADERS
-  });
-};
-
 export const DELETE: APIRoute = async ({ params, request, locals }) => {
   const env = (locals.runtime as any)?.env;
   const kv = env?.INVENTORY_SHARES;
@@ -31,7 +18,7 @@ export const DELETE: APIRoute = async ({ params, request, locals }) => {
   if (!kv) {
     return new Response(
       JSON.stringify({ error: 'Storage not configured' }),
-      { status: 500, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+      { status: 500, headers: { 'Content-Type': 'application/json' } }
     );
   }
 
@@ -41,7 +28,7 @@ export const DELETE: APIRoute = async ({ params, request, locals }) => {
     if (!shareCode) {
       return new Response(
         JSON.stringify({ error: 'Share code required' }),
-        { status: 400, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
@@ -59,7 +46,7 @@ export const DELETE: APIRoute = async ({ params, request, locals }) => {
     if (!attestResult.valid) {
       return new Response(
         JSON.stringify({ error: attestResult.error || 'Invalid app attestation' }),
-        { status: 401, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+        { status: 401, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
@@ -69,7 +56,7 @@ export const DELETE: APIRoute = async ({ params, request, locals }) => {
     if (!expiringShareData) {
       return new Response(
         JSON.stringify({ error: 'Expiring share not found' }),
-        { status: 404, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+        { status: 404, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
@@ -94,14 +81,14 @@ export const DELETE: APIRoute = async ({ params, request, locals }) => {
 
     return new Response(null, {
       status: 204,
-      headers: CORS_HEADERS
+      
     });
 
   } catch (error) {
     console.error('Error deleting expiring share:', error);
     return new Response(
       JSON.stringify({ error: 'Internal server error' }),
-      { status: 500, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+      { status: 500, headers: { 'Content-Type': 'application/json' } }
     );
   }
 };

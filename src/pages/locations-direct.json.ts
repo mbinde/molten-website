@@ -17,7 +17,6 @@ export const GET: APIRoute = async ({ locals }) => {
           status: 500,
           headers: {
             'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*'
           }
         }
       );
@@ -32,7 +31,6 @@ export const GET: APIRoute = async ({ locals }) => {
           status: 500,
           headers: {
             'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*'
           }
         }
       );
@@ -47,7 +45,6 @@ export const GET: APIRoute = async ({ locals }) => {
           status: 500,
           headers: {
             'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*'
           }
         }
       );
@@ -63,7 +60,6 @@ export const GET: APIRoute = async ({ locals }) => {
           status: 404,
           headers: {
             'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*'
           }
         }
       );
@@ -76,7 +72,6 @@ export const GET: APIRoute = async ({ locals }) => {
         status: 200,
         headers: {
           'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*',
           'Cache-Control': 'no-cache, no-store, must-revalidate',
           'Pragma': 'no-cache',
           'Expires': '0'
@@ -95,7 +90,6 @@ export const GET: APIRoute = async ({ locals }) => {
         status: 500,
         headers: {
           'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*'
         }
       }
     );

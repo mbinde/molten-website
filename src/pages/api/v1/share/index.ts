@@ -18,19 +18,6 @@ import { verifyAppAttestAssertion, checkRateLimit } from '../../../../lib/crypto
 
 export const prerender = false;
 
-const CORS_HEADERS = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, X-Apple-Assertion',
-};
-
-export const OPTIONS: APIRoute = async () => {
-  return new Response(null, {
-    status: 204,
-    headers: CORS_HEADERS
-  });
-};
-
 export const POST: APIRoute = async ({ request, locals, clientAddress }) => {
   const env = (locals.runtime as any)?.env;
   const kv = env?.INVENTORY_SHARES;
@@ -38,7 +25,7 @@ export const POST: APIRoute = async ({ request, locals, clientAddress }) => {
   if (!kv) {
     return new Response(
       JSON.stringify({ error: 'Storage not configured' }),
-      { status: 500, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+      { status: 500, headers: { 'Content-Type': 'application/json' } }
     );
   }
 
@@ -59,7 +46,7 @@ export const POST: APIRoute = async ({ request, locals, clientAddress }) => {
             'Content-Type': 'application/json',
             'X-RateLimit-Remaining': '0',
             'X-RateLimit-Reset': rateLimit.resetAt.toISOString(),
-            ...CORS_HEADERS
+            
           }
         }
       );
@@ -73,7 +60,7 @@ export const POST: APIRoute = async ({ request, locals, clientAddress }) => {
     if (!shareCode || !snapshotData || !publicKey) {
       return new Response(
         JSON.stringify({ error: 'Missing required fields: shareCode, snapshotData, publicKey' }),
-        { status: 400, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
@@ -81,7 +68,7 @@ export const POST: APIRoute = async ({ request, locals, clientAddress }) => {
     if (!/^[A-Z0-9]{6}$/.test(shareCode)) {
       return new Response(
         JSON.stringify({ error: 'Invalid share code format (must be 6 uppercase alphanumeric characters)' }),
-        { status: 400, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
@@ -100,7 +87,7 @@ export const POST: APIRoute = async ({ request, locals, clientAddress }) => {
     if (!attestResult.valid) {
       return new Response(
         JSON.stringify({ error: attestResult.error || 'Invalid app attestation' }),
-        { status: 401, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+        { status: 401, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
@@ -109,7 +96,7 @@ export const POST: APIRoute = async ({ request, locals, clientAddress }) => {
     if (existingShare) {
       return new Response(
         JSON.stringify({ error: 'Share code already exists' }),
-        { status: 409, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+        { status: 409, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
@@ -144,7 +131,7 @@ export const POST: APIRoute = async ({ request, locals, clientAddress }) => {
       status: 201,
       headers: {
         'X-RateLimit-Remaining': rateLimit.remaining.toString(),
-        ...CORS_HEADERS
+        
       }
     });
 
@@ -152,7 +139,7 @@ export const POST: APIRoute = async ({ request, locals, clientAddress }) => {
     console.error('Error creating share:', error);
     return new Response(
       JSON.stringify({ error: 'Internal server error' }),
-      { status: 500, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+      { status: 500, headers: { 'Content-Type': 'application/json' } }
     );
   }
 };

@@ -19,19 +19,6 @@ import type { APIRoute } from 'astro';
 
 export const prerender = false;
 
-const CORS_HEADERS = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type',
-};
-
-export const OPTIONS: APIRoute = async () => {
-  return new Response(null, {
-    status: 204,
-    headers: CORS_HEADERS
-  });
-};
-
 export const GET: APIRoute = async ({ params, locals }) => {
   const env = (locals.runtime as any)?.env;
   const kv = env?.INVENTORY_SHARES;
@@ -39,7 +26,7 @@ export const GET: APIRoute = async ({ params, locals }) => {
   if (!kv) {
     return new Response(
       JSON.stringify({ error: 'Storage not configured' }),
-      { status: 500, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+      { status: 500, headers: { 'Content-Type': 'application/json' } }
     );
   }
 
@@ -49,7 +36,7 @@ export const GET: APIRoute = async ({ params, locals }) => {
     if (!mainShareCode) {
       return new Response(
         JSON.stringify({ error: 'Main share code required' }),
-        { status: 400, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
@@ -58,7 +45,7 @@ export const GET: APIRoute = async ({ params, locals }) => {
     if (!mainShare) {
       return new Response(
         JSON.stringify({ error: 'Main share not found' }),
-        { status: 404, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+        { status: 404, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
@@ -74,7 +61,7 @@ export const GET: APIRoute = async ({ params, locals }) => {
           status: 200,
           headers: {
             'Content-Type': 'application/json',
-            ...CORS_HEADERS
+            
           }
         }
       );
@@ -113,7 +100,7 @@ export const GET: APIRoute = async ({ params, locals }) => {
         status: 200,
         headers: {
           'Content-Type': 'application/json',
-          ...CORS_HEADERS
+          
         }
       }
     );
@@ -122,7 +109,7 @@ export const GET: APIRoute = async ({ params, locals }) => {
     console.error('Error listing expiring shares:', error);
     return new Response(
       JSON.stringify({ error: 'Internal server error' }),
-      { status: 500, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+      { status: 500, headers: { 'Content-Type': 'application/json' } }
     );
   }
 };

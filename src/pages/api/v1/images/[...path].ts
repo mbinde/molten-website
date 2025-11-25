@@ -72,7 +72,6 @@ export const GET: APIRoute = async ({ params, request, locals }) => {
         'Content-Type': contentType,
         'ETag': object.httpEtag,
         'Cache-Control': 'public, max-age=31536000, immutable', // 1 year - images don't change
-        'Access-Control-Allow-Origin': '*',
         'Content-Length': object.size.toString(),
         'Last-Modified': object.uploaded.toUTCString()
       }

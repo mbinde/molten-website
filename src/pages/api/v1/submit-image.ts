@@ -27,24 +27,9 @@ import type { APIRoute } from 'astro';
 import { verifyAppAttestAssertion, checkRateLimit } from '../../../lib/crypto';
 
 export const prerender = false;
-
-const CORS_HEADERS = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, X-Apple-Assertion',
-};
-
 const MAX_IMAGE_SIZE_MB = 5;
 const MAX_IMAGE_SIZE_BYTES = MAX_IMAGE_SIZE_MB * 1024 * 1024;
 const DAILY_SUBMISSION_LIMIT = 1000;
-
-export const OPTIONS: APIRoute = async () => {
-  return new Response(null, {
-    status: 204,
-    headers: CORS_HEADERS
-  });
-};
-
 export const POST: APIRoute = async ({ request, locals, clientAddress }) => {
   const env = (locals.runtime as any)?.env;
   const kv = env?.INVENTORY_SHARES; // Reuse existing KV namespace
@@ -52,7 +37,7 @@ export const POST: APIRoute = async ({ request, locals, clientAddress }) => {
   if (!kv) {
     return new Response(
       JSON.stringify({ error: 'Storage not configured' }),
-      { status: 500, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+      { status: 500, headers: { 'Content-Type': 'application/json' } }
     );
   }
 
@@ -74,7 +59,7 @@ export const POST: APIRoute = async ({ request, locals, clientAddress }) => {
             'Content-Type': 'application/json',
             'X-RateLimit-Remaining': '0',
             'X-RateLimit-Reset': rateLimit.resetAt.toISOString(),
-            ...CORS_HEADERS
+            
           }
         }
       );
@@ -91,7 +76,7 @@ export const POST: APIRoute = async ({ request, locals, clientAddress }) => {
           success: false,
           error: 'Missing required fields or terms not accepted'
         }),
-        { status: 400, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
@@ -102,7 +87,7 @@ export const POST: APIRoute = async ({ request, locals, clientAddress }) => {
           success: false,
           error: 'Invalid glass item data'
         }),
-        { status: 400, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
@@ -114,7 +99,7 @@ export const POST: APIRoute = async ({ request, locals, clientAddress }) => {
           success: false,
           error: 'Invalid email address'
         }),
-        { status: 400, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
@@ -125,7 +110,7 @@ export const POST: APIRoute = async ({ request, locals, clientAddress }) => {
           success: false,
           error: 'Invalid image format (must be base64)'
         }),
-        { status: 400, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
@@ -137,7 +122,7 @@ export const POST: APIRoute = async ({ request, locals, clientAddress }) => {
           success: false,
           error: `Image too large (max ${MAX_IMAGE_SIZE_MB}MB)`
         }),
-        { status: 413, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+        { status: 413, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
@@ -160,7 +145,7 @@ export const POST: APIRoute = async ({ request, locals, clientAddress }) => {
           success: false,
           error: attestResult.error || 'Invalid app attestation'
         }),
-        { status: 401, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+        { status: 401, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
@@ -210,7 +195,7 @@ export const POST: APIRoute = async ({ request, locals, clientAddress }) => {
         headers: {
           'Content-Type': 'application/json',
           'X-RateLimit-Remaining': rateLimit.remaining.toString(),
-          ...CORS_HEADERS
+          
         }
       }
     );
@@ -222,7 +207,7 @@ export const POST: APIRoute = async ({ request, locals, clientAddress }) => {
         success: false,
         error: 'Internal server error'
       }),
-      { status: 500, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+      { status: 500, headers: { 'Content-Type': 'application/json' } }
     );
   }
 };

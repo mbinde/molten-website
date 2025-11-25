@@ -3,21 +3,6 @@ import type { APIRoute } from 'astro';
 // IMPORTANT: Disable prerendering for API routes (required for Cloudflare)
 export const prerender = false;
 
-// CORS headers for API routes
-const CORS_HEADERS = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type',
-};
-
-// Handle OPTIONS preflight request
-export const OPTIONS: APIRoute = async () => {
-  return new Response(null, {
-    status: 204,
-    headers: CORS_HEADERS
-  });
-};
-
 interface LocationSubmission {
   name: string;
   address_line1: string;
@@ -168,7 +153,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
           status: 500,
           headers: {
             'Content-Type': 'application/json',
-            ...CORS_HEADERS
+            
           }
         }
       );
@@ -189,7 +174,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
           status: 400,
           headers: {
             'Content-Type': 'application/json',
-            ...CORS_HEADERS
+            
           }
         }
       );
@@ -270,7 +255,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
         status: 200,
         headers: {
           'Content-Type': 'application/json',
-          ...CORS_HEADERS
+          
         }
       }
     );
@@ -286,7 +271,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
         status: 500,
         headers: {
           'Content-Type': 'application/json',
-          ...CORS_HEADERS
+          
         }
       }
     );
