@@ -36,7 +36,7 @@ export const OPTIONS: APIRoute = async () => {
 
 export const POST: APIRoute = async ({ request, locals, clientAddress }) => {
   const env = (locals.runtime as any)?.env;
-  const kv = env?.INVENTORY_SHARES; // Reusing existing KV namespace
+  const kv = env?.BACKUPS;
 
   if (!kv) {
     return new Response(

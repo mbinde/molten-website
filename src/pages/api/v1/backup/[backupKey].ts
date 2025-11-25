@@ -41,7 +41,7 @@ export const OPTIONS: APIRoute = async () => {
 
 export const GET: APIRoute = async ({ params, request, locals, clientAddress }) => {
   const env = (locals.runtime as any)?.env;
-  const kv = env?.INVENTORY_SHARES;
+  const kv = env?.BACKUPS;
 
   if (!kv) {
     return new Response(
@@ -176,7 +176,7 @@ export const GET: APIRoute = async ({ params, request, locals, clientAddress }) 
 
 export const POST: APIRoute = async ({ params, request, locals, clientAddress }) => {
   const env = (locals.runtime as any)?.env;
-  const kv = env?.INVENTORY_SHARES;
+  const kv = env?.BACKUPS;
 
   if (!kv) {
     return new Response(

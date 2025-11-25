@@ -20,6 +20,10 @@ id = "0dd92b62a7534d35886501d95ea66811"
 binding = "RATINGS_CACHE"
 id = "a9393c916da848b09c2d0e741eee8832"
 
+[[kv_namespaces]]
+binding = "BACKUPS"
+id = "f2666be697f644e383bcb44e9f72294e"
+
 # D1 Database for Ratings
 [[d1_databases]]
 binding = "RATINGS_DB"
