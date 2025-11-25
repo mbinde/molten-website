@@ -63,10 +63,19 @@ function base64ToBytes(base64: string): Uint8Array {
 
 /**
  * Verify App Attest assertion (iOS 14+)
+ *
+ * SECURITY NOTE: App Attest verification is NOT YET IMPLEMENTED.
+ * Currently, this function:
+ * - Rejects requests that provide an assertion (fail closed - can't verify it)
+ * - Allows requests without an assertion (for older devices without App Attest)
+ *
+ * This is a known limitation. Additional rate limiting and abuse detection
+ * should be used until full App Attest is implemented.
+ *
  * @param assertion Base64-encoded App Attest assertion
  * @param requestData Request data to verify
  * @param env CloudFlare environment (for KV access to stored keys)
- * @returns True if assertion is valid
+ * @returns Object with valid status and optional error
  */
 export async function verifyAppAttestAssertion(
   assertion: string | null,
@@ -77,31 +86,32 @@ export async function verifyAppAttestAssertion(
   },
   env: any
 ): Promise<{ valid: boolean; error?: string }> {
-  // If no assertion provided, skip verification
-  // (App Attest not supported on older devices)
+  // If no assertion provided, allow the request
+  // This supports older iOS devices that don't have App Attest capability
+  // Rate limiting should be applied at the endpoint level for abuse prevention
   if (!assertion) {
-    return { valid: true };  // Allow for now (can be made stricter in production)
-  }
-
-  try {
-    // TODO: Implement full App Attest verification
-    // See: https://developer.apple.com/documentation/devicecheck/validating_apps_that_connect_to_your_server
-    //
-    // Steps:
-    // 1. Decode CBOR assertion
-    // 2. Extract authenticator data and signature
-    // 3. Reconstruct client data hash
-    // 4. Fetch stored public key from KV (based on keyId from authenticator data)
-    // 5. Verify signature using public key
-    // 6. Validate counter to prevent replay attacks
-
-    console.log('⚠️  App Attest verification not yet implemented - accepting all requests');
     return { valid: true };
-
-  } catch (error) {
-    console.error('App Attest verification error:', error);
-    return { valid: false, error: 'Invalid App Attest assertion' };
   }
+
+  // SECURITY: If an assertion IS provided, we must reject it since we can't verify it
+  // This prevents attackers from sending fake assertions that would bypass any
+  // future verification logic. Fail closed.
+  //
+  // TODO: Implement full App Attest verification
+  // See: https://developer.apple.com/documentation/devicecheck/validating_apps_that_connect_to_your_server
+  //
+  // Steps required:
+  // 1. Decode CBOR assertion
+  // 2. Extract authenticator data and signature
+  // 3. Reconstruct client data hash
+  // 4. Fetch stored public key from KV (based on keyId from authenticator data)
+  // 5. Verify signature using public key
+  // 6. Validate counter to prevent replay attacks
+
+  return {
+    valid: false,
+    error: 'App Attest verification not yet implemented - please retry without assertion or contact support'
+  };
 }
 
 /**

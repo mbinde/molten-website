@@ -1,18 +1,21 @@
 import type { APIRoute } from 'astro';
 import { regenerateLocationsJSON } from '../../../lib/location-generator';
+import { requireAuth } from '../../../lib/auth';
 
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async ({ request, locals }) => {
   try {
-    const { action, suggestionId, adminPassword } = await request.json();
+    const env = (locals.runtime as any)?.env;
 
-    // Verify admin password
-    const expectedPassword = (import.meta as any).env.ADMIN_PASSWORD;
-    if (!expectedPassword || adminPassword !== expectedPassword) {
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+    // Verify admin token
+    const auth = await requireAuth(env, request);
+    if (!auth.authorized) {
+      return new Response(JSON.stringify({ error: auth.error || 'Unauthorized' }), {
         status: 401,
         headers: { 'Content-Type': 'application/json' },
       });
     }
+
+    const { action, suggestionId } = await request.json();
 
     const kv = (import.meta as any).env.MOLTEN_STORES;
     if (!kv) {
