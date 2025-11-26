@@ -13,10 +13,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Trigger batch moderation
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
         run: |
           response=$(curl -s -w "\n%{http_code}" -X POST \
             https://molten.glass/api/v1/ratings/moderate-batch \
-            -H "Content-Type: application/json")
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer $CRON_SECRET")
 
           http_code=$(echo "$response" | tail -n1)
           body=$(echo "$response" | sed '$d')
