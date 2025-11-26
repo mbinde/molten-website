@@ -25,3 +25,6 @@ pnpm-debug.log*
 public/images/
 !public/images/index.html
 static-deploy/
+
+# Wrangler local state
+.wrangler/
