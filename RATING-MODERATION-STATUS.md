@@ -129,7 +129,7 @@ jobs:
     steps:
       - name: Trigger moderation
         run: |
-          curl -X POST https://molten.glass/api/v1/ratings/moderate-batch \
+          curl -X POST https://moltenglass.app/api/v1/ratings/moderate-batch \
             -H "Content-Type: application/json"
 ```
 

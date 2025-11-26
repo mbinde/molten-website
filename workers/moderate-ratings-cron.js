@@ -12,7 +12,7 @@
 export default {
   async scheduled(event, env, ctx) {
     // Call the moderation endpoint
-    const response = await fetch('https://molten.glass/api/v1/ratings/moderate-batch', {
+    const response = await fetch('https://moltenglass.app/api/v1/ratings/moderate-batch', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

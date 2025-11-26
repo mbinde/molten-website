@@ -172,7 +172,7 @@ git push origin main
 ### 6.1 Test Version Endpoint
 
 ```bash
-curl https://molten.glass/api/catalog/version
+curl https://moltenglass.app/api/catalog/version
 ```
 
 **Expected response (200 OK):**
@@ -191,7 +191,7 @@ curl https://molten.glass/api/catalog/version
 ### 6.2 Test Data Endpoint
 
 ```bash
-curl https://molten.glass/api/catalog/data \
+curl https://moltenglass.app/api/catalog/data \
   -H "Accept-Encoding: gzip" \
   --output catalog.json.gz
 
@@ -216,11 +216,11 @@ cat catalog.json | head -20
 
 ```bash
 # Get ETag from first request
-ETAG=$(curl -sI https://molten.glass/api/catalog/data | grep -i etag | cut -d' ' -f2 | tr -d '\r')
+ETAG=$(curl -sI https://moltenglass.app/api/catalog/data | grep -i etag | cut -d' ' -f2 | tr -d '\r')
 echo "ETag: $ETAG"
 
 # Second request with If-None-Match should return 304
-curl -I https://molten.glass/api/catalog/data \
+curl -I https://moltenglass.app/api/catalog/data \
   -H "If-None-Match: $ETAG"
 ```
 
@@ -231,7 +231,7 @@ curl -I https://molten.glass/api/catalog/data \
 ```bash
 # Make 11 requests rapidly (limit is 10/hour)
 for i in {1..11}; do
-  STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://molten.glass/api/catalog/data)
+  STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://moltenglass.app/api/catalog/data)
   echo "Request $i: HTTP $STATUS"
 done
 ```

@@ -8,7 +8,7 @@ This guide explains how to host product images on Cloudflare R2 for the Molten i
 
 **Problem:** After removing product images from the iOS app bundle to reduce size, the app needs to download images from a CDN.
 
-**Solution:** Host the 1,321 product images in a Cloudflare R2 bucket and serve them at `https://molten.glass/images/[filename]`.
+**Solution:** Host the 1,321 product images in a Cloudflare R2 bucket and serve them at `https://moltenglass.app/images/[filename]`.
 
 **Image Naming:** Images are named with manufacturer-code format (e.g., `BB-650001.webp`, `CiM-511101.jpg`)
 
@@ -45,7 +45,7 @@ npx wrangler r2 bucket create product-images
 
 ## Step 2: Configure R2 Bucket for Public Access
 
-We'll use a **Custom Domain** to serve images at `https://molten.glass/images/*`.
+We'll use a **Custom Domain** to serve images at `https://moltenglass.app/images/*`.
 
 ### 2.1 Connect Custom Domain to R2:
 
@@ -170,7 +170,7 @@ Images are named with manufacturer code format:
 **Bucket Name:** `product-images`
 **Region:** Automatic (Cloudflare chooses optimal location)
 **Public Access:** Via custom domain `cdn.moltenglass.app`
-**CORS:** Enabled for `https://molten.glass` origin
+**CORS:** Enabled for `https://moltenglass.app` origin
 **Caching:** Long-lived (1 year) with ETag support
 **Compression:** Automatic (Cloudflare serves compressed when supported)
 

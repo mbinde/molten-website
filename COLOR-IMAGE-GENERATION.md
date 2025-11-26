@@ -51,7 +51,7 @@ This feature converts hex color codes (from your glass inventory) into AI-genera
 
 **Example Curl:**
 ```bash
-curl -X POST https://molten.glass/api/v1/generate-color-image \
+curl -X POST https://moltenglass.app/api/v1/generate-color-image \
   -H "Content-Type: application/json" \
   -d '{
     "colors": [
@@ -143,7 +143,7 @@ struct ColorImageRequest: Codable {
 }
 
 func generateColorImage(colors: [(hex: String, weight: Double)], style: [String] = []) async throws -> Data {
-    let url = URL(string: "https://molten.glass/api/v1/generate-color-image")!
+    let url = URL(string: "https://moltenglass.app/api/v1/generate-color-image")!
     var request = URLRequest(url: url)
     request.httpMethod = "POST"
     request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -200,7 +200,7 @@ protocol ColorImageServiceProtocol {
 }
 
 struct ColorImageService: ColorImageServiceProtocol {
-    private let baseURL = "https://molten.glass"
+    private let baseURL = "https://moltenglass.app"
 
     func generateImage(from colors: [(hex: String, weight: Double)], style: [String] = []) async throws -> Data {
         let endpoint = URL(string: "\(baseURL)/api/v1/generate-color-image")!
@@ -275,8 +275,8 @@ git push
 
 Cloudflare Pages will:
 1. Build the Astro site
-2. Deploy to `molten.glass`
-3. Make the API available at `https://molten.glass/api/v1/generate-color-image`
+2. Deploy to `moltenglass.app`
+3. Make the API available at `https://moltenglass.app/api/v1/generate-color-image`
 
 ### Manual Worker Deployment (Optional)
 

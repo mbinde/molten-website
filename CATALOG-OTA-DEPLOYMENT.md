@@ -134,7 +134,7 @@ Expected output:
 ### 4.1 Test Version Endpoint
 
 ```bash
-curl -X GET https://molten.glass/api/catalog/version
+curl -X GET https://moltenglass.app/api/catalog/version
 ```
 
 Expected response (200 OK):
@@ -155,7 +155,7 @@ Expected response (200 OK):
 ⚠️ **Note**: The data endpoint currently accepts requests without App Attest for testing. This will be enforced in production.
 
 ```bash
-curl -X GET https://molten.glass/api/catalog/data \
+curl -X GET https://moltenglass.app/api/catalog/data \
   -H "Accept-Encoding: gzip" \
   --output catalog.json.gz
 ```
@@ -171,10 +171,10 @@ jq '.item_count' catalog.json
 
 ```bash
 # First request - get ETag
-ETAG=$(curl -sI https://molten.glass/api/catalog/data | grep -i etag | cut -d' ' -f2 | tr -d '\r')
+ETAG=$(curl -sI https://moltenglass.app/api/catalog/data | grep -i etag | cut -d' ' -f2 | tr -d '\r')
 
 # Second request with If-None-Match
-curl -X GET https://molten.glass/api/catalog/data \
+curl -X GET https://moltenglass.app/api/catalog/data \
   -H "If-None-Match: $ETAG" \
   -v
 # Should return: 304 Not Modified
@@ -186,7 +186,7 @@ curl -X GET https://molten.glass/api/catalog/data \
 # Run 11 requests rapidly (limit is 10/hour)
 for i in {1..11}; do
   echo "Request $i:"
-  curl -X GET https://molten.glass/api/catalog/data -w "\nStatus: %{http_code}\n\n"
+  curl -X GET https://moltenglass.app/api/catalog/data -w "\nStatus: %{http_code}\n\n"
 done
 
 # 11th request should return: 429 Too Many Requests
@@ -223,7 +223,7 @@ Monitor the deployment:
 After deployment, check that KV namespace is bound:
 
 ```bash
-curl -X GET https://molten.glass/api/catalog/version
+curl -X GET https://moltenglass.app/api/catalog/version
 ```
 
 If you get `{"error": "Catalog storage not configured"}`, the KV binding is not active. Re-check Step 2.
@@ -289,7 +289,7 @@ node upload-catalog.js \
 ### 3. Verify New Version
 
 ```bash
-curl -X GET https://molten.glass/api/catalog/version
+curl -X GET https://moltenglass.app/api/catalog/version
 # Should return version: 2
 ```
 
@@ -366,7 +366,7 @@ npx wrangler kv:key delete --namespace-id YOUR_NAMESPACE_ID "catalog:ratelimit:i
 **Cause**: Base64 encoding/decoding issue
 
 **Solution**:
-1. Download catalog data: `curl https://molten.glass/api/catalog/data --output test.gz`
+1. Download catalog data: `curl https://moltenglass.app/api/catalog/data --output test.gz`
 2. Test decompression: `gunzip test.gz`
 3. If fails, check upload script's base64 encoding
 4. Re-upload catalog with fixed script

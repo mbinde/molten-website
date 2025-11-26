@@ -17,7 +17,7 @@ jobs:
           CRON_SECRET: ${{ secrets.CRON_SECRET }}
         run: |
           response=$(curl -s -w "\n%{http_code}" -X POST \
-            https://molten.glass/api/v1/ratings/moderate-batch \
+            https://moltenglass.app/api/v1/ratings/moderate-batch \
             -H "Content-Type: application/json" \
             -H "Authorization: Bearer $CRON_SECRET")
 

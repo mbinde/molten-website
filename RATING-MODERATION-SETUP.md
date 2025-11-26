@@ -54,7 +54,7 @@ Cloudflare Pages doesn't support cron triggers in code. You need to set them up 
 3. Go to **Settings** → **Triggers** tab
 4. Click **Add Cron Trigger**
 5. Set schedule: `0 3 * * *` (daily at 3am UTC)
-6. Set endpoint: `https://molten.glass/api/v1/ratings/moderate-batch`
+6. Set endpoint: `https://moltenglass.app/api/v1/ratings/moderate-batch`
 7. Click **Save**
 
 ### Option B: External Scheduler (Alternative)
@@ -78,7 +78,7 @@ jobs:
     steps:
       - name: Trigger moderation endpoint
         run: |
-          curl -X POST https://molten.glass/api/v1/ratings/moderate-batch
+          curl -X POST https://moltenglass.app/api/v1/ratings/moderate-batch
 ```
 
 **Using Cloudflare Workers** (requires separate Worker):
@@ -88,7 +88,7 @@ Create a Worker that calls the endpoint on a schedule:
 ```typescript
 export default {
   async scheduled(event: ScheduledEvent, env: Env, ctx: ExecutionContext) {
-    await fetch('https://molten.glass/api/v1/ratings/moderate-batch', {
+    await fetch('https://moltenglass.app/api/v1/ratings/moderate-batch', {
       method: 'POST'
     });
   }
@@ -135,7 +135,7 @@ Try submitting a rating with profanity via the iOS app:
 
 2. Manually trigger moderation (for testing):
    ```bash
-   curl -X POST https://molten.glass/api/v1/ratings/moderate-batch
+   curl -X POST https://moltenglass.app/api/v1/ratings/moderate-batch
    ```
 
 3. Check the response:
@@ -169,7 +169,7 @@ Try submitting a rating with profanity via the iOS app:
 
 3. Trigger aggregation:
    ```bash
-   curl https://molten.glass/api/v1/ratings/aggregate-cron
+   curl https://moltenglass.app/api/v1/ratings/aggregate-cron
    ```
 
 4. Fetch ratings from app:
@@ -207,7 +207,7 @@ Create a Worker or GitHub Action to monitor rejection rates:
 
 ```typescript
 // Check if rejection rate is too high (> 10%)
-const response = await fetch('https://molten.glass/api/v1/ratings/moderate-batch', { method: 'POST' });
+const response = await fetch('https://moltenglass.app/api/v1/ratings/moderate-batch', { method: 'POST' });
 const data = await response.json();
 
 const rejectionRate = data.rejected / (data.approved + data.rejected);
@@ -263,14 +263,14 @@ Check:
 
 Check:
 1. Is cron trigger configured correctly?
-2. Manually trigger: `curl -X POST https://molten.glass/api/v1/ratings/moderate-batch`
+2. Manually trigger: `curl -X POST https://moltenglass.app/api/v1/ratings/moderate-batch`
 3. Check cron logs for errors
 
 ### Aggregation doesn't include new ratings
 
 Check:
 1. Are ratings approved? (`moderation_status = 'approved'`)
-2. Run aggregation manually: `curl https://molten.glass/api/v1/ratings/aggregate-cron`
+2. Run aggregation manually: `curl https://moltenglass.app/api/v1/ratings/aggregate-cron`
 3. Check KV cache for stale data
 
 ## Manual Operations
@@ -301,7 +301,7 @@ WHERE id = 123
 ### Re-moderate all pending submissions
 
 ```bash
-curl -X POST https://molten.glass/api/v1/ratings/moderate-batch
+curl -X POST https://moltenglass.app/api/v1/ratings/moderate-batch
 ```
 
 ### Reset moderation status (for testing)

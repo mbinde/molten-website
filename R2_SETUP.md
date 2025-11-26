@@ -206,25 +206,25 @@ The iOS/macOS app will:
    - Use conditional requests (If-None-Match) for efficiency
 
 3. Image URLs:
-   - Old: `https://molten.glass/images/000NCe.jpg`
-   - New: `https://molten.glass/api/v1/images/000NCe.jpg`
+   - Old: `https://moltenglass.app/images/000NCe.jpg`
+   - New: `https://moltenglass.app/api/v1/images/000NCe.jpg`
 
 ## Testing
 
 ### Test Manifest Endpoint
 
 ```bash
-curl https://molten.glass/api/v1/images/manifest | jq
+curl https://moltenglass.app/api/v1/images/manifest | jq
 ```
 
 ### Test Image Serving
 
 ```bash
 # Download an image
-curl -I https://molten.glass/api/v1/images/000NCe.jpg
+curl -I https://moltenglass.app/api/v1/images/000NCe.jpg
 
 # Test conditional request
-curl -H "If-None-Match: \"abc123...\"" -I https://molten.glass/api/v1/images/000NCe.jpg
+curl -H "If-None-Match: \"abc123...\"" -I https://moltenglass.app/api/v1/images/000NCe.jpg
 ```
 
 ### Test Local Upload
