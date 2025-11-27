@@ -1,0 +1,124 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+export const prerender = true;
+---
+
+<Layout title="Contact Us - Molten" description="Get in touch with the Molten team for support, feedback, or questions">
+  <!-- Hero Section -->
+  <section class="gradient-orange text-white py-16">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <div class="text-5xl mb-6">✉️</div>
+      <h1 class="text-5xl md:text-6xl font-bold mb-6">
+        Contact Us
+      </h1>
+      <p class="text-xl text-white/90">
+        We'd love to hear from you
+      </p>
+    </div>
+  </section>
+
+  <!-- Contact Content -->
+  <section class="py-20 bg-white">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+
+      <!-- Main Contact -->
+      <div class="mb-12 text-center">
+        <h2 class="text-3xl font-bold mb-6">Get in Touch</h2>
+        <p class="text-lg text-gray-700 mb-8">
+          Have a question, feedback, or need help with Molten? We're here to help.
+        </p>
+        <a href="mailto:info@moltenglass.app"
+           class="inline-block gradient-orange text-white px-8 py-4 rounded-lg font-bold text-xl hover:opacity-90 transition">
+          info@moltenglass.app
+        </a>
+      </div>
+
+      <!-- Contact Categories -->
+      <div class="grid md:grid-cols-2 gap-8 mb-12">
+
+        <!-- Support -->
+        <div class="bg-gray-50 rounded-lg p-8">
+          <div class="text-3xl mb-4">🛠️</div>
+          <h3 class="text-2xl font-bold mb-3">Support</h3>
+          <p class="text-gray-700 mb-4">
+            Having trouble with the app? Found a bug? We want to help you get the most out of Molten.
+          </p>
+          <p class="text-gray-600 text-sm">
+            You can also shake your device in the app to quickly submit a bug report.
+          </p>
+        </div>
+
+        <!-- Feedback -->
+        <div class="bg-gray-50 rounded-lg p-8">
+          <div class="text-3xl mb-4">💡</div>
+          <h3 class="text-2xl font-bold mb-3">Feedback & Ideas</h3>
+          <p class="text-gray-700 mb-4">
+            Have a feature request or suggestion? We love hearing how we can make Molten better for glass artists.
+          </p>
+          <p class="text-gray-600 text-sm">
+            Your feedback directly shapes the future of the app.
+          </p>
+        </div>
+
+        <!-- Catalog -->
+        <div class="bg-gray-50 rounded-lg p-8">
+          <div class="text-3xl mb-4">📚</div>
+          <h3 class="text-2xl font-bold mb-3">Catalog Updates</h3>
+          <p class="text-gray-700 mb-4">
+            Notice a missing glass color or incorrect information in our catalog? Let us know so we can keep it accurate.
+          </p>
+          <p class="text-gray-600 text-sm">
+            You can also use our <a href="/submit" class="text-orange-500 hover:text-orange-600 underline">online submission form</a>.
+          </p>
+        </div>
+
+        <!-- Business -->
+        <div class="bg-gray-50 rounded-lg p-8">
+          <div class="text-3xl mb-4">🤝</div>
+          <h3 class="text-2xl font-bold mb-3">Business Inquiries</h3>
+          <p class="text-gray-700 mb-4">
+            Interested in partnerships, press inquiries, or other business matters? We'd love to connect.
+          </p>
+        </div>
+
+      </div>
+
+      <!-- Response Time -->
+      <div class="text-center mb-12">
+        <p class="text-gray-600">
+          We typically respond within 1-2 business days.
+        </p>
+      </div>
+
+      <!-- Links -->
+      <div class="border-t pt-12">
+        <h3 class="text-xl font-bold mb-6 text-center">Quick Links</h3>
+        <div class="flex flex-wrap justify-center gap-4">
+          <a href="/features" class="text-orange-500 hover:text-orange-600 underline">Features</a>
+          <span class="text-gray-300">•</span>
+          <a href="/privacy" class="text-orange-500 hover:text-orange-600 underline">Privacy Policy</a>
+          <span class="text-gray-300">•</span>
+          <a href="/submit" class="text-orange-500 hover:text-orange-600 underline">Submit to Catalog</a>
+          <span class="text-gray-300">•</span>
+          <a href="https://apps.apple.com/app/molten" class="text-orange-500 hover:text-orange-600 underline">App Store</a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="py-20 gradient-orange text-white">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <h2 class="text-4xl font-bold mb-6">Ready to Get Started?</h2>
+      <p class="text-xl mb-8 text-white/90">
+        Download Molten and start managing your glass inventory today.
+      </p>
+      <a href="https://apps.apple.com/app/molten"
+         class="bg-white text-orange-500 px-8 py-4 rounded-lg font-bold text-lg hover:bg-gray-100 transition inline-block">
+        Download on App Store
+      </a>
+    </div>
+  </section>
+</Layout>
