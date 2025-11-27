@@ -50,13 +50,24 @@ export const prerender = true;
             </li>
           </ul>
         </div>
-        <div class="flex justify-center">
+        <div class="flex justify-center gap-4">
           <img
             src="/hero-catalog-browse.png"
             alt="Browse glass catalog"
-            class="rounded-2xl shadow-2xl max-w-full"
-            style="max-height: 500px;"
+            class="rounded-2xl shadow-2xl"
+            style="max-height: 400px;"
           />
+          <div class="relative hidden sm:block">
+            <img id="catalog-detail-1" src="/hero-glass-detail-1.png" alt="Glass detail view" class="rounded-2xl shadow-2xl catalog-rotate-img" style="max-height: 400px;" />
+            <img id="catalog-detail-2" src="/hero-glass-detail-2.png" alt="Glass detail view" class="rounded-2xl shadow-2xl catalog-rotate-img absolute top-0 left-0 opacity-0" style="max-height: 400px;" />
+            <img id="catalog-detail-3" src="/hero-glass-detail-3.png" alt="Glass detail view" class="rounded-2xl shadow-2xl catalog-rotate-img absolute top-0 left-0 opacity-0" style="max-height: 400px;" />
+            <img id="catalog-detail-4" src="/hero-glass-detail-4.png" alt="Glass detail view" class="rounded-2xl shadow-2xl catalog-rotate-img absolute top-0 left-0 opacity-0" style="max-height: 400px;" />
+            <img id="catalog-detail-5" src="/hero-glass-detail-5.png" alt="Glass detail view" class="rounded-2xl shadow-2xl catalog-rotate-img absolute top-0 left-0 opacity-0" style="max-height: 400px;" />
+            <img id="catalog-detail-6" src="/hero-glass-detail-6.png" alt="Glass detail view" class="rounded-2xl shadow-2xl catalog-rotate-img absolute top-0 left-0 opacity-0" style="max-height: 400px;" />
+            <img id="catalog-detail-7" src="/hero-glass-detail-7.png" alt="Glass detail view" class="rounded-2xl shadow-2xl catalog-rotate-img absolute top-0 left-0 opacity-0" style="max-height: 400px;" />
+            <img id="catalog-detail-8" src="/hero-glass-detail-8.png" alt="Glass detail view" class="rounded-2xl shadow-2xl catalog-rotate-img absolute top-0 left-0 opacity-0" style="max-height: 400px;" />
+            <img id="catalog-detail-9" src="/hero-glass-detail-9.png" alt="Glass detail view" class="rounded-2xl shadow-2xl catalog-rotate-img absolute top-0 left-0 opacity-0" style="max-height: 400px;" />
+          </div>
         </div>
       </div>
     </div>
@@ -328,4 +339,46 @@ export const prerender = true;
       </a>
     </div>
   </section>
+
+  <style>
+    .catalog-rotate-img {
+      transition: opacity 1s ease-in-out;
+    }
+  </style>
+
+  <script>
+    (function() {
+      const images = [
+        document.getElementById('catalog-detail-1'),
+        document.getElementById('catalog-detail-2'),
+        document.getElementById('catalog-detail-3'),
+        document.getElementById('catalog-detail-4'),
+        document.getElementById('catalog-detail-5'),
+        document.getElementById('catalog-detail-6'),
+        document.getElementById('catalog-detail-7'),
+        document.getElementById('catalog-detail-8'),
+        document.getElementById('catalog-detail-9')
+      ];
+
+      // Shuffle array randomly on page load
+      for (let i = images.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [images[i], images[j]] = [images[j], images[i]];
+      }
+
+      // Show first random image, hide others
+      images.forEach((img, i) => {
+        if (img) img.style.opacity = i === 0 ? '1' : '0';
+      });
+
+      let current = 0;
+
+      setInterval(() => {
+        const next = (current + 1) % images.length;
+        if (images[current]) images[current].style.opacity = '0';
+        if (images[next]) images[next].style.opacity = '1';
+        current = next;
+      }, 5000);
+    })();
+  </script>
 </Layout>
