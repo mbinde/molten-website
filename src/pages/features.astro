@@ -6,99 +6,88 @@ export const prerender = true;
 
 <Layout title="Features - Molten Glass Inventory Management">
   <!-- Hero Section -->
-  <section class="gradient-orange text-white py-16">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-      <h1 class="text-5xl md:text-6xl font-bold mb-6">
-        Everything You Need to Manage Your Glass Inventory
-      </h1>
-      <p class="text-xl text-white/90 max-w-3xl mx-auto">
-        Molten provides professional inventory management tools designed specifically for glass artists.
+  <section class="py-20 bg-slate-900">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <h1 class="text-5xl md:text-6xl font-bold mb-6">Features.</h1>
+      <p class="text-xl text-slate-400">
+        Everything you need to manage your studio, from catalog to kiln.
       </p>
     </div>
   </section>
 
-  <!-- Comprehensive Glass Catalog -->
-  <section class="py-20 bg-white">
+  <!-- Feature 1: Comprehensive Catalog -->
+  <section class="py-20 bg-slate-900">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
         <div>
-          <div class="text-5xl mb-4">📚</div>
-          <h2 class="text-4xl font-bold mb-6">Comprehensive Glass Catalog</h2>
-          <p class="text-xl text-gray-700 mb-6">
-            Browse and search through <strong>over 1,000 types of glass from more than 20 manufacturers</strong> including Effetre, Double Helix, Glass Alchemy, Northstar, Bullseye, Creation is Messy, and more.
+          <h2 class="text-4xl font-bold mb-6">Comprehensive Catalog</h2>
+          <p class="text-lg text-slate-400 mb-6">
+            Built-in database of over 3,000 colors. Filter by manufacturer, COE, and more.
           </p>
-
-          <h3 class="text-2xl font-bold mb-4">Key Features:</h3>
-          <ul class="space-y-3 text-lg text-gray-700">
+          <ul class="space-y-3 text-slate-300">
             <li class="flex gap-3">
-              <span class="text-orange-500">✓</span>
+              <span class="text-orange-400">•</span>
+              <span>20+ manufacturers including Bullseye, Effetre, Double Helix, Northstar, and Creation is Messy</span>
+            </li>
+            <li class="flex gap-3">
+              <span class="text-orange-400">•</span>
               <span>Full COE coverage from 33 to 104</span>
             </li>
             <li class="flex gap-3">
-              <span class="text-orange-500">✓</span>
-              <span>Complete product information with detailed descriptions</span>
+              <span class="text-orange-400">•</span>
+              <span>Detailed product info, working notes, and compatibility data</span>
             </li>
             <li class="flex gap-3">
-              <span class="text-orange-500">✓</span>
-              <span>Add your own custom photos for each glass type</span>
-            </li>
-            <li class="flex gap-3">
-              <span class="text-orange-500">✓</span>
-              <span>Personal notes and tags for your observations</span>
-            </li>
-            <li class="flex gap-3">
-              <span class="text-orange-500">✓</span>
-              <span>Advanced search by color, manufacturer, COE, and inventory status</span>
-            </li>
-            <li class="flex gap-3">
-              <span class="text-orange-500">✓</span>
-              <span>Smart filtering to see what's in stock vs. what you need</span>
+              <span class="text-orange-400">•</span>
+              <span>Add your own photos and personal notes</span>
             </li>
           </ul>
         </div>
-        <div class="space-y-4">
-          <img src="/screenshots/01-catalog-browse.png" alt="Browse glass catalog" class="rounded-lg shadow-2xl" />
-          <img src="/screenshots/03-catalog-search.png" alt="Search catalog" class="rounded-lg shadow-2xl" />
+        <div class="flex justify-center">
+          <img
+            src="/hero-catalog-browse.png"
+            alt="Browse glass catalog"
+            class="rounded-2xl shadow-2xl max-w-full"
+            style="max-height: 500px;"
+          />
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Smart Inventory Tracking -->
-  <section class="py-20 bg-gray-50">
+  <!-- Feature 2: Smart Inventory & QR Labels -->
+  <section class="py-20 bg-slate-800">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-        <div class="order-2 lg:order-1">
-          <img src="/screenshots/05-inventory-view.png" alt="Inventory tracking" class="rounded-lg shadow-2xl" />
+        <div class="order-2 lg:order-1 flex justify-center">
+          <img
+            src="/qr-scan.png"
+            alt="Scanning QR code on glass jar"
+            class="rounded-2xl shadow-2xl max-w-full"
+            style="max-height: 500px;"
+          />
         </div>
         <div class="order-1 lg:order-2">
-          <div class="text-5xl mb-4">📦</div>
-          <h2 class="text-4xl font-bold mb-6">Smart Inventory Tracking</h2>
-          <p class="text-xl text-gray-700 mb-6">
-            Track your glass inventory with precision. Never lose track of where your materials are stored or how much you have left.
+          <h2 class="text-4xl font-bold mb-6">Smart Inventory & QR Labels</h2>
+          <p class="text-lg text-slate-400 mb-6">
+            Print professional labels and scan to instantly update your inventory.
           </p>
-
-          <h3 class="text-2xl font-bold mb-4">What You Can Track:</h3>
-          <ul class="space-y-3 text-lg text-gray-700">
+          <ul class="space-y-3 text-slate-300">
             <li class="flex gap-3">
-              <span class="text-orange-500">✓</span>
-              <span><strong>Multiple inventory types</strong> - rods, frit, sheet, tubes, and more</span>
+              <span class="text-orange-400">•</span>
+              <span>Track rods, frit, sheet, tubes, and more with precise quantities</span>
             </li>
             <li class="flex gap-3">
-              <span class="text-orange-500">✓</span>
-              <span><strong>Exact storage locations</strong> - for every piece</span>
+              <span class="text-orange-400">•</span>
+              <span>Organize by storage location—see your entire collection at a glance</span>
             </li>
             <li class="flex gap-3">
-              <span class="text-orange-500">✓</span>
-              <span><strong>Quantities with appropriate units</strong> - rods, pounds, square feet</span>
+              <span class="text-orange-400">•</span>
+              <span>50+ customizable label templates for bins and shelves</span>
             </li>
             <li class="flex gap-3">
-              <span class="text-orange-500">✓</span>
-              <span><strong>Visual overview</strong> - of your entire collection</span>
-            </li>
-            <li class="flex gap-3">
-              <span class="text-orange-500">✓</span>
-              <span><strong>Location breakdown</strong> - see where each piece is stored</span>
+              <span class="text-orange-400">•</span>
+              <span>Scan QR codes to jump directly to any item for instant updates</span>
             </li>
           </ul>
         </div>
@@ -106,79 +95,75 @@ export const prerender = true;
     </div>
   </section>
 
-  <!-- Intelligent Shopping Lists -->
-  <section class="py-20 bg-white">
+  <!-- Feature 3: Intelligent Shopping Lists -->
+  <section class="py-20 bg-slate-900">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
         <div>
-          <div class="text-5xl mb-4">🛒</div>
           <h2 class="text-4xl font-bold mb-6">Intelligent Shopping Lists</h2>
-          <p class="text-xl text-gray-700 mb-6">
-            Never forget what you need to restock. Organize your shopping by your favorite suppliers and keep track on the go.
+          <p class="text-lg text-slate-400 mb-6">
+            Build lists by supplier and transfer purchases directly to inventory.
           </p>
-
-          <h3 class="text-2xl font-bold mb-4">Shopping Made Easy:</h3>
-          <ul class="space-y-3 text-lg text-gray-700">
+          <ul class="space-y-3 text-slate-300">
             <li class="flex gap-3">
-              <span class="text-orange-500">✓</span>
-              <span><strong>Organize by store</strong> - Frantz, Mountain Glass, Hot Glass Color, and more</span>
+              <span class="text-orange-400">•</span>
+              <span>Organize shopping by store—Frantz, Mountain Glass, Arrow Springs, and more</span>
             </li>
             <li class="flex gap-3">
-              <span class="text-orange-500">✓</span>
-              <span><strong>Specify exact quantities</strong> - needed for each item</span>
+              <span class="text-orange-400">•</span>
+              <span>Specify exact quantities and mark priority items</span>
             </li>
             <li class="flex gap-3">
-              <span class="text-orange-500">✓</span>
-              <span><strong>Mark priority items</strong> - know what's urgent</span>
+              <span class="text-orange-400">•</span>
+              <span>Quick mobile reference while shopping</span>
             </li>
             <li class="flex gap-3">
-              <span class="text-orange-500">✓</span>
-              <span><strong>Quick mobile reference</strong> - while shopping</span>
-            </li>
-            <li class="flex gap-3">
-              <span class="text-orange-500">✓</span>
-              <span><strong>Auto-transfer</strong> - checked items to inventory</span>
+              <span class="text-orange-400">•</span>
+              <span>Auto-transfer checked items to your inventory</span>
             </li>
           </ul>
         </div>
-        <div>
-          <img src="/screenshots/06-shopping-list.png" alt="Shopping lists" class="rounded-lg shadow-2xl" />
+        <div class="flex justify-center">
+          <!-- PLACEHOLDER: Need shopping list screenshot -->
+          <div class="bg-slate-700 rounded-2xl flex items-center justify-center text-slate-500 text-center p-8" style="width: 280px; height: 500px;">
+            <span>PLACEHOLDER:<br/>Shopping List Screenshot</span>
+          </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Purchase History & Records -->
-  <section class="py-20 bg-gray-50">
+  <!-- Feature 4: Share & Collaborate -->
+  <section class="py-20 bg-slate-800">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-        <div class="order-2 lg:order-1">
-          <img src="/screenshots/07-purchases.png" alt="Purchase tracking" class="rounded-lg shadow-2xl" />
+        <div class="order-2 lg:order-1 flex justify-center">
+          <!-- PLACEHOLDER: Need share inventory screenshot -->
+          <div class="bg-slate-700 rounded-2xl flex items-center justify-center text-slate-500 text-center p-8" style="width: 280px; height: 500px;">
+            <span>PLACEHOLDER:<br/>Share Inventory Screenshot</span>
+          </div>
         </div>
         <div class="order-1 lg:order-2">
-          <div class="text-5xl mb-4">💰</div>
-          <h2 class="text-4xl font-bold mb-6">Purchase History & Records</h2>
-          <p class="text-xl text-gray-700 mb-6">
-            Keep comprehensive purchase records for organization and tax purposes. Track spending patterns and maintain documentation.
+          <h2 class="text-4xl font-bold mb-6">Share & Collaborate</h2>
+          <p class="text-lg text-slate-400 mb-6">
+            Share your collection with friends for trades or classes. Revoke access anytime.
           </p>
-
-          <h3 class="text-2xl font-bold mb-4">Complete Records:</h3>
-          <ul class="space-y-3 text-lg text-gray-700">
+          <ul class="space-y-3 text-slate-300">
             <li class="flex gap-3">
-              <span class="text-orange-500">✓</span>
-              <span><strong>Detailed purchase history</strong> - vendor, date, items, quantities, pricing</span>
+              <span class="text-orange-400">•</span>
+              <span>Share your full inventory or specific items with other Molten users</span>
             </li>
             <li class="flex gap-3">
-              <span class="text-orange-500">✓</span>
-              <span><strong>Tax documentation</strong> - for deductions</span>
+              <span class="text-orange-400">•</span>
+              <span>Coordinate glass trades with friends</span>
             </li>
             <li class="flex gap-3">
-              <span class="text-orange-500">✓</span>
-              <span><strong>Spending analysis</strong> - by vendor or category</span>
+              <span class="text-orange-400">•</span>
+              <span>Let students or workshop attendees see what's available</span>
             </li>
             <li class="flex gap-3">
-              <span class="text-orange-500">✓</span>
-              <span><strong>Item purchase history</strong> - see when and where you bought each item</span>
+              <span class="text-orange-400">•</span>
+              <span>Control access—revoke sharing permissions anytime</span>
             </li>
           </ul>
         </div>
@@ -186,115 +171,137 @@ export const prerender = true;
     </div>
   </section>
 
-  <!-- Project Planning & Logging -->
-  <section class="py-20 bg-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-      <div class="text-5xl mb-6">🎨</div>
-      <h2 class="text-4xl font-bold mb-6">Project Planning & Logging</h2>
-      <p class="text-xl text-gray-700 mb-12 max-w-3xl mx-auto">
-        Document your creative journey. Plan projects, log work, track sales, and remember what worked (and what didn't).
-      </p>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-5xl mx-auto">
-        <div class="bg-gray-50 rounded-lg p-6">
-          <h3 class="text-xl font-bold mb-3">Save Tutorials</h3>
-          <p class="text-gray-700">Store instructions, reference materials, and inspiration for future projects.</p>
+  <!-- Feature 5: Find Suppliers & Schools -->
+  <section class="py-20 bg-slate-900">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div>
+          <h2 class="text-4xl font-bold mb-6">Find Suppliers & Schools</h2>
+          <p class="text-lg text-slate-400 mb-6">
+            Discover new sources for glass and find educational opportunities near you.
+          </p>
+          <ul class="space-y-3 text-slate-300">
+            <li class="flex gap-3">
+              <span class="text-orange-400">•</span>
+              <span>Browse local glass suppliers and retailers</span>
+            </li>
+            <li class="flex gap-3">
+              <span class="text-orange-400">•</span>
+              <span>Find studios and schools offering glass programs</span>
+            </li>
+            <li class="flex gap-3">
+              <span class="text-orange-400">•</span>
+              <span>Community-submitted locations with ratings</span>
+            </li>
+          </ul>
         </div>
-        <div class="bg-gray-50 rounded-lg p-6">
-          <h3 class="text-xl font-bold mb-3">Log Completed Pieces</h3>
-          <p class="text-gray-700">Document finished work with photos, notes, and glass usage details.</p>
-        </div>
-        <div class="bg-gray-50 rounded-lg p-6">
-          <h3 class="text-xl font-bold mb-3">Track Sales</h3>
-          <p class="text-gray-700">Record sales information for your business records and tax purposes.</p>
-        </div>
-        <div class="bg-gray-50 rounded-lg p-6">
-          <h3 class="text-xl font-bold mb-3">Lessons Learned</h3>
-          <p class="text-gray-700">Keep notes on what worked and what didn't for future reference.</p>
-        </div>
-        <div class="bg-gray-50 rounded-lg p-6">
-          <h3 class="text-xl font-bold mb-3">Glass Usage Tracking</h3>
-          <p class="text-gray-700">Document which glass you used in each piece for reproduction.</p>
-        </div>
-        <div class="bg-gray-50 rounded-lg p-6">
-          <h3 class="text-xl font-bold mb-3">Photo Documentation</h3>
-          <p class="text-gray-700">Attach photos at every stage of your creative process.</p>
+        <div class="flex justify-center">
+          <!-- PLACEHOLDER: Need locations/suppliers screenshot -->
+          <div class="bg-slate-700 rounded-2xl flex items-center justify-center text-slate-500 text-center p-8" style="width: 280px; height: 500px;">
+            <span>PLACEHOLDER:<br/>Locations Screenshot</span>
+          </div>
         </div>
       </div>
     </div>
   </section>
 
   <!-- Privacy First -->
-  <section class="py-20 bg-gray-900 text-white">
+  <section class="py-20 bg-slate-800">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-      <div class="text-5xl mb-6">🔒</div>
-      <h2 class="text-4xl font-bold mb-8">Privacy First</h2>
-      <p class="text-xl mb-12 text-white/90">
-        Your creative work and inventory data stays completely private. No tracking, no data mining, no third parties.
+      <h2 class="text-4xl font-bold mb-6">Your creative work stays private.</h2>
+      <p class="text-lg text-slate-400 mb-12">
+        We don't track you or sell your data. All data is stored locally or in your personal iCloud account.
       </p>
-      <div class="bg-white/10 backdrop-blur rounded-lg p-8 text-left">
-        <h3 class="text-2xl font-bold mb-6">Your Data, Your Control:</h3>
-        <ul class="space-y-4 text-lg">
-          <li class="flex gap-3">
-            <span class="text-green-400">✓</span>
-            <span>Local storage only—everything stays on your device</span>
-          </li>
-          <li class="flex gap-3">
-            <span class="text-green-400">✓</span>
-            <span>iCloud sync to your devices only (no cloud databases)</span>
-          </li>
-          <li class="flex gap-3">
-            <span class="text-green-400">✓</span>
-            <span>Nothing ever sold or shared with third parties</span>
-          </li>
-          <li class="flex gap-3">
-            <span class="text-green-400">✓</span>
-            <span>Complete privacy and ownership of your data</span>
-          </li>
-        </ul>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="bg-slate-700/50 rounded-xl p-6">
+          <div class="text-3xl mb-4">📱</div>
+          <h3 class="text-xl font-semibold mb-2">Local Storage</h3>
+          <p class="text-slate-400">Everything stays on your device</p>
+        </div>
+        <div class="bg-slate-700/50 rounded-xl p-6">
+          <div class="text-3xl mb-4">☁️</div>
+          <h3 class="text-xl font-semibold mb-2">iCloud Sync</h3>
+          <p class="text-slate-400">Syncs to your devices only</p>
+        </div>
+        <div class="bg-slate-700/50 rounded-xl p-6">
+          <div class="text-3xl mb-4">🔒</div>
+          <h3 class="text-xl font-semibold mb-2">No Third Parties</h3>
+          <p class="text-slate-400">Your data is never sold or shared</p>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- Active Development -->
-  <section class="py-20 bg-gradient-to-br from-orange-50 to-orange-100">
+  <!-- Pricing -->
+  <section class="py-20 bg-slate-900">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-      <div class="text-5xl mb-6">🚀</div>
-      <h2 class="text-4xl font-bold mb-8">Active Development</h2>
-      <p class="text-xl text-gray-700 mb-12">
-        Molten is continuously improving with new features based on artist feedback.
+      <h2 class="text-4xl font-bold mb-6">Free or Pro.</h2>
+      <p class="text-lg text-slate-400 mb-12">
+        Enjoy the full catalog, inventory, and shopping features for free.<br/>
+        <strong class="text-white">Molten Pro</strong> unlocks versioned cloud backups and inventory sharing.
       </p>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
-        <div class="bg-white rounded-lg p-6 shadow-md">
-          <h3 class="text-xl font-bold mb-2">Enhanced Location Tracking</h3>
-          <p class="text-gray-700">For complex inventory systems with multiple storage areas.</p>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-2xl mx-auto">
+        <div class="bg-slate-800 rounded-xl p-8 border border-slate-700">
+          <h3 class="text-2xl font-bold mb-4">Free</h3>
+          <ul class="text-left space-y-3 text-slate-300">
+            <li class="flex gap-3">
+              <span class="text-green-400">✓</span>
+              <span>Full glass catalog</span>
+            </li>
+            <li class="flex gap-3">
+              <span class="text-green-400">✓</span>
+              <span>Inventory tracking</span>
+            </li>
+            <li class="flex gap-3">
+              <span class="text-green-400">✓</span>
+              <span>Shopping lists</span>
+            </li>
+            <li class="flex gap-3">
+              <span class="text-green-400">✓</span>
+              <span>QR label printing</span>
+            </li>
+            <li class="flex gap-3">
+              <span class="text-green-400">✓</span>
+              <span>iCloud sync</span>
+            </li>
+          </ul>
         </div>
-        <div class="bg-white rounded-lg p-6 shadow-md">
-          <h3 class="text-xl font-bold mb-2">Kiln Schedules</h3>
-          <p class="text-gray-700">Dedicated tools for warm glass artists working with kilns.</p>
-        </div>
-        <div class="bg-white rounded-lg p-6 shadow-md">
-          <h3 class="text-xl font-bold mb-2">Expanded Glass Types</h3>
-          <p class="text-gray-700">Support for more specialized glass forms and materials.</p>
-        </div>
-        <div class="bg-white rounded-lg p-6 shadow-md">
-          <h3 class="text-xl font-bold mb-2">QR Code Labeling</h3>
-          <p class="text-gray-700">System for bins and shelves to quickly locate materials.</p>
+        <div class="bg-gradient-to-br from-orange-500/20 to-orange-600/20 rounded-xl p-8 border border-orange-500/50">
+          <h3 class="text-2xl font-bold mb-4 text-orange-400">Pro</h3>
+          <ul class="text-left space-y-3 text-slate-300">
+            <li class="flex gap-3">
+              <span class="text-orange-400">✓</span>
+              <span>Everything in Free</span>
+            </li>
+            <li class="flex gap-3">
+              <span class="text-orange-400">✓</span>
+              <span>Versioned cloud backups</span>
+            </li>
+            <li class="flex gap-3">
+              <span class="text-orange-400">✓</span>
+              <span>Inventory sharing</span>
+            </li>
+            <li class="flex gap-3">
+              <span class="text-orange-400">✓</span>
+              <span>Priority support</span>
+            </li>
+          </ul>
         </div>
       </div>
     </div>
   </section>
 
   <!-- CTA Section -->
-  <section class="py-20 gradient-orange text-white">
+  <section class="py-24 bg-dark-primary">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-      <h2 class="text-4xl font-bold mb-6">Ready to Get Organized?</h2>
-      <p class="text-xl mb-8 text-white/90">
-        Download Molten today and bring professional inventory management to your studio.
-      </p>
-      <a href="https://apps.apple.com/app/molten"
-         class="bg-white text-orange-500 px-8 py-4 rounded-lg font-bold text-lg inline-block hover:bg-gray-100 transition">
-        Download on App Store
+      <h2 class="text-4xl md:text-5xl font-bold mb-12">
+        Ready to organize your studio?
+      </h2>
+      <a href="https://apps.apple.com/app/molten" class="btn-app-store text-lg px-8 py-4">
+        <svg class="w-7 h-7" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+        </svg>
+        Download on the App Store
       </a>
     </div>
   </section>
