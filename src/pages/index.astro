@@ -33,13 +33,20 @@ export const prerender = true;
           </a>
         </div>
 
-        <!-- Right: Phone Mockup -->
+        <!-- Right: Phone Mockup with rotation -->
         <div class="flex justify-center lg:justify-end">
           <div class="relative">
             <img
-              src="/hero-glass-detail.png"
-              alt="Molten app showing glass color detail with specifications"
-              class="phone-mockup"
+              id="hero-phone-1"
+              src="/hero-glass-detail-1.png"
+              alt="Molten app showing Blue Flambé glass detail"
+              class="phone-mockup hero-phone-img"
+            />
+            <img
+              id="hero-phone-2"
+              src="/hero-glass-detail-2.png"
+              alt="Molten app showing Maleficent Flake Holographic glass detail"
+              class="phone-mockup hero-phone-img absolute top-0 left-0 opacity-0"
             />
           </div>
         </div>
@@ -116,6 +123,29 @@ export const prerender = true;
     </div>
 
   </section>
+
+  <style>
+    .hero-phone-img {
+      transition: opacity 1s ease-in-out;
+    }
+  </style>
+
+  <script>
+    (function() {
+      const images = [
+        document.getElementById('hero-phone-1'),
+        document.getElementById('hero-phone-2')
+      ];
+      let current = 0;
+
+      setInterval(() => {
+        const next = (current + 1) % images.length;
+        images[current].style.opacity = '0';
+        images[next].style.opacity = '1';
+        current = next;
+      }, 5000);
+    })();
+  </script>
 
   <!-- CTA / Footer Section -->
   <section class="py-24 bg-dark-primary">
