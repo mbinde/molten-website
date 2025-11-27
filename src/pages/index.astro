@@ -6,12 +6,12 @@ export const prerender = true;
 
 <Layout title="Molten - Professional Glass Inventory Management for iOS">
   <!-- Hero Section -->
-  <section class="hero-section">
+  <section class="relative min-h-[600px] overflow-hidden">
     <!-- Background Image -->
-    <div class="hero-bg">
-      <img src="/furnace.png" alt="Glassblowing furnace" />
+    <div class="absolute inset-0 z-0">
+      <img src="/furnace.png" alt="Glassblowing furnace" class="w-full h-full object-cover" />
     </div>
-    <div class="hero-overlay"></div>
+    <div class="absolute inset-0 z-[1]" style="background: linear-gradient(to right, rgba(15, 23, 42, 0.95) 0%, rgba(15, 23, 42, 0.6) 50%, rgba(15, 23, 42, 0.3) 100%), linear-gradient(to bottom, transparent 50%, rgb(15, 23, 42) 100%);"></div>
 
     <!-- Hero Content -->
     <div class="hero-content max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-32">
