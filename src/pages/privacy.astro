@@ -13,7 +13,7 @@ export const prerender = true;
         Privacy Policy
       </h1>
       <p class="text-xl text-white/90">
-        Last updated: October 23, 2025
+        Last updated: November 26, 2025
       </p>
     </div>
   </section>
@@ -29,8 +29,8 @@ export const prerender = true;
           We've designed the app from the ground up with privacy as a core principle, not an afterthought.
         </p>
         <p class="text-lg text-gray-700">
-          <strong>Simple summary:</strong> Your data stays on your devices. We don't collect it, we don't sell it,
-          we don't even see it.
+          <strong>Simple summary:</strong> Your inventory data stays on your devices and in your iCloud account.
+          We only collect minimal technical data to fix bugs and improve the app.
         </p>
       </div>
 
@@ -44,15 +44,15 @@ export const prerender = true;
           </li>
           <li class="flex gap-3">
             <span class="text-green-600">✗</span>
-            <span>We don't track your usage patterns</span>
+            <span>We don't access your personal notes or tags</span>
           </li>
           <li class="flex gap-3">
             <span class="text-green-600">✗</span>
-            <span>We don't use analytics or tracking services</span>
+            <span>We don't track your in-app behavior or usage patterns</span>
           </li>
           <li class="flex gap-3">
             <span class="text-green-600">✗</span>
-            <span>We don't sell your data to third parties</span>
+            <span>We don't sell or share your data with third parties for advertising</span>
           </li>
           <li class="flex gap-3">
             <span class="text-green-600">✗</span>
@@ -73,46 +73,112 @@ export const prerender = true;
           <div>
             <h3 class="text-2xl font-bold mb-3">Local Storage</h3>
             <p class="text-lg text-gray-700">
-              All your inventory data, photos, notes, and records are stored locally on your device using
-              Apple's Core Data framework. This data never leaves your device unless you explicitly choose to sync it.
+              All your inventory data is stored locally on your device using
+              Apple's Core Data framework. This data never leaves your device unless you enable iCloud sync.
             </p>
           </div>
 
           <div>
             <h3 class="text-2xl font-bold mb-3">iCloud Sync (Optional)</h3>
             <p class="text-lg text-gray-700 mb-3">
-              If you enable iCloud sync, your data is synchronized between your devices using Apple's CloudKit
+              If you enable iCloud sync, your inventory data is synchronized between your devices using Apple's CloudKit
               framework. This means:
             </p>
             <ul class="list-disc list-inside space-y-2 text-lg text-gray-700 ml-4">
               <li>Your data syncs directly between your devices via your personal iCloud account</li>
-              <li>We never have access to your iCloud data</li>
+              <li>We never have access to your synced data</li>
               <li>Apple encrypts your data in transit and at rest</li>
               <li>Only you can access this data through your Apple ID</li>
             </ul>
+            <p class="text-lg text-gray-700 mt-3">
+              <strong>Note:</strong> Catalog data (the 2,500+ glass items in our database) is stored locally and does not sync via iCloud to prevent unnecessary data duplication.
+            </p>
           </div>
 
           <div>
             <h3 class="text-2xl font-bold mb-3">Photos</h3>
             <p class="text-lg text-gray-700">
-              Custom photos you upload for glass items or projects are stored in your device's local storage
-              and backed up to iCloud (if you have iCloud backup enabled for the app). These photos are never
+              Custom photos you add for glass items are stored in your device's local storage
+              and backed up via iCloud if you have iCloud backup enabled. These photos are never
               sent to our servers.
             </p>
+          </div>
+
+          <div>
+            <h3 class="text-2xl font-bold mb-3">Cloud Backups (Pro Feature)</h3>
+            <p class="text-lg text-gray-700 mb-3">
+              Pro subscribers can enable automatic cloud backups of their inventory data to our servers. These backups are:
+            </p>
+            <ul class="list-disc list-inside space-y-2 text-lg text-gray-700 ml-4">
+              <li>Indexed by a randomly-generated ID created on your device — we cannot link backups to you personally</li>
+              <li>Stored on Cloudflare's infrastructure</li>
+              <li>Completely under your control — you can disable backups or delete all backup data at any time from the app</li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 class="text-2xl font-bold mb-3">Inventory Sharing (Optional)</h3>
+            <p class="text-lg text-gray-700 mb-3">
+              You can choose to share your inventory with others by generating a sharing code. When you share:
+            </p>
+            <ul class="list-disc list-inside space-y-2 text-lg text-gray-700 ml-4">
+              <li>You control what display name is shown to people you share with</li>
+              <li>Only people you give your sharing code to can view your inventory</li>
+              <li>You can revoke access at any time by turning off sharing</li>
+              <li>Shared data is automatically deleted after 90 days of inactivity</li>
+              <li>Shared inventory data is stored on Cloudflare's infrastructure while sharing is active</li>
+            </ul>
           </div>
         </div>
       </div>
 
-      <!-- What We Do Collect (Minimal) -->
+      <!-- What We Do Collect -->
       <div class="mb-12">
-        <h2 class="text-3xl font-bold mb-6">Information We May Receive</h2>
+        <h2 class="text-3xl font-bold mb-6">Information We Collect</h2>
 
         <div class="space-y-6">
           <div>
-            <h3 class="text-2xl font-bold mb-3">App Store Information</h3>
+            <h3 class="text-2xl font-bold mb-3">Crash Reports and Error Logs</h3>
+            <p class="text-lg text-gray-700 mb-3">
+              We use <a href="https://sentry.io" class="text-orange-500 hover:text-orange-600 underline" target="_blank" rel="noopener">Sentry</a>,
+              a third-party error tracking service, to collect crash reports and error logs. This helps us identify and fix bugs quickly.
+              The data collected includes:
+            </p>
+            <ul class="list-disc list-inside space-y-2 text-lg text-gray-700 ml-4">
+              <li>Device type and iOS version</li>
+              <li>App version and build number</li>
+              <li>Error type and stack trace (technical debugging information)</li>
+              <li>General operation context (e.g., "catalog download failed")</li>
+            </ul>
+            <p class="text-lg text-gray-700 mt-3">
+              This data does <strong>not</strong> include your inventory, projects, personal notes, or any identifying information.
+              Sentry's privacy policy is available at <a href="https://sentry.io/privacy/" class="text-orange-500 hover:text-orange-600 underline" target="_blank" rel="noopener">sentry.io/privacy</a>.
+            </p>
+          </div>
+
+          <div>
+            <h3 class="text-2xl font-bold mb-3">Bug Reports (User-Initiated)</h3>
+            <p class="text-lg text-gray-700 mb-3">
+              If you shake your device to submit a bug report, you can optionally include:
+            </p>
+            <ul class="list-disc list-inside space-y-2 text-lg text-gray-700 ml-4">
+              <li>A description of the issue you encountered</li>
+              <li>Your email address (if you want a response)</li>
+              <li>Device information (app version, device model, iOS version)</li>
+            </ul>
+            <p class="text-lg text-gray-700 mt-3">
+              All fields are optional, and the report is only sent when you choose to submit it.
+              Bug reports are sent to Sentry for tracking and resolution.
+            </p>
+          </div>
+
+          <div>
+            <h3 class="text-2xl font-bold mb-3">App Store Analytics</h3>
             <p class="text-lg text-gray-700">
               When you download Molten from the App Store, Apple may share basic analytics with us such as
-              number of downloads and crash reports. This data is anonymized and cannot be linked to individual users.
+              number of downloads, app usage statistics, and crash reports. This data is anonymized by Apple
+              and cannot be linked to individual users. You can control this in your device's Privacy settings
+              under "Analytics & Improvements."
             </p>
           </div>
 
@@ -128,26 +194,34 @@ export const prerender = true;
 
       <!-- Your Rights -->
       <div class="mb-12">
-        <h2 class="text-3xl font-bold mb-6">Your Rights</h2>
+        <h2 class="text-3xl font-bold mb-6">Your Rights and Controls</h2>
         <p class="text-lg text-gray-700 mb-4">
-          Since your data is stored locally on your device and in your personal iCloud account:
+          You have complete control over your data:
         </p>
         <ul class="space-y-3 text-lg text-gray-700">
           <li class="flex gap-3">
             <span class="text-orange-500">✓</span>
-            <span>You have complete control over your data</span>
+            <span><strong>Delete your data:</strong> Uninstalling the app removes all local data. iCloud data can be managed in your iCloud settings.</span>
           </li>
           <li class="flex gap-3">
             <span class="text-orange-500">✓</span>
-            <span>You can delete the app and all its data at any time</span>
+            <span><strong>Delete cloud backups:</strong> Delete all your cloud backup data at any time from the app's Settings.</span>
           </li>
           <li class="flex gap-3">
             <span class="text-orange-500">✓</span>
-            <span>You can disable iCloud sync in your device settings</span>
+            <span><strong>Stop sharing:</strong> Revoke inventory sharing access instantly by turning off sharing in the app.</span>
           </li>
           <li class="flex gap-3">
             <span class="text-orange-500">✓</span>
-            <span>You own all your inventory data, photos, and notes</span>
+            <span><strong>Disable iCloud sync:</strong> Turn off iCloud sync in your device's Settings to keep data local only.</span>
+          </li>
+          <li class="flex gap-3">
+            <span class="text-orange-500">✓</span>
+            <span><strong>Control Apple analytics:</strong> Adjust Settings → Privacy & Security → Analytics & Improvements on your device.</span>
+          </li>
+          <li class="flex gap-3">
+            <span class="text-orange-500">✓</span>
+            <span><strong>Request data deletion:</strong> Contact us at info@moltenglass.app to request deletion of any data we hold (support emails, bug reports).</span>
           </li>
         </ul>
       </div>
@@ -156,28 +230,81 @@ export const prerender = true;
       <div class="mb-12">
         <h2 class="text-3xl font-bold mb-6">Third-Party Services</h2>
         <p class="text-lg text-gray-700 mb-4">
-          Molten does not integrate with any third-party analytics, advertising, or tracking services.
-          The only third-party service we use is Apple's infrastructure:
+          Molten uses the following third-party services:
         </p>
-        <ul class="list-disc list-inside space-y-2 text-lg text-gray-700 ml-4">
-          <li>CloudKit for optional iCloud sync</li>
-          <li>App Store for distribution</li>
+        <ul class="space-y-4 text-lg text-gray-700">
+          <li>
+            <strong>Apple CloudKit:</strong> For optional iCloud sync of your user data.
+            <br/>
+            <span class="text-gray-600">Privacy: <a href="https://www.apple.com/privacy/" class="text-orange-500 hover:text-orange-600 underline" target="_blank" rel="noopener">apple.com/privacy</a></span>
+          </li>
+          <li>
+            <strong>Apple App Store:</strong> For app distribution and optional analytics.
+            <br/>
+            <span class="text-gray-600">Privacy: <a href="https://www.apple.com/privacy/" class="text-orange-500 hover:text-orange-600 underline" target="_blank" rel="noopener">apple.com/privacy</a></span>
+          </li>
+          <li>
+            <strong>Sentry:</strong> For crash reporting and error tracking.
+            <br/>
+            <span class="text-gray-600">Privacy: <a href="https://sentry.io/privacy/" class="text-orange-500 hover:text-orange-600 underline" target="_blank" rel="noopener">sentry.io/privacy</a></span>
+          </li>
+          <li>
+            <strong>Cloudflare:</strong> For hosting our website, cloud backups, and inventory sharing.
+            <br/>
+            <span class="text-gray-600">Privacy: <a href="https://www.cloudflare.com/privacypolicy/" class="text-orange-500 hover:text-orange-600 underline" target="_blank" rel="noopener">cloudflare.com/privacypolicy</a></span>
+          </li>
         </ul>
-        <p class="text-lg text-gray-700 mt-4">
-          These services are governed by Apple's privacy policy, which you can review at
-          <a href="https://www.apple.com/privacy/" class="text-orange-500 hover:text-orange-600 underline" target="_blank" rel="noopener">
-            apple.com/privacy
-          </a>.
-        </p>
+      </div>
+
+      <!-- Data Retention -->
+      <div class="mb-12">
+        <h2 class="text-3xl font-bold mb-6">Data Retention</h2>
+        <ul class="space-y-3 text-lg text-gray-700">
+          <li class="flex gap-3">
+            <span class="text-orange-500">•</span>
+            <span><strong>Local app data:</strong> Retained until you delete the app or clear its data.</span>
+          </li>
+          <li class="flex gap-3">
+            <span class="text-orange-500">•</span>
+            <span><strong>iCloud data:</strong> Retained in your iCloud account until you delete it.</span>
+          </li>
+          <li class="flex gap-3">
+            <span class="text-orange-500">•</span>
+            <span><strong>Cloud backups:</strong> Retained until you delete them from the app or disable backups.</span>
+          </li>
+          <li class="flex gap-3">
+            <span class="text-orange-500">•</span>
+            <span><strong>Shared inventory data:</strong> Automatically deleted after 90 days of inactivity, or immediately when you turn off sharing.</span>
+          </li>
+          <li class="flex gap-3">
+            <span class="text-orange-500">•</span>
+            <span><strong>Error logs:</strong> Sentry retains error data for 90 days by default.</span>
+          </li>
+          <li class="flex gap-3">
+            <span class="text-orange-500">•</span>
+            <span><strong>Support emails:</strong> Retained as long as needed to resolve your issue, then archived.</span>
+          </li>
+        </ul>
       </div>
 
       <!-- Children's Privacy -->
       <div class="mb-12">
         <h2 class="text-3xl font-bold mb-6">Children's Privacy</h2>
         <p class="text-lg text-gray-700">
-          Molten is not directed at children under 13. Since we don't collect personal information from anyone,
-          we don't knowingly collect information from children. If you believe we have inadvertently collected
-          information from a child, please contact us.
+          Molten is not directed at children under 13. We do not knowingly collect personal information from children under 13.
+          The minimal data we collect (error logs) does not include information that identifies individual users.
+          If you believe a child has submitted personal information to us, please contact us at info@moltenglass.app.
+        </p>
+      </div>
+
+      <!-- International Users -->
+      <div class="mb-12">
+        <h2 class="text-3xl font-bold mb-6">International Users</h2>
+        <p class="text-lg text-gray-700">
+          Molten is operated from the United States. If you are using the app from outside the United States,
+          please be aware that any information you provide (such as bug reports) may be transferred to and processed in the United States
+          or other countries where our service providers operate. By using the app and submitting bug reports,
+          you consent to this transfer.
         </p>
       </div>
 
@@ -201,7 +328,7 @@ export const prerender = true;
       <div class="bg-gray-50 rounded-lg p-8">
         <h2 class="text-3xl font-bold mb-6">Contact Us</h2>
         <p class="text-lg text-gray-700 mb-4">
-          If you have questions about this privacy policy or how we handle your data, please contact us at:
+          If you have questions about this privacy policy, want to request data deletion, or have concerns about how we handle your data, please contact us at:
         </p>
         <p class="text-lg">
           <a href="mailto:info@moltenglass.app" class="text-orange-500 hover:text-orange-600 font-bold">
@@ -217,7 +344,7 @@ export const prerender = true;
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
       <h2 class="text-4xl font-bold mb-6">Your Privacy Matters</h2>
       <p class="text-xl mb-8 text-white/90">
-        Download Molten and experience truly private inventory management.
+        Download Molten and experience inventory management designed with your privacy in mind.
       </p>
       <div class="flex flex-col sm:flex-row gap-4 justify-center">
         <a href="https://apps.apple.com/app/molten"
