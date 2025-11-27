@@ -163,10 +163,17 @@ export const prerender = true;
   <section class="py-20 bg-slate-900">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-        <div class="order-2 lg:order-1 flex justify-center">
-          <!-- PLACEHOLDER: Need share inventory screenshot -->
-          <div class="bg-slate-700 rounded-2xl flex items-center justify-center text-slate-500 text-center p-8" style="width: 280px; height: 500px;">
-            <span>PLACEHOLDER:<br/>Share Inventory Screenshot</span>
+        <div class="order-2 lg:order-1 flex justify-center gap-4">
+          <img
+            src="/inventory-sharing-share-code.png"
+            alt="Share code for inventory sharing"
+            class="rounded-2xl shadow-2xl"
+            style="max-height: 400px;"
+          />
+          <div class="relative hidden sm:block">
+            <img id="sharing-1" src="/inventory-sharing-start.png" alt="Start sharing inventory" class="rounded-2xl shadow-2xl sharing-rotate-img" style="max-height: 400px;" />
+            <img id="sharing-2" src="/inventory-sharing-active-shares.png" alt="Active inventory shares" class="rounded-2xl shadow-2xl sharing-rotate-img absolute top-0 left-0 opacity-0" style="max-height: 400px;" />
+            <img id="sharing-3" src="/inventory-sharing-comparison.png" alt="Compare inventories" class="rounded-2xl shadow-2xl sharing-rotate-img absolute top-0 left-0 opacity-0" style="max-height: 400px;" />
           </div>
         </div>
         <div class="order-1 lg:order-2">
@@ -341,14 +348,16 @@ export const prerender = true;
   </section>
 
   <style>
-    .catalog-rotate-img {
+    .catalog-rotate-img,
+    .sharing-rotate-img {
       transition: opacity 1s ease-in-out;
     }
   </style>
 
   <script>
     (function() {
-      const images = [
+      // Catalog rotation (randomized)
+      const catalogImages = [
         document.getElementById('catalog-detail-1'),
         document.getElementById('catalog-detail-2'),
         document.getElementById('catalog-detail-3'),
@@ -360,24 +369,38 @@ export const prerender = true;
         document.getElementById('catalog-detail-9')
       ];
 
-      // Shuffle array randomly on page load
-      for (let i = images.length - 1; i > 0; i--) {
+      // Shuffle catalog array randomly on page load
+      for (let i = catalogImages.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
-        [images[i], images[j]] = [images[j], images[i]];
+        [catalogImages[i], catalogImages[j]] = [catalogImages[j], catalogImages[i]];
       }
 
       // Show first random image, hide others
-      images.forEach((img, i) => {
+      catalogImages.forEach((img, i) => {
         if (img) img.style.opacity = i === 0 ? '1' : '0';
       });
 
-      let current = 0;
-
+      let catalogCurrent = 0;
       setInterval(() => {
-        const next = (current + 1) % images.length;
-        if (images[current]) images[current].style.opacity = '0';
-        if (images[next]) images[next].style.opacity = '1';
-        current = next;
+        const next = (catalogCurrent + 1) % catalogImages.length;
+        if (catalogImages[catalogCurrent]) catalogImages[catalogCurrent].style.opacity = '0';
+        if (catalogImages[next]) catalogImages[next].style.opacity = '1';
+        catalogCurrent = next;
+      }, 5000);
+
+      // Sharing rotation (sequential, not randomized)
+      const sharingImages = [
+        document.getElementById('sharing-1'),
+        document.getElementById('sharing-2'),
+        document.getElementById('sharing-3')
+      ];
+
+      let sharingCurrent = 0;
+      setInterval(() => {
+        const next = (sharingCurrent + 1) % sharingImages.length;
+        if (sharingImages[sharingCurrent]) sharingImages[sharingCurrent].style.opacity = '0';
+        if (sharingImages[next]) sharingImages[next].style.opacity = '1';
+        sharingCurrent = next;
       }, 5000);
     })();
   </script>
