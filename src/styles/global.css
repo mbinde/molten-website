@@ -53,7 +53,9 @@
   .hero-overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(to right, rgba(15, 23, 42, 0.95) 0%, rgba(15, 23, 42, 0.7) 50%, rgba(15, 23, 42, 0.4) 100%);
+    background:
+      linear-gradient(to right, rgba(15, 23, 42, 0.95) 0%, rgba(15, 23, 42, 0.6) 50%, rgba(15, 23, 42, 0.3) 100%),
+      linear-gradient(to bottom, transparent 50%, rgb(15, 23, 42) 100%);
   }
 
   .hero-content {
