@@ -14,7 +14,7 @@ export const prerender = true;
       <div class="text-5xl mb-6">🔒</div>
       <h1 class="text-5xl md:text-6xl font-bold mb-6">Privacy Policy</h1>
       <p class="text-xl text-slate-400">
-        Last updated: November 26, 2025
+        Last updated: November 29, 2025
       </p>
     </div>
   </section>
@@ -31,7 +31,7 @@ export const prerender = true;
         </p>
         <p class="text-lg text-slate-400">
           <strong class="text-white">Simple summary:</strong> Your inventory data stays on your devices and in your iCloud account.
-          We only collect minimal technical data to fix bugs and improve the app.
+          We don't collect any data from the app itself.
         </p>
       </div>
 
@@ -175,62 +175,6 @@ export const prerender = true;
 
         <div class="space-y-6">
           <div>
-            <h3 class="text-2xl font-bold mb-3">Crash Reports and Error Logs</h3>
-            <p class="text-lg text-slate-400 mb-3">
-              We use <a href="https://sentry.io" class="text-orange-400 hover:text-orange-300 underline" target="_blank" rel="noopener">Sentry</a>,
-              a third-party error tracking service, to collect crash reports and error logs. This helps us identify and fix bugs quickly.
-              The data collected includes:
-            </p>
-            <ul class="space-y-2 text-lg text-slate-300 ml-4">
-              <li class="flex gap-3">
-                <span class="text-orange-400">•</span>
-                <span>Device type and iOS version</span>
-              </li>
-              <li class="flex gap-3">
-                <span class="text-orange-400">•</span>
-                <span>App version and build number</span>
-              </li>
-              <li class="flex gap-3">
-                <span class="text-orange-400">•</span>
-                <span>Error type and stack trace (technical debugging information)</span>
-              </li>
-              <li class="flex gap-3">
-                <span class="text-orange-400">•</span>
-                <span>General operation context (e.g., "catalog download failed")</span>
-              </li>
-            </ul>
-            <p class="text-lg text-slate-400 mt-3">
-              This data does <strong class="text-white">not</strong> include your inventory, projects, personal notes, or any identifying information.
-              Sentry's privacy policy is available at <a href="https://sentry.io/privacy/" class="text-orange-400 hover:text-orange-300 underline" target="_blank" rel="noopener">sentry.io/privacy</a>.
-            </p>
-          </div>
-
-          <div>
-            <h3 class="text-2xl font-bold mb-3">Bug Reports (User-Initiated)</h3>
-            <p class="text-lg text-slate-400 mb-3">
-              If you shake your device to submit a bug report, you can optionally include:
-            </p>
-            <ul class="space-y-2 text-lg text-slate-300 ml-4">
-              <li class="flex gap-3">
-                <span class="text-orange-400">•</span>
-                <span>A description of the issue you encountered</span>
-              </li>
-              <li class="flex gap-3">
-                <span class="text-orange-400">•</span>
-                <span>Your email address (if you want a response)</span>
-              </li>
-              <li class="flex gap-3">
-                <span class="text-orange-400">•</span>
-                <span>Device information (app version, device model, iOS version)</span>
-              </li>
-            </ul>
-            <p class="text-lg text-slate-400 mt-3">
-              All fields are optional, and the report is only sent when you choose to submit it.
-              Bug reports are sent to Sentry for tracking and resolution.
-            </p>
-          </div>
-
-          <div>
             <h3 class="text-2xl font-bold mb-3">App Store Analytics</h3>
             <p class="text-lg text-slate-400">
               When you download Molten from the App Store, Apple may share basic analytics with us such as
@@ -279,7 +223,7 @@ export const prerender = true;
           </li>
           <li class="flex gap-3">
             <span class="text-orange-400">✓</span>
-            <span><strong class="text-white">Request data deletion:</strong> Contact us at info@moltenglass.app to request deletion of any data we hold (support emails, bug reports).</span>
+            <span><strong class="text-white">Request data deletion:</strong> Contact us at info@moltenglass.app to request deletion of any data we hold (such as support emails).</span>
           </li>
         </ul>
       </div>
@@ -300,11 +244,6 @@ export const prerender = true;
             <strong class="text-white">Apple App Store:</strong> For app distribution and optional analytics.
             <br/>
             <span class="text-slate-500">Privacy: <a href="https://www.apple.com/privacy/" class="text-orange-400 hover:text-orange-300 underline" target="_blank" rel="noopener">apple.com/privacy</a></span>
-          </li>
-          <li>
-            <strong class="text-white">Sentry:</strong> For crash reporting and error tracking.
-            <br/>
-            <span class="text-slate-500">Privacy: <a href="https://sentry.io/privacy/" class="text-orange-400 hover:text-orange-300 underline" target="_blank" rel="noopener">sentry.io/privacy</a></span>
           </li>
           <li>
             <strong class="text-white">Cloudflare:</strong> For hosting our website, cloud backups, and inventory sharing.
@@ -336,10 +275,6 @@ export const prerender = true;
           </li>
           <li class="flex gap-3">
             <span class="text-orange-400">•</span>
-            <span><strong class="text-white">Error logs:</strong> Sentry retains error data for 90 days by default.</span>
-          </li>
-          <li class="flex gap-3">
-            <span class="text-orange-400">•</span>
             <span><strong class="text-white">Support emails:</strong> Retained as long as needed to resolve your issue, then archived.</span>
           </li>
         </ul>
@@ -350,7 +285,6 @@ export const prerender = true;
         <h2 class="text-3xl font-bold mb-6">Children's Privacy</h2>
         <p class="text-lg text-slate-400">
           Molten is not directed at children under 13. We do not knowingly collect personal information from children under 13.
-          The minimal data we collect (error logs) does not include information that identifies individual users.
           If you believe a child has submitted personal information to us, please contact us at info@moltenglass.app.
         </p>
       </div>
@@ -360,9 +294,8 @@ export const prerender = true;
         <h2 class="text-3xl font-bold mb-6">International Users</h2>
         <p class="text-lg text-slate-400">
           Molten is operated from the United States. If you are using the app from outside the United States,
-          please be aware that any information you provide (such as bug reports) may be transferred to and processed in the United States
-          or other countries where our service providers operate. By using the app and submitting bug reports,
-          you consent to this transfer.
+          please be aware that any information you provide (such as support emails) may be transferred to and processed in the United States
+          or other countries where our service providers operate.
         </p>
       </div>
 
