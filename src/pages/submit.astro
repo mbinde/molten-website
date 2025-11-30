@@ -6,86 +6,94 @@ export const prerender = true;
 ---
 
 <Layout title="Submit to Molten Directory">
-  <section class="py-16 bg-gray-50 min-h-screen">
+  <!-- Hero Section -->
+  <section class="relative py-20 overflow-hidden">
+    <!-- Gradient Overlay -->
+    <div class="absolute inset-0 z-[1]" style="background: linear-gradient(to bottom, rgb(15, 23, 42) 0%, rgb(30, 41, 59) 50%, rgb(15, 23, 42) 100%);"></div>
+    <!-- Content -->
+    <div class="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <h1 class="text-5xl md:text-6xl font-bold mb-6">Submit to Directory</h1>
+      <p class="text-xl text-slate-400">
+        Know a great place for glass artists? Share it with the Molten community!
+      </p>
+      <p class="text-sm text-slate-500 mt-4">
+        All submissions are reviewed before being added to the app.
+      </p>
+    </div>
+  </section>
+
+  <!-- Form Section -->
+  <section class="py-20 bg-slate-900">
     <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-      <!-- Header -->
-      <div class="text-center mb-12">
-        <h1 class="text-4xl font-bold mb-4">Submit to Directory</h1>
-        <p class="text-lg text-gray-600">
-          Know a great place for glass artists? Share it with the Molten community!
+      <!-- Note Box -->
+      <div class="mb-8 bg-slate-800/50 border border-slate-700 rounded-xl p-6">
+        <p class="text-sm text-slate-300">
+          <strong class="text-white">Note:</strong> If you are the representative of one of the locations in our database and want it removed, please fill out the handful of required fields, and then put your contact information at the bottom so we can verify with you, remove it, and make sure we don't add it back again.
         </p>
-        <p class="text-sm text-gray-500 mt-2">
-          All submissions are reviewed before being added to the app.
-        </p>
-        <div class="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4 text-left max-w-2xl mx-auto">
-          <p class="text-sm text-blue-900">
-            <strong>Note:</strong> If you are the representative of one of the locations in our database and want it removed, please fill out the handful of required fields, and then put your contact information at the bottom so we can verify with you, remove it, and make sure we don't add it back again.
-          </p>
-        </div>
       </div>
 
       <!-- Form -->
-      <div class="bg-white rounded-lg shadow-lg p-8">
+      <div class="bg-slate-800/50 rounded-xl border border-slate-700 p-8">
         <form id="storeSubmissionForm" class="space-y-8">
           <!-- Basic Information -->
           <div class="space-y-6">
-            <h2 class="text-2xl font-bold border-b pb-2">Basic Information</h2>
+            <h2 class="text-2xl font-bold border-b border-slate-700 pb-2">Basic Information</h2>
 
             <!-- Name -->
             <div>
-              <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
-                Business/Institution Name <span class="text-red-500">*</span>
+              <label for="name" class="block text-sm font-medium text-slate-300 mb-2">
+                Business/Institution Name <span class="text-orange-400">*</span>
               </label>
               <input
                 type="text"
                 id="name"
                 name="name"
                 required
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                class="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                 placeholder="e.g., The Pratt Fine Arts Center"
               />
             </div>
 
             <!-- Main Website -->
             <div>
-              <label for="website_url" class="block text-sm font-medium text-gray-700 mb-2">
-                Main Website <span class="text-red-500">*</span>
+              <label for="website_url" class="block text-sm font-medium text-slate-300 mb-2">
+                Main Website <span class="text-orange-400">*</span>
               </label>
               <input
                 type="url"
                 id="website_url"
                 name="website_url"
                 required
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                class="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                 placeholder="https://example.com"
               />
             </div>
 
             <!-- Address Line 1 -->
             <div>
-              <label for="address_line1" class="block text-sm font-medium text-gray-700 mb-2">
-                Address <span class="text-red-500">*</span>
+              <label for="address_line1" class="block text-sm font-medium text-slate-300 mb-2">
+                Address <span class="text-orange-400">*</span>
               </label>
               <input
                 type="text"
                 id="address_line1"
                 name="address_line1"
                 required
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                class="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                 placeholder="123 Main Street"
               />
             </div>
 
             <!-- Address Line 2 (Optional) -->
             <div>
-              <label for="address_line2" class="block text-sm font-medium text-gray-700 mb-2">
-                Address Line 2 <span class="text-gray-400">(Optional)</span>
+              <label for="address_line2" class="block text-sm font-medium text-slate-300 mb-2">
+                Address Line 2 <span class="text-slate-500">(Optional)</span>
               </label>
               <input
                 type="text"
                 id="address_line2"
                 name="address_line2"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                class="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                 placeholder="Suite 100"
               />
             </div>
@@ -93,56 +101,56 @@ export const prerender = true;
             <!-- City, State, ZIP, Country Row -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div>
-                <label for="city" class="block text-sm font-medium text-gray-700 mb-2">
-                  City <span class="text-red-500">*</span>
+                <label for="city" class="block text-sm font-medium text-slate-300 mb-2">
+                  City <span class="text-orange-400">*</span>
                 </label>
                 <input
                   type="text"
                   id="city"
                   name="city"
                   required
-                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  class="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                   placeholder="Seattle"
                 />
               </div>
 
               <div>
-                <label for="state" class="block text-sm font-medium text-gray-700 mb-2">
-                  State/Province <span class="text-red-500">*</span>
+                <label for="state" class="block text-sm font-medium text-slate-300 mb-2">
+                  State/Province <span class="text-orange-400">*</span>
                 </label>
                 <input
                   type="text"
                   id="state"
                   name="state"
                   required
-                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  class="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                   placeholder="WA"
                 />
               </div>
 
               <div>
-                <label for="zip" class="block text-sm font-medium text-gray-700 mb-2">
-                  Postal Code <span class="text-red-500">*</span>
+                <label for="zip" class="block text-sm font-medium text-slate-300 mb-2">
+                  Postal Code <span class="text-orange-400">*</span>
                 </label>
                 <input
                   type="text"
                   id="zip"
                   name="zip"
                   required
-                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  class="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                   placeholder="98119"
                 />
               </div>
 
               <div>
-                <label for="country" class="block text-sm font-medium text-gray-700 mb-2">
-                  Country <span class="text-red-500">*</span>
+                <label for="country" class="block text-sm font-medium text-slate-300 mb-2">
+                  Country <span class="text-orange-400">*</span>
                 </label>
                 <select
                   id="country"
                   name="country"
                   required
-                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  class="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                 >
                   <option value="">Select...</option>
                   <option value="USA" selected>United States</option>
@@ -344,260 +352,260 @@ export const prerender = true;
 
             <!-- Phone -->
             <div>
-              <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">
-                Phone Number <span class="text-gray-400">(Optional)</span>
+              <label for="phone" class="block text-sm font-medium text-slate-300 mb-2">
+                Phone Number <span class="text-slate-500">(Optional)</span>
               </label>
               <input
                 type="tel"
                 id="phone"
                 name="phone"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                class="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                 placeholder="+1 (206) 284-5600"
               />
             </div>
 
             <!-- Notes -->
             <div>
-              <label for="notes" class="block text-sm font-medium text-gray-700 mb-2">
-                Notes <span class="text-gray-400">(Optional)</span>
+              <label for="notes" class="block text-sm font-medium text-slate-300 mb-2">
+                Notes <span class="text-slate-500">(Optional)</span>
               </label>
               <textarea
                 id="notes"
                 name="notes"
                 rows="3"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                class="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                 placeholder="Any additional information..."
               ></textarea>
             </div>
           </div>
 
           <!-- Retail Glass Section -->
-          <div class="space-y-4 border-t pt-6">
+          <div class="space-y-4 border-t border-slate-700 pt-6">
             <h2 class="text-2xl font-bold pb-2">Retail Glass</h2>
-            <p class="text-sm text-gray-600">Does this location sell glass supplies?</p>
+            <p class="text-sm text-slate-400">Does this location sell glass supplies?</p>
 
             <!-- Retail URL -->
             <div>
-              <label for="retail_url" class="block text-sm font-medium text-gray-700 mb-2">
-                Retail/Shop URL <span class="text-gray-400">(Optional - if different from main website)</span>
+              <label for="retail_url" class="block text-sm font-medium text-slate-300 mb-2">
+                Retail/Shop URL <span class="text-slate-500">(Optional - if different from main website)</span>
               </label>
               <input
                 type="url"
                 id="retail_url"
                 name="retail_url"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                class="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                 placeholder="https://example.com/shop"
               />
             </div>
 
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-3">
-                Glass Types Available <span class="text-gray-400">(Select all that apply)</span>
+              <label class="block text-sm font-medium text-slate-300 mb-3">
+                Glass Types Available <span class="text-slate-500">(Select all that apply)</span>
               </label>
               <div class="space-y-2">
                 <label class="flex items-center">
-                  <input type="checkbox" name="retail_supports_casting" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
-                  <span class="ml-2 text-gray-700">Casting</span>
+                  <input type="checkbox" name="retail_supports_casting" class="w-4 h-4 text-orange-500 bg-slate-900 border-slate-600 rounded focus:ring-orange-500 focus:ring-offset-slate-900">
+                  <span class="ml-2 text-slate-300">Casting</span>
                 </label>
                 <label class="flex items-center">
-                  <input type="checkbox" name="retail_supports_flameworking_hard" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
-                  <span class="ml-2 text-gray-700">Flameworking - Hard (Borosilicate)</span>
+                  <input type="checkbox" name="retail_supports_flameworking_hard" class="w-4 h-4 text-orange-500 bg-slate-900 border-slate-600 rounded focus:ring-orange-500 focus:ring-offset-slate-900">
+                  <span class="ml-2 text-slate-300">Flameworking - Hard (Borosilicate)</span>
                 </label>
                 <label class="flex items-center">
-                  <input type="checkbox" name="retail_supports_flameworking_soft" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
-                  <span class="ml-2 text-gray-700">Flameworking - Soft (Soda-Lime)</span>
+                  <input type="checkbox" name="retail_supports_flameworking_soft" class="w-4 h-4 text-orange-500 bg-slate-900 border-slate-600 rounded focus:ring-orange-500 focus:ring-offset-slate-900">
+                  <span class="ml-2 text-slate-300">Flameworking - Soft (Soda-Lime)</span>
                 </label>
                 <label class="flex items-center">
-                  <input type="checkbox" name="retail_supports_fusing" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
-                  <span class="ml-2 text-gray-700">Fusing</span>
+                  <input type="checkbox" name="retail_supports_fusing" class="w-4 h-4 text-orange-500 bg-slate-900 border-slate-600 rounded focus:ring-orange-500 focus:ring-offset-slate-900">
+                  <span class="ml-2 text-slate-300">Fusing</span>
                 </label>
                 <label class="flex items-center">
-                  <input type="checkbox" name="retail_supports_glass_blowing" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
-                  <span class="ml-2 text-gray-700">Glass Blowing</span>
+                  <input type="checkbox" name="retail_supports_glass_blowing" class="w-4 h-4 text-orange-500 bg-slate-900 border-slate-600 rounded focus:ring-orange-500 focus:ring-offset-slate-900">
+                  <span class="ml-2 text-slate-300">Glass Blowing</span>
                 </label>
                 <label class="flex items-center">
-                  <input type="checkbox" name="retail_supports_stained_glass" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
-                  <span class="ml-2 text-gray-700">Stained Glass</span>
+                  <input type="checkbox" name="retail_supports_stained_glass" class="w-4 h-4 text-orange-500 bg-slate-900 border-slate-600 rounded focus:ring-orange-500 focus:ring-offset-slate-900">
+                  <span class="ml-2 text-slate-300">Stained Glass</span>
                 </label>
                 <label class="flex items-center">
-                  <input type="checkbox" name="retail_supports_other" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
-                  <span class="ml-2 text-gray-700">Other</span>
+                  <input type="checkbox" name="retail_supports_other" class="w-4 h-4 text-orange-500 bg-slate-900 border-slate-600 rounded focus:ring-orange-500 focus:ring-offset-slate-900">
+                  <span class="ml-2 text-slate-300">Other</span>
                 </label>
               </div>
             </div>
           </div>
 
           <!-- Classes Section -->
-          <div class="space-y-4 border-t pt-6">
+          <div class="space-y-4 border-t border-slate-700 pt-6">
             <h2 class="text-2xl font-bold pb-2">Classes</h2>
-            <p class="text-sm text-gray-600">Does this location offer glass art classes?</p>
+            <p class="text-sm text-slate-400">Does this location offer glass art classes?</p>
 
             <!-- Classes URL -->
             <div>
-              <label for="classes_url" class="block text-sm font-medium text-gray-700 mb-2">
-                Classes URL <span class="text-gray-400">(Optional - if different from main website)</span>
+              <label for="classes_url" class="block text-sm font-medium text-slate-300 mb-2">
+                Classes URL <span class="text-slate-500">(Optional - if different from main website)</span>
               </label>
               <input
                 type="url"
                 id="classes_url"
                 name="classes_url"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                class="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                 placeholder="https://example.com/classes"
               />
             </div>
 
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-3">
-                Techniques Taught <span class="text-gray-400">(Select all that apply)</span>
+              <label class="block text-sm font-medium text-slate-300 mb-3">
+                Techniques Taught <span class="text-slate-500">(Select all that apply)</span>
               </label>
               <div class="space-y-2">
                 <label class="flex items-center">
-                  <input type="checkbox" name="classes_supports_casting" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
-                  <span class="ml-2 text-gray-700">Casting</span>
+                  <input type="checkbox" name="classes_supports_casting" class="w-4 h-4 text-orange-500 bg-slate-900 border-slate-600 rounded focus:ring-orange-500 focus:ring-offset-slate-900">
+                  <span class="ml-2 text-slate-300">Casting</span>
                 </label>
                 <label class="flex items-center">
-                  <input type="checkbox" name="classes_supports_flameworking_hard" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
-                  <span class="ml-2 text-gray-700">Flameworking - Hard (Borosilicate)</span>
+                  <input type="checkbox" name="classes_supports_flameworking_hard" class="w-4 h-4 text-orange-500 bg-slate-900 border-slate-600 rounded focus:ring-orange-500 focus:ring-offset-slate-900">
+                  <span class="ml-2 text-slate-300">Flameworking - Hard (Borosilicate)</span>
                 </label>
                 <label class="flex items-center">
-                  <input type="checkbox" name="classes_supports_flameworking_soft" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
-                  <span class="ml-2 text-gray-700">Flameworking - Soft (Soda-Lime)</span>
+                  <input type="checkbox" name="classes_supports_flameworking_soft" class="w-4 h-4 text-orange-500 bg-slate-900 border-slate-600 rounded focus:ring-orange-500 focus:ring-offset-slate-900">
+                  <span class="ml-2 text-slate-300">Flameworking - Soft (Soda-Lime)</span>
                 </label>
                 <label class="flex items-center">
-                  <input type="checkbox" name="classes_supports_fusing" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
-                  <span class="ml-2 text-gray-700">Fusing</span>
+                  <input type="checkbox" name="classes_supports_fusing" class="w-4 h-4 text-orange-500 bg-slate-900 border-slate-600 rounded focus:ring-orange-500 focus:ring-offset-slate-900">
+                  <span class="ml-2 text-slate-300">Fusing</span>
                 </label>
                 <label class="flex items-center">
-                  <input type="checkbox" name="classes_supports_glass_blowing" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
-                  <span class="ml-2 text-gray-700">Glass Blowing</span>
+                  <input type="checkbox" name="classes_supports_glass_blowing" class="w-4 h-4 text-orange-500 bg-slate-900 border-slate-600 rounded focus:ring-orange-500 focus:ring-offset-slate-900">
+                  <span class="ml-2 text-slate-300">Glass Blowing</span>
                 </label>
                 <label class="flex items-center">
-                  <input type="checkbox" name="classes_supports_stained_glass" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
-                  <span class="ml-2 text-gray-700">Stained Glass</span>
+                  <input type="checkbox" name="classes_supports_stained_glass" class="w-4 h-4 text-orange-500 bg-slate-900 border-slate-600 rounded focus:ring-orange-500 focus:ring-offset-slate-900">
+                  <span class="ml-2 text-slate-300">Stained Glass</span>
                 </label>
                 <label class="flex items-center">
-                  <input type="checkbox" name="classes_supports_other" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
-                  <span class="ml-2 text-gray-700">Other</span>
+                  <input type="checkbox" name="classes_supports_other" class="w-4 h-4 text-orange-500 bg-slate-900 border-slate-600 rounded focus:ring-orange-500 focus:ring-offset-slate-900">
+                  <span class="ml-2 text-slate-300">Other</span>
                 </label>
               </div>
             </div>
           </div>
 
           <!-- Rentals Section (hidden for now but structured for future) -->
-          <div class="space-y-4 border-t pt-6 hidden">
+          <div class="space-y-4 border-t border-slate-700 pt-6 hidden">
             <h2 class="text-2xl font-bold pb-2">Equipment Rentals</h2>
-            <p class="text-sm text-gray-600">Does this location rent equipment or studio space?</p>
+            <p class="text-sm text-slate-400">Does this location rent equipment or studio space?</p>
 
             <!-- Rentals URL -->
             <div>
-              <label for="rentals_url" class="block text-sm font-medium text-gray-700 mb-2">
-                Rentals URL <span class="text-gray-400">(Optional - if different from main website)</span>
+              <label for="rentals_url" class="block text-sm font-medium text-slate-300 mb-2">
+                Rentals URL <span class="text-slate-500">(Optional - if different from main website)</span>
               </label>
               <input
                 type="url"
                 id="rentals_url"
                 name="rentals_url"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                class="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                 placeholder="https://example.com/rentals"
               />
             </div>
 
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-3">
-                Equipment Available <span class="text-gray-400">(Select all that apply)</span>
+              <label class="block text-sm font-medium text-slate-300 mb-3">
+                Equipment Available <span class="text-slate-500">(Select all that apply)</span>
               </label>
               <div class="space-y-2">
                 <label class="flex items-center">
-                  <input type="checkbox" name="rentals_supports_casting" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
-                  <span class="ml-2 text-gray-700">Casting</span>
+                  <input type="checkbox" name="rentals_supports_casting" class="w-4 h-4 text-orange-500 bg-slate-900 border-slate-600 rounded focus:ring-orange-500 focus:ring-offset-slate-900">
+                  <span class="ml-2 text-slate-300">Casting</span>
                 </label>
                 <label class="flex items-center">
-                  <input type="checkbox" name="rentals_supports_flameworking_hard" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
-                  <span class="ml-2 text-gray-700">Flameworking - Hard (Borosilicate)</span>
+                  <input type="checkbox" name="rentals_supports_flameworking_hard" class="w-4 h-4 text-orange-500 bg-slate-900 border-slate-600 rounded focus:ring-orange-500 focus:ring-offset-slate-900">
+                  <span class="ml-2 text-slate-300">Flameworking - Hard (Borosilicate)</span>
                 </label>
                 <label class="flex items-center">
-                  <input type="checkbox" name="rentals_supports_flameworking_soft" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
-                  <span class="ml-2 text-gray-700">Flameworking - Soft (Soda-Lime)</span>
+                  <input type="checkbox" name="rentals_supports_flameworking_soft" class="w-4 h-4 text-orange-500 bg-slate-900 border-slate-600 rounded focus:ring-orange-500 focus:ring-offset-slate-900">
+                  <span class="ml-2 text-slate-300">Flameworking - Soft (Soda-Lime)</span>
                 </label>
                 <label class="flex items-center">
-                  <input type="checkbox" name="rentals_supports_fusing" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
-                  <span class="ml-2 text-gray-700">Fusing</span>
+                  <input type="checkbox" name="rentals_supports_fusing" class="w-4 h-4 text-orange-500 bg-slate-900 border-slate-600 rounded focus:ring-orange-500 focus:ring-offset-slate-900">
+                  <span class="ml-2 text-slate-300">Fusing</span>
                 </label>
                 <label class="flex items-center">
-                  <input type="checkbox" name="rentals_supports_glass_blowing" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
-                  <span class="ml-2 text-gray-700">Glass Blowing</span>
+                  <input type="checkbox" name="rentals_supports_glass_blowing" class="w-4 h-4 text-orange-500 bg-slate-900 border-slate-600 rounded focus:ring-orange-500 focus:ring-offset-slate-900">
+                  <span class="ml-2 text-slate-300">Glass Blowing</span>
                 </label>
                 <label class="flex items-center">
-                  <input type="checkbox" name="rentals_supports_stained_glass" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
-                  <span class="ml-2 text-gray-700">Stained Glass</span>
+                  <input type="checkbox" name="rentals_supports_stained_glass" class="w-4 h-4 text-orange-500 bg-slate-900 border-slate-600 rounded focus:ring-orange-500 focus:ring-offset-slate-900">
+                  <span class="ml-2 text-slate-300">Stained Glass</span>
                 </label>
                 <label class="flex items-center">
-                  <input type="checkbox" name="rentals_supports_other" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
-                  <span class="ml-2 text-gray-700">Other</span>
+                  <input type="checkbox" name="rentals_supports_other" class="w-4 h-4 text-orange-500 bg-slate-900 border-slate-600 rounded focus:ring-orange-500 focus:ring-offset-slate-900">
+                  <span class="ml-2 text-slate-300">Other</span>
                 </label>
               </div>
             </div>
           </div>
 
           <!-- Submitter Info -->
-          <div class="border-t pt-6 mt-6">
+          <div class="border-t border-slate-700 pt-6 mt-6">
             <h3 class="text-lg font-medium mb-4">Your Information (Optional)</h3>
-            <p class="text-sm text-gray-600 mb-4">
+            <p class="text-sm text-slate-400 mb-4">
               If you are officially authorized to represent this location, include your information here so we can contact you. We will lock down this location to changes by anyone else and mark it as verified in our directory, or delete it from the directory and not show it again even if someone re-submits it.
             </p>
-            <p class="text-sm text-gray-500 mb-4">
+            <p class="text-sm text-slate-500 mb-4">
               We won't share your name or contact information on the website, the app, or use it for any purpose other than our email correspondence to verify your association with the location and make sure you are comfortable with how it is (or isn't) represented in the Molten app.
             </p>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label for="submitter_name" class="block text-sm font-medium text-gray-700 mb-2">
-                  Your Name <span class="text-gray-400">(Optional)</span>
+                <label for="submitter_name" class="block text-sm font-medium text-slate-300 mb-2">
+                  Your Name <span class="text-slate-500">(Optional)</span>
                 </label>
                 <input
                   type="text"
                   id="submitter_name"
                   name="submitter_name"
-                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  class="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                 />
               </div>
 
               <div>
-                <label for="submitter_phone" class="block text-sm font-medium text-gray-700 mb-2">
-                  Your Phone <span class="text-gray-400">(Optional)</span>
+                <label for="submitter_phone" class="block text-sm font-medium text-slate-300 mb-2">
+                  Your Phone <span class="text-slate-500">(Optional)</span>
                 </label>
                 <input
                   type="tel"
                   id="submitter_phone"
                   name="submitter_phone"
-                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  class="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                   placeholder="+1 (206) 555-1234"
                 />
               </div>
             </div>
 
             <div class="mt-4">
-              <label for="submitter_email" class="block text-sm font-medium text-gray-700 mb-2">
-                Your Email <span class="text-gray-400">(Optional)</span>
+              <label for="submitter_email" class="block text-sm font-medium text-slate-300 mb-2">
+                Your Email <span class="text-slate-500">(Optional)</span>
               </label>
               <input
                 type="email"
                 id="submitter_email"
                 name="submitter_email"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                class="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:ring-2 focus:ring-orange-500 focus:border-transparent"
               />
             </div>
 
             <!-- Additional Comments -->
             <div class="mt-6">
-              <label for="submitter_comments" class="block text-sm font-medium text-gray-700 mb-2">
+              <label for="submitter_comments" class="block text-sm font-medium text-slate-300 mb-2">
                 Additional Comments
               </label>
               <textarea
                 id="submitter_comments"
                 name="submitter_comments"
                 rows="4"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                class="w-full px-4 py-2 bg-slate-900 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                 placeholder="Anything you'd like to add..."
               ></textarea>
             </div>
@@ -607,7 +615,7 @@ export const prerender = true;
           <div class="pt-6">
             <button
               type="submit"
-              class="w-full bg-orange-500 text-white py-3 px-6 rounded-lg font-bold text-lg hover:bg-orange-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              class="w-full gradient-orange text-white py-3 px-6 rounded-lg font-bold text-lg hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Submit
             </button>
@@ -620,7 +628,7 @@ export const prerender = true;
 
       <!-- Back Link -->
       <div class="text-center mt-8">
-        <a href="/" class="text-orange-500 hover:text-orange-600 font-medium">
+        <a href="/" class="text-orange-400 hover:text-orange-300 font-medium">
           ← Back to Home
         </a>
       </div>
@@ -685,7 +693,7 @@ export const prerender = true;
 
       if (response.ok) {
         // Success
-        messageDiv.className = 'p-4 rounded-lg bg-green-50 border border-green-200 text-green-800';
+        messageDiv.className = 'p-4 rounded-lg bg-green-900/50 border border-green-700 text-green-300';
         messageDiv.textContent = result.message || 'Thank you! Your submission has been received and will be reviewed shortly.';
         messageDiv.classList.remove('hidden');
 
@@ -693,12 +701,12 @@ export const prerender = true;
         form.reset();
       } else {
         // Error
-        messageDiv.className = 'p-4 rounded-lg bg-red-50 border border-red-200 text-red-800';
+        messageDiv.className = 'p-4 rounded-lg bg-red-900/50 border border-red-700 text-red-300';
         messageDiv.textContent = result.error || 'Something went wrong. Please try again.';
         messageDiv.classList.remove('hidden');
       }
     } catch (error) {
-      messageDiv.className = 'p-4 rounded-lg bg-red-50 border border-red-200 text-red-800';
+      messageDiv.className = 'p-4 rounded-lg bg-red-900/50 border border-red-700 text-red-300';
       messageDiv.textContent = 'Network error. Please check your connection and try again.';
       messageDiv.classList.remove('hidden');
     } finally {
