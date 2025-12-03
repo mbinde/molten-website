@@ -1,0 +1,98 @@
+This is a very exciting project. Your App Store description is excellent—it’s detailed, highlights clear pain points for glass artists (tracking specific colors, COE, managing stock across locations), and offers robust solutions.
+
+The current website (based on the URL provided) is functional but likely minimal. To convince an artist to download an inventory app, the website needs to immediately bridge the gap between the messy, vibrant reality of a glass studio and the clean, organized utility of your app.
+
+Here is a design proposal for a better "Molten" landing page, focusing on visual impact, clarity, and conversion.
+
+---
+
+### 1. Overall Strategy & Visual Identity
+
+The concept is **"Controlled Chaos."** Glass art is about heat, vibrant color, and raw materials. Inventory management is about order and calm. The website should balance these two.
+
+* **Color Palette:** Use a dark mode theme as the base (think charcoal or slate gray, like a kiln shelf or graphite paddle). Use vibrant "molten" colors as accents for buttons and highlights—fiery oranges, deep reds, or electric blues—drawn directly from glass rod colors.
+* **Imagery:** This is crucial. You need high-quality photography.
+    * *Backgrounds:* Macro shots of colored glass rods stacked end-to-end, piles of vibrant frit, or a torch flame (blurred to not distract).
+    * *Foreground:* Crisp, clean iPhone/iPad mockups showing the app's colorful interface cutting through the studio background.
+* **Typography:** A clean, modern sans-serif font (e.g., Inter, Roboto, or Helvetica Neue) that is easy to scan.
+
+---
+
+### 2. Section-by-Section Page Breakdown
+
+Here is the proposed structure for the homepage, flowing from top to bottom.
+
+#### A. The Hero Section (Above the Fold)
+*Goal: Instant understanding of what the app is and a beautiful visual hook.*
+
+* **Background Visual:** A striking, high-resolution photo of a working glass studio bench—rods scattered, tools around, perhaps glowing glass on a mandrel—but slightly darkened so text pops.
+* **Foreground Visual:** A large iPhone mockup on the right side, displaying the main inventory screen full of colorful glass tags.
+* **Headline:** **Molten: Everything except the heat.** (Using your excellent subtitle as the main hook).
+* **Subline:** The complete inventory management app for glass artists. Track materials, plan shopping, and organize your studio from any device.
+* **Primary CTA Button:** [Download on the App Store] (Use an official-looking badge or a vibrant orange button with the Apple logo).
+
+#### B. The "Trust Triangle" Bar
+*Goal: Quick social proof and key stats to build immediate authority.*
+
+A slim horizontal bar right below the hero section with three quick stats derived from your promotional text:
+
+* [Icon: Color Palette] **3,000+ Colors & Coatings**
+* [Icon: Factory/Gear] **20+ Major Manufacturers**
+* [Icon: Cloud] **iCloud Sync Across Devices**
+
+#### C. Feature Feature: The Comprehensive Catalog
+*Goal: Highlight the biggest pain point solver—not having to manually enter data.*
+
+* **Layout:** Text on the Left, Large Screenshot on the Right.
+* **Headline:** The Ultimate Glass Database. Built-in.
+* **Body Copy:** Stop guessing COE. Browse over 3,000 glass colors from manufacturers like Bullseye, Effetre, Double Helix, Northstar, and Creation is Messy. We cover full COE ranging from 33 to 104 with detailed product info for every item.
+* **Visual:** A screenshot showing the "Search" or "Browse" screen, filtering by a specific manufacturer (e.g., Double Helix) showing lots of unique color names and photos.
+
+#### D. Feature Feature: Smart Studio Organization
+*Goal: Show how it handles the physical reality of the studio.*
+
+* **Layout:** Large Screenshot on the Left, Text on the Right.
+* **Headline:** Know What You Have & Where It Is.
+* **Body Copy:** Whether you have rods, frit, sheet, or tubes, Molten helps you track precise quantities. Organize by storage location so you can see your entire collection at a glance.
+* **Special Highlight (Crucial Feature):**
+    * **Professional Label Printing:** Organize your studio with 50+ customizable label templates. Print QR codes that scan directly to the item in the app for instant updates.
+* **Visual:** A screenshot of an "Item Detail" page showing a photo of a glass rod, its quantity, and its storage location. Perhaps a smaller graphic showing a sample printed QR label next to it.
+
+#### E. Secondary Features Grid (3 Columns)
+*Goal: Quickly summarize the remaining utility features.*
+
+* **Column 1: Intelligent Shopping**
+    * [Icon: Shopping Cart]
+    * Never forget what you need to restock. Build lists by supplier and transfer purchased items directly to inventory.
+* **Column 2: Find Suppliers & Schools**
+    * [Icon: Map Pin]
+    * Discover new sources. Browse local suppliers or find educational institutions offering glass programs near you.
+* **Column 3: Share & Collaborate**
+    * [Icon: User Group]
+    * Share your inventory with friends for trades or coordinating workshops. Revoke access anytime.
+
+#### F. The "Privacy First" Promise & Pricing
+*Goal: Reassure users about their data and explain the business model.*
+
+* **Background:** A cleaner, lighter gray section to differentiate it.
+* **Headline:** Your creative work stays private.
+* **Body Copy:** We don't track you or sell your data. All data is stored locally or in your personal iCloud account.
+* **Pricing Sub-header:** Free or Pro.
+* **Body Copy:** Enjoy the full catalog, inventory, and shopping features for free. **Molten Pro** unlocks versioned cloud backups and inventory sharing via monthly or yearly subscriptions.
+
+#### G. The Final Call to Action (Footer area)
+*Goal: One final push to download.*
+
+* **Headline:** Ready to organize your studio?
+* **CTA Button:** [Download Molten on the App Store]
+* **Footer Links:** (Small text at the very bottom)
+    * Support | Privacy Policy | Marketing URL | © 2025 [Your Name]
+
+---
+
+### Summary of Improvements Over a Basic Page
+
+1.  **Leverages Your Copy:** It uses your strong subtitle ("Everything except the heat") as the primary hero headline.
+2.  **Visual Storytelling:** Instead of just telling them it manages inventory, it *shows* colorful glass organized inside a clean UI.
+3.  **Highlights Unique Selling Props:** It gives dedicated space to the QR code labeling and the massive pre-built database, which are key differentiators.
+4.  **Addresses Objections:** It proactively handles data privacy concerns and clarifies the free vs. pro model.

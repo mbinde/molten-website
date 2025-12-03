@@ -44,7 +44,12 @@ export const GET: APIRoute = async ({ params, request, locals }) => {
     }
 
     // Get the image from R2
-    const object = await R2.get(path);
+    // Try glass/ prefix first (most common), then coatings/ as fallback
+    // This supports iOS app which only sends filename without prefix
+    let object = await R2.get(`glass/${path}`);
+    if (!object) {
+      object = await R2.get(`coatings/${path}`);
+    }
 
     if (!object) {
       return new Response('Image not found', { status: 404 });

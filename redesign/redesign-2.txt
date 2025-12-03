@@ -1,0 +1,49 @@
+Here are three image mockups showing the design for the main landing page and the essential sub-pages, based on the App Store description you provided.
+
+### 1. The Landing Page Hero Section
+
+This is the top-most section of your website, designed for immediate impact. It follows the "controlled chaos" theme, contrasting the hot, messy reality of a glass studio with the clean, organized interface of the Molten app.
+
+The headline uses your excellent subtitle, "Everything except the heat," as the primary hook. The sub-text is a concise summary of your promotional text.
+
+### 2. Key Features Section (Mid-Page)
+
+Scrolling down from the hero section, this part of the page details the app's core functionality. I've chosen to highlight the two most compelling features from your description:
+
+* **Comprehensive Catalog:** Showing the massive, pre-built database of colors and manufacturers.
+* **Smart Inventory with QR Codes:** Demonstrating the unique physical-to-digital workflow of scanning labels in the studio.
+
+### 3. Essential Sub-Pages (Privacy & Contact)
+
+These are the two critical sub-pages referenced in your App Store metadata. Their design is intentionally simple and text-focused, maintaining the dark theme from the main landing page but without the distracting visuals, as their primary goal is to provide information.
+
+* **Privacy Policy:** A clean, readable layout for your legal text, reinforcing the "Privacy First" promise from your description.
+* **Contact:** A straightforward form for users to send feedback or questions, as mentioned in your description's footer.
+
+Here are the design mockups for your new Molten website. These designs are directly informed by the App Store metadata you provided, focusing on the "controlled chaos" theme—bridging the vibrant, fiery world of glass art with the clean, organized utility of your app.
+
+### 1. The Landing Page Hero Section
+
+This is the top-most section of your website, designed for immediate impact. It contrasts the hot, messy reality of a glass studio with the clean, organized interface of the Molten app.
+
+* **Headline:** Uses your excellent subtitle, **"Everything except the heat,"** as the primary hook.
+* **Visuals:** A fiery glassblowing scene is the backdrop for a clean iPhone mockup showing the app's colorful inventory.
+* **Social Proof:** A small bar at the bottom highlights key stats from your promotional text: **3,000+ Colors**, **20+ Manufacturers**, and **iCloud Sync**.
+
+
+
+### 2. Key Features Section (Mid-Page)
+
+Scrolling down, this section details the app's core functionality. I've highlighted the two most compelling features from your description in a split-layout:
+
+* **Comprehensive Catalog:** On the left, an iPad screenshot showcases the massive, pre-built database of colors and manufacturers.
+* **Smart Inventory & QR Labels:** On the right, a real-world photo demonstrates the unique physical-to-digital workflow of scanning a QR label on a jar of glass frit.
+
+
+
+### 3. Essential Sub-Pages (Privacy & Contact)
+
+These are the two critical sub-pages referenced in your App Store metadata. Their design is intentionally simple and text-focused, maintaining the dark theme from the main landing page but without the distracting visuals, as their primary goal is to provide information.
+
+* **Privacy Policy:** A clean, readable layout for your legal text, reinforcing the "Privacy First" promise from your description.
+* **Contact Us:** A straightforward form for users to send feedback or questions, as mentioned in your description's footer.
